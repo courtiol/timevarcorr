@@ -17,10 +17,11 @@ are missing and it may be buggy. Use at your own risk.
 It aims at computing the correlation between 2 time-series. It performs
 a non-parametric kernel smoothing (using a common bandwidth) of all
 underlying componenents required for the computation of a correlation
-coefficient (i.e. *x*, *y*, *x*<sup>2</sup>, *y*<sup>2</sup>, *x**y*).
-An automatic selection procedure for the bandwidth parameter is
-implemented. Gaussian, box and Epanechnikov kernels can be used. Both
-Pearson and Spearman correlation coefficients can be estimated.
+coefficient (i.e. *x*, *y*, *x*<sup>2</sup>, *y*<sup>2</sup>,
+*x* \* *y*). An automatic selection procedure for the bandwidth
+parameter is implemented. Gaussian, box and Epanechnikov kernels can be
+used. Both Pearson and Spearman correlation coefficients can be
+estimated.
 
 ## Installation
 
@@ -39,12 +40,12 @@ Simple example using base-R syntax:
 ``` r
 library(timevarcorr)
 d <- stockprice[1:500, ]
-test <- tcor(x = d$SP500, y = d$FTSE100, t = d$DateID, kernel = "normal")
+test <- with(d, tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal"))
 #> [1] "h selected using LOO-CV = 60.9"
-plot(test, type = "l", ylab = "Correlation", xlab = "Time", main = "Correlation between 2 stock indexes", las = 1)
+plot(test, type = "l", ylab = "Correlation", xlab = "Time", main = "SP500 vs FTSE100", las = 1)
 ```
 
-<img src="man/figures/README-example-1.png" width="100%" />
+<img src="man/figures/README-example-1.png" width="70%" />
 
 Same example using tidyverse syntax:
 
@@ -67,12 +68,12 @@ stockprice |>
   ggplot() +
     aes(x = t, y = r) +
     geom_line() +
-    labs(title = "Correlation between 2 stock indexes", x = "Time", y = "Correlation") +
+    labs(title = "SP500 vs FTSE100", x = "Time", y = "Correlation") +
     theme_classic()
 #> [1] "h selected using LOO-CV = 60.9"
 ```
 
-<img src="man/figures/README-example2-1.png" width="100%" />
+<img src="man/figures/README-example2-1.png" width="70%" />
 
 Alternative using `dplyr::mutate` showing gaps of observations in the
 series:
@@ -84,23 +85,23 @@ stockprice |>
   ggplot() +
     aes(x = DateID, y = r) +
     geom_line() +
-    labs(title = "Correlation between 2 stock indexes", x = "Time", y = "Correlation") +
+    labs(title = "SP500 vs FTSE100", x = "Time", y = "Correlation") +
     theme_classic()
 #> [1] "h selected using LOO-CV = 60.9"
 ```
 
-<img src="man/figures/README-example3-1.png" width="100%" />
+<img src="man/figures/README-example3-1.png" width="70%" />
 
 You can do more. For exampe, you can use other kernels, fix the
 bandwidth manually, or use the Spearman’s rather than the Pearson’s
 correlation coefficient:
 
 ``` r
-test2 <- tcor(x = d$SP500, y = d$FTSE100, t = d$DateID, cor.method = "spearman", kernel = "box", h = 10)
+test2 <- with(d, tcor(x = SP500, y = FTSE100, t = DateID, cor.method = "spearman", kernel = "box", h = 10))
 plot(test2, type = "l", ylab = "Correlation (Spearman)", xlab = "Time", las = 1)
 ```
 
-<img src="man/figures/README-example4-1.png" width="100%" />
+<img src="man/figures/README-example4-1.png" width="70%" />
 
 ## Inspiration
 
