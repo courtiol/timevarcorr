@@ -61,6 +61,7 @@
 #'
 #' @seealso [`kern_smooth`]
 #'
+#' @importFrom parallel mclapply
 #' @export
 #'
 #' @examples
@@ -177,9 +178,16 @@ tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "sp
 
      if (length(x_ori) > 500) message("Bandwidth selection using LOO-CV... (may take a while)")
 
+     ## message if trying parallel computation on Windows (parallel::mclapply is not supported by Windows)
+     if (!requireNamespace("parallelsugar", quietly = TRUE)) {
+       if (Sys.info()[['sysname']] == "Windows" && (!is.null(options("mc.cores")[[1]]) && options("mc.cores")[[1]] > 1)) {
+         message("\nParallel processing will only work here for Linux and MacOS.\nFor Windows, try installing {parallelsugar} before running this code:\nremotes::install_github('nathanvan/parallelsugar')\n")
+       }
+     }
+
      ## define function for performing leave-one-out cross-validation ## TODO: extract code into standalone function
      CV <- function(h) {
-       CVi <- parallel::mclapply(seq_along(t_ori), function(oob) {
+       CVi <- mclapply(seq_along(t_ori), function(oob) {
          obj <- pred_tcor(x = x_ori[-oob], y = y_ori[-oob], t = t_ori[-oob], h = h, t.for.pred = t_ori[oob],
                           cor.method = cor.method, kernel = kernel, param_smoother = param_smoother)
          (obj$r - ((x_ori[oob] - obj$x) * (y_ori[oob] - obj$y)) / (obj$sd_x * obj$sd_y))^2
