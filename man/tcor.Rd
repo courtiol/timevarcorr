@@ -89,8 +89,8 @@ regression. The default is to use the Epanechnikov kernel, but other kernels
 have also been implemented and can thus alternativelly be used
 (see \code{\link{kern_smooth}} for details). The default seems to lead to larger bandwidth
 being selected by cross-validation, which is more pleasing at least for the eye.
-If \code{h} is large, the default method no longer works while the alternatives still
-behave fine in this situation.
+If \code{h} is small or large, the default method may no longer works while
+the alternatives still behave fine in these situations.
 \item \strong{Bandwidth selection}: when the value used to define the bandwidth (\code{h})
 is set to \code{NULL} (the default), it is first estimated by leave-one-out cross
 validation. If cross validation error is minimal for the maximal value of \code{h}
