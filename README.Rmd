@@ -1,0 +1,97 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# timevarcorr
+
+<!-- badges: start -->
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/fw)](https://CRAN.R-project.org/package=timevarcorr)
+<!-- badges: end -->
+
+This R package is at a very early stage of development.
+Many features are missing and it may be buggy.
+Use at your own risk.
+
+It aims at computing the correlation between 2 time-series.
+It performs a non-parametric kernel smoothing (using a common bandwidth) of all underlying componenents required for the computation of a correlation coefficient (i.e. $x$, $y$, $x^2$, $y^2$, $xy$).
+An automatic selection procedure for the bandwidth parameter is implemented.
+Gaussian, box and Epanechnikov kernels can be used.
+Both Pearson and Spearman correlation coefficients can be estimated.
+
+
+## Installation
+
+You can install the development version of timevarcorr from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("remotes")
+remotes::install_github("courtiol/timevarcorr")
+```
+
+## Example
+
+Simple example using base-R syntax:
+
+```{r example}
+library(timevarcorr)
+d <- stockprice[1:500, ]
+test <- tcor(x = d$SP500, y = d$FTSE100, t = d$DateID, kernel = "normal")
+plot(test, type = "l", ylab = "Correlation", xlab = "Time", main = "Correlation between 2 stock indexes", las = 1)
+```
+
+Same example using tidyverse syntax:
+
+```{r example2}
+library(tidyverse)
+
+stockprice |> 
+  slice(1:500) |>
+  summarise(tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal")) |>
+  ggplot() +
+    aes(x = t, y = r) +
+    geom_line() +
+    labs(title = "Correlation between 2 stock indexes", x = "Time", y = "Correlation") +
+    theme_classic()
+```
+
+Alternative using `dplyr::mutate` showing gaps of observations in the series:
+
+```{r example3}
+stockprice |> 
+  slice(1:500) |>
+  mutate(r = tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal", keep.missing = TRUE)$r) |>
+  ggplot() +
+    aes(x = DateID, y = r) +
+    geom_line() +
+    labs(title = "Correlation between 2 stock indexes", x = "Time", y = "Correlation") +
+    theme_classic()
+```
+
+You can do more. For exampe, you can use other kernels, fix the bandwidth manually, or use the Spearman's rather than the Pearson's correlation coefficient:
+
+```{r example4}
+test2 <- tcor(x = d$SP500, y = d$FTSE100, t = d$DateID, cor.method = "spearman", kernel = "box", h = 10)
+plot(test2, type = "l", ylab = "Correlation (Spearman)", xlab = "Time", las = 1)
+```
+
+## Inspiration
+
+The inspiration for this work was the reading of the following paper:
+
+Choi, JE., Shin, D.W. Nonparametric estimation of time varying correlation coefficient. J. Korean Stat. Soc. 50, 333–353 (2021). https://doi.org/10.1007/s42952-020-00073-6
+
+
