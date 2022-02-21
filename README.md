@@ -18,7 +18,7 @@ involved. So, please only use at your own risk.
 
 It aims at computing the correlation between 2 time-series. It performs
 a non-parametric kernel smoothing (using a common bandwidth) of all
-underlying componenents required for the computation of a correlation
+underlying components required for the computation of a correlation
 coefficient (i.e. *x*, *y*, *x*<sup>2</sup>, *y*<sup>2</sup>,
 *x* \* *y*). An automatic selection procedure for the bandwidth
 parameter is implemented. Epanechnikov, Gaussian, and box kernels can be
@@ -41,7 +41,7 @@ Note that this package relies so far on only one direct dependency –
 [lpridge](https://github.com/cran/lpridge) – which itself depends on
 nothing but a plain R install.
 
-Nonethess, in some of the examples below, I also rely on the
+Nonetheless, in some of the examples below, I also rely on the
 [tidyverse](https://github.com/tidyverse) ecosystem, so you would need
 to install this as well to reproduce the content of this README:
 
@@ -51,7 +51,7 @@ install.packages("tidyverse")
 
 ## Examples
 
-The main fonction of this package is called `tcor` and its documentation
+The main function of this package is called `tcor` and its documentation
 is available here:
 
 ``` r
@@ -106,7 +106,7 @@ stockprice |>
 
 <img src="man/figures/README-example3-1.png" width="70%" style="display: block; margin: auto;" />
 
-You can do more. For exampe, you can use other kernels, fix the
+You can do more. For example, you can use other kernels, fix the
 bandwidth manually, or use the Spearman’s rather than the Pearson’s
 correlation coefficient:
 
@@ -227,7 +227,7 @@ devtools::session_info()
 #>  xml2          1.3.3      2021-11-30 [3] CRAN (R 4.1.2)
 #>  yaml          2.2.2      2022-01-25 [3] CRAN (R 4.1.2)
 #> 
-#>  [1] /tmp/Rtmp9lSeJr/temp_libpath8c79d6cfd5fd9
+#>  [1] /tmp/Rtmp9lSeJr/temp_libpath8c79d5c6e6a63
 #>  [2] /home/alex/R/x86_64-redhat-linux-gnu-library/4.1
 #>  [3] /usr/local/lib/R/library
 #>  [4] /usr/lib64/R/library

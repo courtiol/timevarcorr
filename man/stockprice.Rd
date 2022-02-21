@@ -30,7 +30,7 @@ stockprice
 \description{
 A dataset containing the stockmarket returns between 2000-04-03 and 2017-12-05.
 This dataset is very close to the one used by Choi & Shin 2021, although not
-striclty identical. It has been produced by the Oxford-Man Institute of Quantitative Finance.
+strictly identical. It has been produced by the Oxford-Man Institute of Quantitative Finance.
 }
 \references{
 Heber, Gerd, Asger Lunde, Neil Shephard and Kevin Sheppard (2009)

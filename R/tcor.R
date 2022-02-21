@@ -8,14 +8,14 @@
 #' component (i.e. `x`, `y`, `x^2`, `y^2`, `x*y`) is smoothed and the smoothed
 #' terms are considered in place the original means. The intensity of the
 #' smoothing depends on a unique parameter: the bandwidth (`h`). If `h = Inf`,
-#' the method produces the orginial (i.e. time-invariant) correlation value. The
+#' the method produces the original (i.e. time-invariant) correlation value. The
 #' smaller the parameter `h`, the more variation in time is being captured. The
 #' parameter `h` can be provided by the user; otherwise it is automatically
 #' estimated (see **Details**).
 #'
 #' - **Smoothing**: the smoothing of each component is performed by kernel
 #' regression. The default is to use the Epanechnikov kernel, but other kernels
-#' have also been implemented and can thus alternativelly be used
+#' have also been implemented and can thus alternatively be used
 #' (see [`kern_smooth`] for details). The default seems to lead to larger bandwidth
 #' being selected by cross-validation, which is more pleasing at least for the eye.
 #' If `h` is small or large, the default method may no longer works while
