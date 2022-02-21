@@ -12,7 +12,8 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.path = "man/figures/README-",
   fig.align = "center",
-  out.width = "70%"
+  out.width = "70%",
+  warning = FALSE
 )
 ```
 
@@ -27,13 +28,13 @@ status](https://www.r-pkg.org/badges/version/fw)](https://CRAN.R-project.org/pac
 
 This R package is at a very early stage of development.
 Many key features are missing (e.g. confidence intervals and test) and it may be buggy.
-I also don't understand much of the statistical concepts invovled.
-So, please use at your own risk.
+I also don't understand much of the statistical concepts involved.
+So, please only use at your own risk.
 
 It aims at computing the correlation between 2 time-series.
 It performs a non-parametric kernel smoothing (using a common bandwidth) of all underlying componenents required for the computation of a correlation coefficient (i.e. $x$, $y$, $x^2$, $y^2$, $x*y$).
 An automatic selection procedure for the bandwidth parameter is implemented.
-Gaussian, box and Epanechnikov kernels can be used.
+Epanechnikov, Gaussian, and box kernels can be used.
 Both Pearson and Spearman correlation coefficients can be estimated.
 
 
@@ -42,7 +43,7 @@ Both Pearson and Spearman correlation coefficients can be estimated.
 You can install the development version of timevarcorr from [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("remotes") ## uncomment and run if you don't have this packge installed
+# install.packages("remotes") ## uncomment and run if you don't have this package installed
 remotes::install_github("courtiol/timevarcorr")
 ```
 
@@ -59,10 +60,17 @@ install.packages("tidyverse")
 
 ## Examples
 
+The main fonction of this package is called `tcor` and its documentation is available here:
+
+```{r help}
+help(tcor, package = timevarcorr)
+```
+
 Simple example using base-R syntax:
 
 ```{r example}
 library(timevarcorr)
+
 d <- stockprice[1:500, ]
 test <- with(d, tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal"))
 plot(test, type = "l", ylab = "Correlation", xlab = "Time", main = "SP500 vs FTSE100", las = 1)
