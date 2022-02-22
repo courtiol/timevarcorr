@@ -181,7 +181,7 @@ tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "sp
     }
 
     if (Sys.info()[['sysname']] != "Windows" && parallel::detectCores() < nb.cores) {
-      stop(paste("\nYour computer does not allow so a large value for `nb.cores`. The maximum value you may consider is", parallel::detectCores(), "\n"))
+      stop(paste("\nYour computer does not allow such a large value for the argument `nb.cores`. The maximum value you may consider is", parallel::detectCores(), ".\n"))
     }
 
     if (Sys.info()[['sysname']] != "Windows" && parallel::detectCores() > 1 && nb.cores == 1) {
