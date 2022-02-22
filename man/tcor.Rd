@@ -14,6 +14,7 @@ tcor(
   kernel = c("epanechnikov", "box", "normal"),
   param_smoother = list(),
   keep.missing = FALSE,
+  nb.cores = 1L,
   verbose = FALSE
 )
 
@@ -49,6 +50,8 @@ internal smoothing function (see \strong{Details}).}
 
 \item{keep.missing}{a logical specifying if time steps associated with missing
 information should be kept in the output (default = \code{FALSE} to facilitate plotting).}
+
+\item{nb.cores}{an integer giving the number of CPU cores to be used to during cross-validation.}
 
 \item{verbose}{a logical specifying if information should be displayed to
 monitor the progress of the cross validation (default = \code{FALSE}).}
@@ -103,8 +106,8 @@ Shin, 2021.
 selection occurs (see above). For large datasets, this step can be
 computationally demanding. The current implementation thus relies on
 \code{\link[parallel:mclapply]{parallel::mclapply}}. This implies that you can set how many CPU cores you
-want to use by calling \code{options("mc.cores" = XX)} beforehand, replacing \code{XX}
-by the relevant number.
+want to use by setting the parameter \code{nb.cores = XX} when calling the
+function, replacing \code{XX}by the relevant number.
 }
 }
 \section{Functions}{
@@ -157,13 +160,12 @@ abline(h = rho, col = "green", lty = 2, lwd = 2)
 ## of the 3 alternative kernels on full dataset
 # nb: takes a few minutes to run
 
-options("mc.cores" = 2L)
 res_hauto_epanech <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID,
-                                           verbose = TRUE))
+                                           nb.cores = 2L, verbose = TRUE))
 res_hauto_box <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID,
-                                       kernel = "box", verbose = TRUE))
+                                       kernel = "box", nb.cores = 2L, verbose = TRUE))
 res_hauto_norm <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID,
-                                        kernel = "norm", verbose = TRUE))
+                                        kernel = "norm", nb.cores = 2L, verbose = TRUE))
 plot(res_hauto_epanech, type = "l", col = "red",
      ylab = "Cor", xlab = "Time", las = 1, ylim = c(0, 1))
 points(res_hauto_box, type = "l", col = "blue")
