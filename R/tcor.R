@@ -33,9 +33,10 @@
 #' - **Parallel computation**: if `h` is not provided, an automatic bandwidth
 #' selection occurs (see above). For large datasets, this step can be
 #' computationally demanding. The current implementation thus relies on
-#' [`parallel::mclapply`]. This implies that you can set how many CPU cores you
-#' want to use by setting the parameter `nb.cores = XX` when calling the
-#' function, replacing `XX`by the relevant number.
+#' [`parallel::mclapply`] on thus is only effective for Linux and MacOS. Relying
+#' on parallel processing also implies that you call `options("mc.cores" = XX)`
+#' beforehand, replacing `XX` by the relevant number of CPU cores you want to use
+#' (see **Examples**).
 #'
 #' @inheritParams kern_smooth
 #' @param x a numeric vector.
@@ -44,7 +45,6 @@
 #' is to be computed ("pearson", the default; or "spearman").
 #' @param keep.missing a logical specifying if time steps associated with missing
 #' information should be kept in the output (default = `FALSE` to facilitate plotting).
-#' @param nb.cores an integer giving the number of CPU cores to be used to during cross-validation.
 #' @param verbose a logical specifying if information should be displayed to
 #' monitor the progress of the cross validation (default = `FALSE`).
 #'
@@ -110,12 +110,13 @@
 #' ## of the 3 alternative kernels on full dataset
 #' # nb: takes a few minutes to run
 #'
+#' options("mc.cores" = 2L)
 #' res_hauto_epanech <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID,
-#'                                            nb.cores = 2L, verbose = TRUE))
+#'                                           verbose = TRUE))
 #' res_hauto_box <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID,
-#'                                        kernel = "box", nb.cores = 2L, verbose = TRUE))
+#'                                        kernel = "box", verbose = TRUE))
 #' res_hauto_norm <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID,
-#'                                         kernel = "norm", nb.cores = 2L, verbose = TRUE))
+#'                                         kernel = "norm", verbose = TRUE))
 #' plot(res_hauto_epanech, type = "l", col = "red",
 #'      ylab = "Cor", xlab = "Time", las = 1, ylim = c(0, 1))
 #' points(res_hauto_box, type = "l", col = "blue")
@@ -160,7 +161,6 @@
 tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "spearman"),
                  kernel = c("epanechnikov", "box", "normal"), param_smoother = list(),
                  keep.missing = FALSE,
-                 nb.cores = 1L,
                  verbose = FALSE) {
 
   ## stripping out missing data
@@ -174,12 +174,22 @@ tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "sp
   if (is.null(h)) {
 
     ## check nb.cores input
-    if (parallel::detectCores() < nb.cores) {
+    if (is.null(options("mc.cores")[[1]])) {
+      nb.cores <- 1
+    } else {
+      nb.cores <- options("mc.cores")[[1]]
+    }
+
+    if (Sys.info()[['sysname']] != "Windows" && parallel::detectCores() < nb.cores) {
       stop(paste("\nYour computer does not allow so a large value for `nb.cores`. The maximum value you may consider is", parallel::detectCores(), "\n"))
     }
 
-    if (parallel::detectCores() > 1 && nb.cores == 1) {
+    if (Sys.info()[['sysname']] != "Windows" && parallel::detectCores() > 1 && nb.cores == 1) {
       message("\nYou may set `nb.cores` to a number higher than 1 for faster computation.\n")
+    }
+
+    if (Sys.info()[['sysname']] == "Windows" && nb.cores > 1) {
+      message("\nThe argument `nb.cores` is ignore on Windows-based infrastructure.\n")
     }
 
     time <- system.time({
@@ -188,20 +198,13 @@ tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "sp
 
      if (length(x_ori) > 500) message("Bandwidth selection using LOO-CV... (may take a while)")
 
-     ## message if trying parallel computation on Windows (parallel::mclapply is not supported by Windows)
-     if (!requireNamespace("parallelsugar", quietly = TRUE)) {
-       if (Sys.info()[['sysname']] == "Windows" && nb.cores > 1) {
-         stop("\nParallel processing can only work out-of-the-box for Linux and MacOS.\nFor Windows, please try installing {parallelsugar} before running this code:\nremotes::install_github('nathanvan/parallelsugar')\nOtherwise, set the parameter `nb.cores` to 1 to avoid parallel processing.\n")
-       }
-     }
-
      ## define function for performing leave-one-out cross-validation ## TODO: extract code into standalone function
      CV <- function(h) {
        CVi <- mclapply(seq_along(t_ori), function(oob) {
          obj <- pred_tcor(x = x_ori[-oob], y = y_ori[-oob], t = t_ori[-oob], h = h, t.for.pred = t_ori[oob],
                           cor.method = cor.method, kernel = kernel, param_smoother = param_smoother)
          (obj$r - ((x_ori[oob] - obj$x) * (y_ori[oob] - obj$y)) / (obj$sd_x * obj$sd_y))^2
-       }, mc.cores = nb.cores)
+       })
        CVi_num <- as.numeric(CVi)
        failing <- is.na(CVi_num)
        res <- mean(CVi_num[!failing])

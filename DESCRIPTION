@@ -17,6 +17,4 @@ Depends:
     R (>= 2.10)
 Imports:
   lpridge
-Suggests:
-  parallelsugar
 LazyData: true
