@@ -181,7 +181,7 @@ tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "sp
      ## message if trying parallel computation on Windows (parallel::mclapply is not supported by Windows)
      if (!requireNamespace("parallelsugar", quietly = TRUE)) {
        if (Sys.info()[['sysname']] == "Windows" && (!is.null(options("mc.cores")[[1]]) && options("mc.cores")[[1]] > 1)) {
-         message("\nParallel processing will only work here for Linux and MacOS.\nFor Windows, try installing {parallelsugar} before running this code:\nremotes::install_github('nathanvan/parallelsugar')\n")
+         stop("\nParallel processing can only work out-of-the-box for Linux and MacOS.\nFor Windows, please try installing {parallelsugar} before running this code:\nremotes::install_github('nathanvan/parallelsugar')\nOtherwise, run options('mc.cores' = 1L) to avoid parallel processing.")
        }
      }
 
