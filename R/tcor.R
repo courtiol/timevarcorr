@@ -14,12 +14,12 @@
 #' estimated (see **Details**).
 #'
 #' - **Smoothing**: the smoothing of each component is performed by kernel
-#' regression. The default is to use the Epanechnikov kernel, but other kernels
-#' have also been implemented and can thus alternatively be used
-#' (see [`kern_smooth`] for details). The default seems to lead to larger bandwidth
-#' being selected by cross-validation, which is more pleasing at least for the eye.
-#' If `h` is small or large, the default method may no longer works while
-#' the alternatives still behave fine in these situations.
+#' regression. The default is to use the Epanechnikov kernel following Choi &
+#' Shin 2021, but other kernels have also been implemented and can thus
+#' alternatively be used (see [`kern_smooth`] for details). The normal kernell
+#' seems to sometimes lead to very small bandwidth being selected, but the
+#' default can lead to numerical issues. We thus recommend always comparing the
+#' results from different kernel methods.
 #'
 #' - **Bandwidth selection**: when the value used to define the bandwidth (`h`)
 #' is set to `NULL` (the default), it is first estimated by leave-one-out cross
@@ -155,6 +155,16 @@
 #' legend("topright", fill = c("red", "grey", "orange"),
 #'        legend = c("epanechnikov", "box", "normal"), bty = "n",
 #'        title = "Kernel")
+#'
+#'
+#' ## Not all kernels work well in all situations
+#' ## nb: EuStockMarkets is a time-series object provided with R
+#'
+#' EuStock_epanech <- tcor(EuStockMarkets[, "DAX"], EuStockMarkets[, "SMI"])
+#' plot(EuStock_epanech, type = "l", las = 1) ## problem of estimation for first and last years
+#'
+#' EuStock_norm <- tcor(EuStockMarkets[, "DAX"], EuStockMarkets[, "SMI"], kernel = "normal")
+#' plot(EuStock_norm, type = "l", las = 1) ## normal kernel seems to work great with these data
 #'
 #' }
 #'

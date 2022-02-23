@@ -22,6 +22,9 @@
 #' - Direct download link:
 #' \url{https://realized.oxford-man.ox.ac.uk/images/oxfordmanrealizedvolatilityindices-0.2-final.zip}
 #'
+#' @seealso
+#' [`datasets::EuStockMarkets`] for a similar dataset, albeit formated differently.
+#'
 #' @references
 #' Heber, Gerd, Asger Lunde, Neil Shephard and Kevin Sheppard (2009)
 #' "Oxford-Man Institute's realized library", Oxford-Man Institute, University of Oxford.

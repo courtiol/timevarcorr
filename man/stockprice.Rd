@@ -39,4 +39,7 @@ Heber, Gerd, Asger Lunde, Neil Shephard and Kevin Sheppard (2009)
 Choi, JE., Shin, D.W. Nonparametric estimation of time varying correlation coefficient.
 J. Korean Stat. Soc. 50, 333–353 (2021). https://doi.org/10.1007/s42952-020-00073-6
 }
+\seealso{
+\code{\link[datasets:EuStockMarkets]{datasets::EuStockMarkets}} for a similar dataset, albeit formated differently.
+}
 \keyword{datasets}
