@@ -361,3 +361,26 @@ pred_tcor <- function(x, y, t = seq_along(x), t.for.pred = t, h, cor.method = c(
   smoothed
   }
 
+
+#' @describeIn tcor Internal function computing the Ht matrix (equation 6 from Choi & Shin, 2021)
+#' @export
+#' @param smoothed_obj an object created with [`pred_tcor`].
+#'
+#' @return a 5 x 5 matrix used to compute confidence intervals.
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
+#'
+#' ###################################################################################
+#' ## Examples for the internal function computing Ht (eq. 6 from Choi & Shin, 2021)##
+#' ###################################################################################
+#'
+#' foo <- with(head(stockprice), pred_tcor(x = SP500, y = FTSE100, t = DateID, h = 20))
+#' calc_Ht(foo)
+#'
+calc_Ht <- function(smoothed_obj) {
+  smoothed_obj
+}

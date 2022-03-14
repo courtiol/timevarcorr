@@ -3,6 +3,7 @@
 \name{tcor}
 \alias{tcor}
 \alias{pred_tcor}
+\alias{calc_Ht}
 \title{Compute time varying correlation coefficients}
 \usage{
 tcor(
@@ -27,6 +28,8 @@ pred_tcor(
   kernel = c("epanechnikov", "box", "normal"),
   param_smoother = list()
 )
+
+calc_Ht(smoothed_obj)
 }
 \arguments{
 \item{x}{a numeric vector.}
@@ -55,6 +58,8 @@ monitor the progress of the cross validation (default = \code{FALSE}).}
 
 \item{t.for.pred}{a (numeric or Date) vector of time points at which to
 evaluate the smoothed fit. If missing, \code{t} is used.}
+
+\item{smoothed_obj}{an object created with \code{\link{pred_tcor}}.}
 }
 \value{
 A dataframe of time points (\code{t}) and corresponding correlation values (\code{r}).
@@ -68,6 +73,10 @@ parameter.
 }
 
 a dataframe will the time, the correlation value and its underlying (smoothed) components.
+
+a 5 x 5 matrix used to compute confidence intervals.
+
+
 }
 \description{
 The function \code{tcor} implements the nonparametric estimation of the time
@@ -111,6 +120,8 @@ beforehand, replacing \code{XX} by the relevant number of CPU cores you want to 
 \section{Functions}{
 \itemize{
 \item \code{pred_tcor}: Internal function computing the correlation for a given bandwidth
+
+\item \code{calc_Ht}: Internal function computing the Ht matrix (equation 6 from Choi & Shin, 2021)
 }}
 
 \examples{
@@ -240,6 +251,15 @@ with(head(stockprice)[c(1, 3, 6, 2, 4, 5), ], pred_tcor(x = SP500, y = FTSE100, 
 ## Note: the function does not handle missing data (by design)
 
 # pred_tcor(x = c(NA, rnorm(9)), y = rnorm(10), t = c(1:2, 23:30), h = 2) ## should err if ran!
+
+
+
+###################################################################################
+## Examples for the internal function computing Ht (eq. 6 from Choi & Shin, 2021)##
+###################################################################################
+
+foo <- with(head(stockprice), pred_tcor(x = SP500, y = FTSE100, t = DateID, h = 20))
+calc_Ht(foo)
 
 }
 \references{
