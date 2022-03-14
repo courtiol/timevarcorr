@@ -2,7 +2,8 @@
 % Please edit documentation in R/tcor.R
 \name{tcor}
 \alias{tcor}
-\alias{pred_tcor}
+\alias{calc_tcor}
+\alias{calc_Ht}
 \title{Compute time varying correlation coefficients}
 \usage{
 tcor(
@@ -17,7 +18,7 @@ tcor(
   verbose = FALSE
 )
 
-pred_tcor(
+calc_tcor(
   x,
   y,
   t = seq_along(x),
@@ -27,6 +28,8 @@ pred_tcor(
   kernel = c("epanechnikov", "box", "normal"),
   param_smoother = list()
 )
+
+calc_Ht(smoothed_obj)
 }
 \arguments{
 \item{x}{a numeric vector.}
@@ -55,6 +58,8 @@ monitor the progress of the cross validation (default = \code{FALSE}).}
 
 \item{t.for.pred}{a (numeric or Date) vector of time points at which to
 evaluate the smoothed fit. If missing, \code{t} is used.}
+
+\item{smoothed_obj}{an object created with \code{\link{calc_tcor}}.}
 }
 \value{
 A dataframe of time points (\code{t}) and corresponding correlation values (\code{r}).
@@ -67,7 +72,7 @@ Some metadata are also attached to the dataframe (as attributes):
 parameter.
 }
 
-a dataframe will the time, the correlation value and its underlying (smoothed) components.
+
 }
 \description{
 The function \code{tcor} implements the nonparametric estimation of the time
@@ -110,7 +115,16 @@ beforehand, replacing \code{XX} by the relevant number of CPU cores you want to 
 }
 \section{Functions}{
 \itemize{
-\item \code{pred_tcor}: Internal function computing the correlation for a given bandwidth
+\item \code{calc_tcor}: Internal function computing the correlation for a given bandwidth.
+
+The function calls the kernel smoothing procedure on each component required
+to compute the time-varrying correlation. It returns a dataframe with the time,
+the correlation value and the underlying (smoothed) components.
+
+\item \code{calc_Ht}: Internal function computing the Ht array.
+
+Ht is a component needed to compute confindence intervals defined in eq. 6 from Choi & Shin, 2021.
+The function returns a 5 x 5 x t array.
 }}
 
 \examples{
@@ -222,24 +236,35 @@ plot(EuStock_norm, type = "l", las = 1) ## normal kernel seems to work great wit
 ## Examples for the internal function computing the correlation ##
 ##################################################################
 
-with(head(stockprice), pred_tcor(x = SP500, y = FTSE100, t = DateID, h = 20))
-with(head(stockprice), pred_tcor(x = SP500, y = FTSE100, t = DateID, h = 20,
+with(head(stockprice), calc_tcor(x = SP500, y = FTSE100, t = DateID, h = 20))
+with(head(stockprice), calc_tcor(x = SP500, y = FTSE100, t = DateID, h = 20,
      t.for.pred = DateID[1]))
 
 ## The function can handle non consecutive time points
 
 set.seed(1)
-pred_tcor(x = rnorm(10), y = rnorm(10), t = c(1:2, 23:30), h = 2)
+calc_tcor(x = rnorm(10), y = rnorm(10), t = c(1:2, 23:30), h = 2)
 
 
 ## The function can handle non-ordered time series
 
-with(head(stockprice)[c(1, 3, 6, 2, 4, 5), ], pred_tcor(x = SP500, y = FTSE100, t = DateID, h = 20))
+with(head(stockprice)[c(1, 3, 6, 2, 4, 5), ], calc_tcor(x = SP500, y = FTSE100, t = DateID, h = 20))
 
 
 ## Note: the function does not handle missing data (by design)
 
-# pred_tcor(x = c(NA, rnorm(9)), y = rnorm(10), t = c(1:2, 23:30), h = 2) ## should err if ran!
+# calc_tcor(x = c(NA, rnorm(9)), y = rnorm(10), t = c(1:2, 23:30), h = 2) ## should err if ran!
+
+
+
+####################################################################################
+## Examples for the internal function computing Ht (eq. 6 from Choi & Shin, 2021) ##
+####################################################################################
+
+foo <- with(na.omit(stockprice),
+            calc_tcor(x = SP500, y = FTSE100, t = DateID, h = 20, kernel = "box"))
+head(foo)
+calc_Ht(foo)
 
 }
 \references{

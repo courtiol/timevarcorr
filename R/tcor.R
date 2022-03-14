@@ -211,7 +211,7 @@ tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "sp
      ## define function for performing leave-one-out cross-validation ## TODO: extract code into standalone function
      CV <- function(h) {
        CVi <- mclapply(seq_along(t_ori), function(oob) {
-         obj <- pred_tcor(x = x_ori[-oob], y = y_ori[-oob], t = t_ori[-oob], h = h, t.for.pred = t_ori[oob],
+         obj <- calc_tcor(x = x_ori[-oob], y = y_ori[-oob], t = t_ori[-oob], h = h, t.for.pred = t_ori[oob],
                           cor.method = cor.method, kernel = kernel, param_smoother = param_smoother)
          (obj$r - ((x_ori[oob] - obj$x) * (y_ori[oob] - obj$y)) / (obj$sd_x * obj$sd_y))^2
        })
@@ -270,7 +270,7 @@ tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "sp
   }
 
   ## compute correlation with the selected bandwidth
-  res_all <- pred_tcor(x = x_ori, y = y_ori, t = t_ori, h = h, cor.method = cor.method,
+  res_all <- calc_tcor(x = x_ori, y = y_ori, t = t_ori, h = h, cor.method = cor.method,
                        kernel = kernel, param_smoother = param_smoother)
 
   ## format data for output
@@ -290,9 +290,13 @@ tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "sp
 }
 
 
-#' @describeIn tcor Internal function computing the correlation for a given bandwidth
+#' @describeIn tcor Internal function computing the correlation for a given bandwidth.
+#'
+#' The function calls the kernel smoothing procedure on each component required
+#' to compute the time-varrying correlation. It returns a dataframe with the time,
+#' the correlation value and the underlying (smoothed) components.
+#'
 #' @export
-#' @return a dataframe will the time, the correlation value and its underlying (smoothed) components.
 #'
 #' @examples
 #'
@@ -301,26 +305,26 @@ tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "sp
 #' ## Examples for the internal function computing the correlation ##
 #' ##################################################################
 #'
-#' with(head(stockprice), pred_tcor(x = SP500, y = FTSE100, t = DateID, h = 20))
-#' with(head(stockprice), pred_tcor(x = SP500, y = FTSE100, t = DateID, h = 20,
+#' with(head(stockprice), calc_tcor(x = SP500, y = FTSE100, t = DateID, h = 20))
+#' with(head(stockprice), calc_tcor(x = SP500, y = FTSE100, t = DateID, h = 20,
 #'      t.for.pred = DateID[1]))
 #'
 #' ## The function can handle non consecutive time points
 #'
 #' set.seed(1)
-#' pred_tcor(x = rnorm(10), y = rnorm(10), t = c(1:2, 23:30), h = 2)
+#' calc_tcor(x = rnorm(10), y = rnorm(10), t = c(1:2, 23:30), h = 2)
 #'
 #'
 #' ## The function can handle non-ordered time series
 #'
-#' with(head(stockprice)[c(1, 3, 6, 2, 4, 5), ], pred_tcor(x = SP500, y = FTSE100, t = DateID, h = 20))
+#' with(head(stockprice)[c(1, 3, 6, 2, 4, 5), ], calc_tcor(x = SP500, y = FTSE100, t = DateID, h = 20))
 #'
 #'
 #' ## Note: the function does not handle missing data (by design)
 #'
-#' # pred_tcor(x = c(NA, rnorm(9)), y = rnorm(10), t = c(1:2, 23:30), h = 2) ## should err if ran!
+#' # calc_tcor(x = c(NA, rnorm(9)), y = rnorm(10), t = c(1:2, 23:30), h = 2) ## should err if ran!
 #'
-pred_tcor <- function(x, y, t = seq_along(x), t.for.pred = t, h, cor.method = c("pearson", "spearman"),
+calc_tcor <- function(x, y, t = seq_along(x), t.for.pred = t, h, cor.method = c("pearson", "spearman"),
                       kernel = c("epanechnikov", "box", "normal"), param_smoother = list()) {
 
   ## checking inputs
@@ -361,3 +365,51 @@ pred_tcor <- function(x, y, t = seq_along(x), t.for.pred = t, h, cor.method = c(
   smoothed
   }
 
+
+#' @describeIn tcor Internal function computing the Ht array.
+#'
+#' Ht is a component needed to compute confindence intervals defined in eq. 6 from Choi & Shin, 2021.
+#' The function returns a 5 x 5 x t array.
+#'
+#' @export
+#' @param smoothed_obj an object created with [`calc_tcor`].
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
+#'
+#' ####################################################################################
+#' ## Examples for the internal function computing Ht (eq. 6 from Choi & Shin, 2021) ##
+#' ####################################################################################
+#'
+#' foo <- with(na.omit(stockprice),
+#'             calc_tcor(x = SP500, y = FTSE100, t = DateID, h = 20, kernel = "box"))
+#' head(foo)
+#' calc_Ht(foo)
+#'
+calc_Ht <- function(smoothed_obj) {
+  res <- array(0, dim = c(5, 5, nrow(smoothed_obj)))
+
+  res[1, 1, ] <- 2*smoothed_obj$x*smoothed_obj$sd_x
+  res[1, 2, ] <- 2*smoothed_obj$y*smoothed_obj$sd_y*smoothed_obj$r
+  res[1, 3, ] <- smoothed_obj$sd_x
+  res[1, 4, ] <- smoothed_obj$sd_y*smoothed_obj$r
+  res[1, 5, ] <- smoothed_obj$x*smoothed_obj$sd_y*smoothed_obj$r + smoothed_obj$y*smoothed_obj$sd_x
+
+  res[2, 2, ] <- 2*smoothed_obj$y*smoothed_obj$sd_y*sqrt(1 - smoothed_obj$r^2)
+  res[2, 4, ] <- smoothed_obj$sd_y*sqrt(1 - smoothed_obj$r^2)
+  res[2, 5, ] <- smoothed_obj$x*smoothed_obj$sd_y*sqrt(1 - smoothed_obj$r^2)
+
+  res[3, 1, ] <- smoothed_obj$sd_x^2
+  res[3, 2, ] <- smoothed_obj$sd_y^2*smoothed_obj$r^2
+  res[3, 5, ] <- smoothed_obj$sd_x*smoothed_obj$sd_y*smoothed_obj$r
+
+  res[4, 2, ] <- smoothed_obj$sd_y^2*(smoothed_obj$r^2 - 1)
+
+  res[5, 2, ] <- 2*smoothed_obj$sd_y^2*smoothed_obj$r*sqrt(1 - smoothed_obj$r^2)
+  res[5, 5, ] <- sqrt(1 - smoothed_obj$r^2)*smoothed_obj$sd_x*smoothed_obj$sd_y
+
+  res
+}
