@@ -7,6 +7,8 @@
 \alias{calc_Gamma}
 \alias{calc_GammaINF}
 \alias{calc_L_And}
+\alias{calc_D}
+\alias{calc_Dbound}
 \title{Internal functions for the computation of confidence intervals}
 \usage{
 calc_H(smoothed_obj)
@@ -18,6 +20,16 @@ calc_Gamma(e, l)
 calc_GammaINF(e, L)
 
 calc_L_And(e, AR.method = c("yule-walker", "burg", "ols", "mle", "yw"))
+
+calc_D(smoothed_obj)
+
+calc_Dbound(
+  boundary,
+  smoothed_obj,
+  h,
+  c,
+  AR.method = c("yule-walker", "burg", "ols", "mle", "yw")
+)
 }
 \arguments{
 \item{smoothed_obj}{an object created with \code{\link{calc_rho}}.}
@@ -31,6 +43,12 @@ calc_L_And(e, AR.method = c("yule-walker", "burg", "ols", "mle", "yw"))
 \item{L}{a scalar indicating a bandwidth parameter.}
 
 \item{AR.method}{character string specifying the method to fit the autoregressive model used to compute \verb{$\\hat\{\\gamma\}_1$} in \verb{$L_\{And\}$} (see \code{\link[stats:ar]{stats::ar}} for details).}
+
+\item{boundary}{a character string specifying if the upper or lower value of D must be computed.}
+
+\item{h}{a scalar indicating the bandwidth used by the smoothing function.}
+
+\item{c}{a scalar between 0 and 1, indicating a boundary used during the integration.}
 }
 \description{
 These functions compute the different terms required to compute the confidence
@@ -48,7 +66,7 @@ The function returns a 5 x 5 x t array.
 
 \verb{$\\hat\{e\}_t$} is a component needed to compute confidence intervals;
 it is defined in eq. 9 from Choi & Shin, 2021.
-The function returns a 5 x t matrix storing the residuals.
+The function returns a t x 5 matrix storing the residuals.
 
 \item \code{calc_Gamma}: Internal function computing \verb{$\\hat\{\\Gamma\}_l$}.
 
@@ -68,6 +86,18 @@ The function returns a 5 x 5 matrix.
 it is defined in Choi & Shin, 2021, p 342.
 It also corresponds to \verb{$S_T^*$}, eq 5.3 in Andrews 1991.
 The function returns a scalar which should be used as an input for \code{L} in \code{\link{calc_GammaINF}}.
+
+\item \code{calc_D}: Internal function computing \verb{$D_t$}.
+
+\verb{$D_t$} is a component needed to compute confidence intervals;
+it is defined in Choi & Shin, 2021, p 338.
+The function returns a t x 5 matrix storing the residuals.
+
+\item \code{calc_Dbound}: Internal function computing \verb{$D_\{Lt\}$} or \verb{$D_\{Ut\}$}.
+
+\verb{$D_\{Lt\}$} & \verb{$D_\{Ut\}$} are components needed to compute confidence intervals;
+they are defined in Choi & Shin, 2021, p 339.
+The function returns a 5 x 5 x t array.
 }}
 
 \examples{
@@ -84,7 +114,7 @@ H
 ## Computing `$\hat{e}_t$`
 
 e <- calc_e(smoothed_obj = rho_obj, H = H)
-e
+head(e)
 
 ## Computing `$\hat{\Gamma}_l$`
 
@@ -99,6 +129,15 @@ calc_GammaINF(e = e, L = 2)
 calc_L_And(e = e)
 sapply(c("yule-walker", "burg", "ols", "mle", "yw"),
        function(m) calc_L_And(e = e, AR.method = m)) ## comparing AR.methods
+
+## Computing `$D_t$`
+
+head(calc_D(smoothed_obj = rho_obj))
+
+## Computing `$D_{Lt}$` & `$D_{Ut}$`
+
+calc_Dbound(boundary = "lower", smoothed_obj = rho_obj, c = 0.5, h = 100)
+calc_Dbound(boundary = "upper", smoothed_obj = rho_obj, c = 0.5, h = 100)
 
 }
 \references{

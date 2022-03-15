@@ -67,7 +67,7 @@ calc_H <- function(smoothed_obj) {
 #'
 #' `$\hat{e}_t$` is a component needed to compute confidence intervals;
 #' it is defined in eq. 9 from Choi & Shin, 2021.
-#' The function returns a 5 x t matrix storing the residuals.
+#' The function returns a t x 5 matrix storing the residuals.
 #'
 #' @export
 #' @param H an object created with [`calc_H`].
@@ -76,7 +76,7 @@ calc_H <- function(smoothed_obj) {
 #' ## Computing `$\hat{e}_t$`
 #'
 #' e <- calc_e(smoothed_obj = rho_obj, H = H)
-#' e
+#' head(e)
 #'
 calc_e <- function(smoothed_obj, H) {
   res <- matrix(0, ncol = 5, nrow = dim(H)[3])
@@ -163,4 +163,71 @@ calc_L_And <- function(e, AR.method = c("yule-walker", "burg", "ols", "mle", "yw
   AR.method <- match.arg(AR.method)
   gamma_1 <- stats::ar(rowSums(e), method = AR.method, order.max = 1L)$ar
   1.1447*((4*nrow(e)*gamma_1^2)/((1 - gamma_1^2)^2))^(1/3)
+}
+
+
+#' @describeIn CI Internal function computing `$D_t$`.
+#'
+#' `$D_t$` is a component needed to compute confidence intervals;
+#' it is defined in Choi & Shin, 2021, p 338.
+#' The function returns a t x 5 matrix storing the residuals.
+#'
+#' @export
+#'
+#' @examples
+#' ## Computing `$D_t$`
+#'
+#' head(calc_D(smoothed_obj = rho_obj))
+#'
+calc_D <- function(smoothed_obj) {
+  res <- matrix(0, nrow = nrow(smoothed_obj), ncol = 5)
+  res[, 1] <- -1/2*(smoothed_obj$xy_smoothed - smoothed_obj$x_smoothed*smoothed_obj$y_smoothed)/(smoothed_obj$sd_x_smoothed^3*smoothed_obj$sd_y_smoothed)
+  res[, 2] <- -1/2*(smoothed_obj$xy_smoothed - smoothed_obj$x_smoothed*smoothed_obj$y_smoothed)/(smoothed_obj$sd_x_smoothed*smoothed_obj$sd_y_smoothed^3)
+  res[, 3] <- (-smoothed_obj$y_smoothed*smoothed_obj$sd_x_smoothed^2 + smoothed_obj$x_smoothed*(smoothed_obj$xy_smoothed - smoothed_obj$x_smoothed*smoothed_obj$y_smoothed))/(smoothed_obj$sd_x_smoothed^3*smoothed_obj$sd_y_smoothed)
+  res[, 4] <- (-smoothed_obj$x_smoothed*smoothed_obj$sd_y_smoothed^2 + smoothed_obj$y_smoothed*(smoothed_obj$xy_smoothed - smoothed_obj$x_smoothed*smoothed_obj$y_smoothed))/(smoothed_obj$sd_x_smoothed*smoothed_obj$sd_y_smoothed^3)
+  res[, 5] <- 1/(smoothed_obj$sd_x_smoothed*smoothed_obj$sd_y_smoothed)
+  res
+}
+
+
+#' @describeIn CI Internal function computing `$D_{Lt}$` or `$D_{Ut}$`.
+#'
+#' `$D_{Lt}$` & `$D_{Ut}$` are components needed to compute confidence intervals;
+#' they are defined in Choi & Shin, 2021, p 339.
+#' The function returns a 5 x 5 x t array.
+#'
+#' @export
+#' @inheritParams kern_smooth
+#' @param boundary a character string specifying if the upper or lower value of D must be computed.
+#' @param c a scalar between 0 and 1, indicating a boundary used during the integration.
+#'
+#' @examples
+#' ## Computing `$D_{Lt}$` & `$D_{Ut}$`
+#'
+#' calc_Dbound(boundary = "lower", smoothed_obj = rho_obj, c = 0.5, h = 100)
+#' calc_Dbound(boundary = "upper", smoothed_obj = rho_obj, c = 0.5, h = 100)
+#'
+calc_Dbound <- function(boundary, smoothed_obj, h, c, AR.method = c("yule-walker", "burg", "ols", "mle", "yw")) {
+
+  if (!boundary %in% c("upper", "lower")) stop("The parameter `boundary` must be 'upper' or 'lower'.")
+  if (abs(c) > 1) stop("The parameter `c` must belong to [-1, 1].")
+
+  lwr_bound <- ifelse(boundary == "lower", -c, -1)
+  upr_bound <- ifelse(boundary == "lower", 1, c)
+
+  bk <- function(x) 1 - abs(x) ## Bartlett kernel (given that -1 < x < 1).
+  bk2 <- function(x) bk(x)^2
+
+  term1 <- stats::integrate(bk, lwr_bound, upr_bound)$value^-2
+
+  H <- calc_H(smoothed_obj = smoothed_obj)
+  e <- calc_e(smoothed_obj = smoothed_obj, H = H)
+  L_And <- calc_L_And(e = e, AR.method = AR.method)
+  GammaINF <- calc_GammaINF(e = e, L = L_And)
+
+  res <- array(0, dim = c(5, 5, nrow(smoothed_obj)))
+  for (t in seq_len(nrow(smoothed_obj))) {
+    res[, , t] <- term1*t(H[, , t]) %*% GammaINF %*% H[, , t] * stats::integrate(bk2, lwr_bound, upr_bound)$value
+  }
+  res
 }
