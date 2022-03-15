@@ -32,7 +32,7 @@ calc_rho(
 
 calc_H(smoothed_obj)
 
-calc_e(H)
+calc_e(smoothed_obj, H)
 }
 \arguments{
 \item{x}{a numeric vector.}
@@ -67,7 +67,7 @@ evaluate the smoothed fit. If missing, \code{t} is used.}
 \item{H}{an object created with \code{\link{calc_H}}.}
 }
 \value{
-A dataframe of time points (\code{t}) and corresponding correlation values (\code{r}).
+A dataframe of time points (\code{t}) and corresponding correlation values (\code{rho_smoothed}).
 Some metadata are also attached to the dataframe (as attributes):
 \itemize{
 \item \code{h} the bandwidth parameter.
@@ -76,10 +76,6 @@ Some metadata are also attached to the dataframe (as attributes):
 \item \code{h_select_duration} the computing time spent to select the bandwidth
 parameter.
 }
-
-
-
-
 }
 \description{
 The function \code{tcor} implements the nonparametric estimation of the time
@@ -126,19 +122,19 @@ beforehand, replacing \code{XX} by the relevant number of CPU cores you want to 
 
 The function calls the kernel smoothing procedure on each component required
 to compute the time-varrying correlation. It returns a dataframe with the time,
-the correlation value and the underlying (smoothed) components.
+the correlation value and the underlying components used for the computation.
 
 \item \code{calc_H}: Internal function computing the \verb{$\\hat\{H_t\}$} array.
 
 \verb{$\\hat\{H_t\}$} is a component needed to compute confidence intervals;
 \verb{$H_t$} is defined in eq. 6 from Choi & Shin, 2021.
-The function returns a 5 x 5 x t array.
+The function returns a 5 x 5 x t array (5 because of the 5 key components: "x2", "y2", "x", "y", "xy").
 
 \item \code{calc_e}: Internal function computing \verb{$\\hat\{e\}_t$}.
 
 \verb{$\\hat\{e\}_t$} is a component needed to compute confidence intervals;
 it is defined in eq. 9 from Choi & Shin, 2021.
-The function returns ???.
+The function returns a 5 x t matrix storing the residuals (5 because of the 5 key components: "x2", "y2", "x", "y", "xy").
 }}
 
 \examples{
@@ -257,7 +253,7 @@ with(head(stockprice), calc_rho(x = SP500, y = FTSE100, t = DateID, h = 20,
 ## The function can handle non consecutive time points
 
 set.seed(1)
-calc_rho(x = rnorm(10), y = rnorm(10), t = c(1:2, 23:30), h = 2)
+calc_rho(x = rnorm(10), y = rnorm(10), t = c(1:5, 26:30), h = 3, kernel = "box")
 
 
 ## The function can handle non-ordered time series
@@ -267,7 +263,7 @@ with(head(stockprice)[c(1, 3, 6, 2, 4, 5), ], calc_rho(x = SP500, y = FTSE100, t
 
 ## Note: the function does not handle missing data (by design)
 
-# calc_rho(x = c(NA, rnorm(9)), y = rnorm(10), t = c(1:2, 23:30), h = 2) ## should err if ran!
+# calc_rho(x = c(NA, rnorm(9)), y = rnorm(10), t = c(1:2, 23:30), h = 2) ## should err (if ran)
 
 
 
@@ -288,8 +284,8 @@ calc_H(foo)
 
 foo <- with(na.omit(stockprice),
             calc_rho(x = SP500, y = FTSE100, t = DateID, h = 20, kernel = "box"))
-foo <- calc_H(foo)
-calc_e(foo)
+H <- calc_H(foo)
+calc_e(foo, H = H)
 
 }
 \references{

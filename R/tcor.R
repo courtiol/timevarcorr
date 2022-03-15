@@ -48,7 +48,7 @@
 #' @param verbose a logical specifying if information should be displayed to
 #' monitor the progress of the cross validation (default = `FALSE`).
 #'
-#' @return A dataframe of time points (`t`) and corresponding correlation values (`r`).
+#' @return A dataframe of time points (`t`) and corresponding correlation values (`rho_smoothed`).
 #' Some metadata are also attached to the dataframe (as attributes):
 #' - `h` the bandwidth parameter.
 #' - `CV_error` the minimal Cross Validation error when `h` selected by CV.
@@ -294,7 +294,7 @@ tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "sp
 #'
 #' The function calls the kernel smoothing procedure on each component required
 #' to compute the time-varrying correlation. It returns a dataframe with the time,
-#' the correlation value and the underlying (smoothed) components.
+#' the correlation value and the underlying components used for the computation.
 #'
 #' @export
 #'
@@ -378,12 +378,11 @@ calc_rho <- function(x, y, t = seq_along(x), t.for.pred = t, h, cor.method = c("
 #'
 #' `$\hat{H_t}$` is a component needed to compute confidence intervals;
 #' `$H_t$` is defined in eq. 6 from Choi & Shin, 2021.
-#' The function returns a 5 x 5 x t array.
+#' The function returns a 5 x 5 x t array (5 because of the 5 key components: "x2", "y2", "x", "y", "xy").
 #'
 #' @export
 #' @param smoothed_obj an object created with [`calc_rho`].
 #'
-#' @return
 #' @export
 #'
 #' @examples
@@ -428,12 +427,11 @@ calc_H <- function(smoothed_obj) {
 #'
 #' `$\hat{e}_t$` is a component needed to compute confidence intervals;
 #' it is defined in eq. 9 from Choi & Shin, 2021.
-#' The function returns ???.
+#' The function returns a 5 x t matrix storing the residuals (5 because of the 5 key components: "x2", "y2", "x", "y", "xy").
 #'
 #' @export
 #' @param H an object created with [`calc_H`].
 #'
-#' @return
 #' @export
 #'
 #' @examples
@@ -445,13 +443,16 @@ calc_H <- function(smoothed_obj) {
 #'
 #' foo <- with(na.omit(stockprice),
 #'             calc_rho(x = SP500, y = FTSE100, t = DateID, h = 20, kernel = "box"))
-#' foo <- calc_H(foo)
-#' calc_e(foo)
+#' H <- calc_H(foo)
+#' calc_e(foo, H = H)
 #'
-calc_e <- function(H) {
-  res <- array(0, dim = c(5, 5, dim(H)[3]))
+calc_e <- function(smoothed_obj, H) {
+  res <- matrix(0, ncol = 5, nrow = dim(H)[3])
   for (i in seq_len(dim(H)[3])) {
-    res[, , i] <- solve(t(H[, , i])) ## Not finished
+    Ut   <- t(smoothed_obj[i, c("x2", "y2", "x", "y", "xy"), drop = FALSE])
+    mu_t <- t(smoothed_obj[i, c("x2_smoothed", "y2_smoothed", "x_smoothed", "y_smoothed", "xy_smoothed"), drop = FALSE])
+    res[i, ] <- solve(t(H[, , i])) %*% (Ut - mu_t)
   }
+  colnames(res) <- paste0(c("x2", "y2", "x", "y", "xy"), "_resid")
   res
 }
