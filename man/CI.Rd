@@ -97,6 +97,8 @@ calc_GammaINF(e = e, L = 2)
 ## Computing `$L_{And}$`
 
 calc_L_And(e = e)
+sapply(c("yule-walker", "burg", "ols", "mle", "yw"),
+       function(m) calc_L_And(e = e, AR.method = m)) ## comparing AR.methods
 
 }
 \references{

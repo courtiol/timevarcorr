@@ -156,6 +156,8 @@ calc_GammaINF <- function(e, L) {
 #' ## Computing `$L_{And}$`
 #'
 #' calc_L_And(e = e)
+#' sapply(c("yule-walker", "burg", "ols", "mle", "yw"),
+#'        function(m) calc_L_And(e = e, AR.method = m)) ## comparing AR.methods
 #'
 calc_L_And <- function(e, AR.method = c("yule-walker", "burg", "ols", "mle", "yw")) {
   AR.method <- match.arg(AR.method)
