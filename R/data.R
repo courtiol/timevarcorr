@@ -23,7 +23,7 @@
 #' \url{https://realized.oxford-man.ox.ac.uk/images/oxfordmanrealizedvolatilityindices-0.2-final.zip}
 #'
 #' @seealso
-#' [`datasets::EuStockMarkets`] for a similar dataset, albeit formated differently.
+#' [`datasets::EuStockMarkets`] for a similar dataset, albeit formatted differently.
 #'
 #' @references
 #' Heber, Gerd, Asger Lunde, Neil Shephard and Kevin Sheppard (2009)

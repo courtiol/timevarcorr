@@ -16,7 +16,7 @@
 #' - **Smoothing**: the smoothing of each component is performed by kernel
 #' regression. The default is to use the Epanechnikov kernel following Choi &
 #' Shin 2021, but other kernels have also been implemented and can thus
-#' alternatively be used (see [`kern_smooth`] for details). The normal kernell
+#' alternatively be used (see [`kern_smooth`] for details). The normal kernel
 #' seems to sometimes lead to very small bandwidth being selected, but the
 #' default can lead to numerical issues. We thus recommend always comparing the
 #' results from different kernel methods.
@@ -296,7 +296,7 @@ tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "sp
 #' @describeIn tcor Internal function computing the correlation for a given bandwidth.
 #'
 #' The function calls the kernel smoothing procedure on each component required
-#' to compute the time-varrying correlation. It returns a dataframe with the time,
+#' to compute the time-varying correlation. It returns a dataframe with the time,
 #' the correlation value and the underlying components used for the computation.
 #'
 #' @export
@@ -362,7 +362,7 @@ calc_rho <- function(x, y, t = seq_along(x), t.for.pred = t, h, cor.method = c("
 
   smoothed <- cbind(x_smoothed, as.data.frame(other_smoothed)) ## don't coerce into matrix -> t can be non numeric
 
-  ## we compute the time varrying correlation coefficient
+  ## we compute the time varying correlation coefficient
   smoothed$sd_x <- sqrt(smoothed$x2 - smoothed$x^2)
   smoothed$sd_y <- sqrt(smoothed$y2 - smoothed$y^2)
   smoothed$rho <- (smoothed$xy - smoothed$x * smoothed$y) / (smoothed$sd_x * smoothed$sd_y)

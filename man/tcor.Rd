@@ -112,7 +112,7 @@ estimated (see \strong{Details}).
 \item \strong{Smoothing}: the smoothing of each component is performed by kernel
 regression. The default is to use the Epanechnikov kernel following Choi &
 Shin 2021, but other kernels have also been implemented and can thus
-alternatively be used (see \code{\link{kern_smooth}} for details). The normal kernell
+alternatively be used (see \code{\link{kern_smooth}} for details). The normal kernel
 seems to sometimes lead to very small bandwidth being selected, but the
 default can lead to numerical issues. We thus recommend always comparing the
 results from different kernel methods.
@@ -138,7 +138,7 @@ beforehand, replacing \code{XX} by the relevant number of CPU cores you want to 
 \item \code{calc_rho}: Internal function computing the correlation for a given bandwidth.
 
 The function calls the kernel smoothing procedure on each component required
-to compute the time-varrying correlation. It returns a dataframe with the time,
+to compute the time-varying correlation. It returns a dataframe with the time,
 the correlation value and the underlying components used for the computation.
 
 \item \code{calc_H}: Internal function computing the \verb{$\\hat\{H_t\}$} array.
