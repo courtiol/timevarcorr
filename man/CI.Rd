@@ -8,7 +8,7 @@
 \alias{calc_GammaINF}
 \alias{calc_L_And}
 \alias{calc_D}
-\alias{calc_Dbound}
+\alias{calc_SE}
 \title{Internal functions for the computation of confidence intervals}
 \usage{
 calc_H(smoothed_obj)
@@ -23,11 +23,9 @@ calc_L_And(e, AR.method = c("yule-walker", "burg", "ols", "mle", "yw"))
 
 calc_D(smoothed_obj)
 
-calc_Dbound(
-  boundary,
+calc_SE(
   smoothed_obj,
   h,
-  c,
   AR.method = c("yule-walker", "burg", "ols", "mle", "yw")
 )
 }
@@ -44,11 +42,7 @@ calc_Dbound(
 
 \item{AR.method}{character string specifying the method to fit the autoregressive model used to compute \verb{$\\hat\{\\gamma\}_1$} in \verb{$L_\{And\}$} (see \code{\link[stats:ar]{stats::ar}} for details).}
 
-\item{boundary}{a character string specifying if the upper or lower value of D must be computed.}
-
 \item{h}{a scalar indicating the bandwidth used by the smoothing function.}
-
-\item{c}{a scalar between 0 and 1, indicating a boundary used during the integration.}
 }
 \description{
 These functions compute the different terms required to compute the confidence
@@ -60,13 +54,13 @@ interval around the time-varying correlation coefficients.
 
 \verb{$\\hat\{H_t\}$} is a component needed to compute confidence intervals;
 \verb{$H_t$} is defined in eq. 6 from Choi & Shin, 2021.
-The function returns a 5 x 5 x t array.
+The function returns a 5 x 5 x \code{t} array.
 
 \item \code{calc_e}: Internal function computing \verb{$\\hat\{e\}_t$}.
 
 \verb{$\\hat\{e\}_t$} is a component needed to compute confidence intervals;
 it is defined in eq. 9 from Choi & Shin, 2021.
-The function returns a t x 5 matrix storing the residuals.
+The function returns a \code{t} x 5 matrix storing the residuals.
 
 \item \code{calc_Gamma}: Internal function computing \verb{$\\hat\{\\Gamma\}_l$}.
 
@@ -91,13 +85,14 @@ The function returns a scalar which should be used as an input for \code{L} in \
 
 \verb{$D_t$} is a component needed to compute confidence intervals;
 it is defined in Choi & Shin, 2021, p 338.
-The function returns a t x 5 matrix storing the residuals.
+The function returns a \code{t} x 5 matrix storing the residuals.
 
-\item \code{calc_Dbound}: Internal function computing \verb{$D_\{Lt\}$} or \verb{$D_\{Ut\}$}.
+\item \code{calc_SE}: Internal function computing \verb{se(\\hat\{rho\}_t(h))}.
 
-\verb{$D_\{Lt\}$} & \verb{$D_\{Ut\}$} are components needed to compute confidence intervals;
-they are defined in Choi & Shin, 2021, p 339.
-The function returns a 5 x 5 x t array.
+The standard deviation of the time-varying correlation (\verb{se(\\hat\{rho\}_t(h))}) is defined in eq. 8 from Choi & Shin, 2021.
+It depends on \verb{$D_\{Lt\}$}, \verb{$D_\{Mt\}$} & \verb{$D_\{Ut\}$}, themselve defined in Choi & Shin, 2021, p 337 & 339.
+The \verb{$D_\{Xt\}$} terms are all computed within the function since they all rely on the same components.
+The function returns a vector of length \code{t}.
 }}
 
 \examples{
@@ -134,10 +129,11 @@ sapply(c("yule-walker", "burg", "ols", "mle", "yw"),
 
 head(calc_D(smoothed_obj = rho_obj))
 
-## Computing `$D_{Lt}$` & `$D_{Ut}$`
+## Computing `se(\hat{rho}_t(h))`
 
-calc_Dbound(boundary = "lower", smoothed_obj = rho_obj, c = 0.5, h = 100)
-calc_Dbound(boundary = "upper", smoothed_obj = rho_obj, c = 0.5, h = 100)
+\dontrun{
+calc_SE(smoothed_obj = rho_obj, h = 50)
+}
 
 }
 \references{

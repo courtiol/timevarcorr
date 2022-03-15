@@ -26,7 +26,7 @@ NULL
 #'
 #' `$\hat{H_t}$` is a component needed to compute confidence intervals;
 #' `$H_t$` is defined in eq. 6 from Choi & Shin, 2021.
-#' The function returns a 5 x 5 x t array.
+#' The function returns a 5 x 5 x `t` array.
 #'
 #' @export
 #' @param smoothed_obj an object created with [`calc_rho`].
@@ -67,7 +67,7 @@ calc_H <- function(smoothed_obj) {
 #'
 #' `$\hat{e}_t$` is a component needed to compute confidence intervals;
 #' it is defined in eq. 9 from Choi & Shin, 2021.
-#' The function returns a t x 5 matrix storing the residuals.
+#' The function returns a `t` x 5 matrix storing the residuals.
 #'
 #' @export
 #' @param H an object created with [`calc_H`].
@@ -162,6 +162,7 @@ calc_GammaINF <- function(e, L) {
 calc_L_And <- function(e, AR.method = c("yule-walker", "burg", "ols", "mle", "yw")) {
   AR.method <- match.arg(AR.method)
   gamma_1 <- stats::ar(rowSums(e), method = AR.method, order.max = 1L)$ar
+  if (length(gamma_1) == 0) return(0)
   1.1447*((4*nrow(e)*gamma_1^2)/((1 - gamma_1^2)^2))^(1/3)
 }
 
@@ -170,7 +171,7 @@ calc_L_And <- function(e, AR.method = c("yule-walker", "burg", "ols", "mle", "yw
 #'
 #' `$D_t$` is a component needed to compute confidence intervals;
 #' it is defined in Choi & Shin, 2021, p 338.
-#' The function returns a t x 5 matrix storing the residuals.
+#' The function returns a `t` x 5 matrix storing the residuals.
 #'
 #' @export
 #'
@@ -190,44 +191,57 @@ calc_D <- function(smoothed_obj) {
 }
 
 
-#' @describeIn CI Internal function computing `$D_{Lt}$` or `$D_{Ut}$`.
+#' @describeIn CI Internal function computing `se(\hat{rho}_t(h))`.
 #'
-#' `$D_{Lt}$` & `$D_{Ut}$` are components needed to compute confidence intervals;
-#' they are defined in Choi & Shin, 2021, p 339.
-#' The function returns a 5 x 5 x t array.
+#' The standard deviation of the time-varying correlation (`se(\hat{rho}_t(h))`) is defined in eq. 8 from Choi & Shin, 2021.
+#' It depends on `$D_{Lt}$`, `$D_{Mt}$` & `$D_{Ut}$`, themselve defined in Choi & Shin, 2021, p 337 & 339.
+#' The `$D_{Xt}$` terms are all computed within the function since they all rely on the same components.
+#' The function returns a vector of length `t`.
 #'
 #' @export
 #' @inheritParams kern_smooth
-#' @param boundary a character string specifying if the upper or lower value of D must be computed.
-#' @param c a scalar between 0 and 1, indicating a boundary used during the integration.
 #'
 #' @examples
-#' ## Computing `$D_{Lt}$` & `$D_{Ut}$`
+#' ## Computing `se(\hat{rho}_t(h))`
 #'
-#' calc_Dbound(boundary = "lower", smoothed_obj = rho_obj, c = 0.5, h = 100)
-#' calc_Dbound(boundary = "upper", smoothed_obj = rho_obj, c = 0.5, h = 100)
+#' \dontrun{
+#' calc_SE(smoothed_obj = rho_obj, h = 50)
+#' }
 #'
-calc_Dbound <- function(boundary, smoothed_obj, h, c, AR.method = c("yule-walker", "burg", "ols", "mle", "yw")) {
+calc_SE <- function(smoothed_obj, h, AR.method = c("yule-walker", "burg", "ols", "mle", "yw")) {
 
-  if (!boundary %in% c("upper", "lower")) stop("The parameter `boundary` must be 'upper' or 'lower'.")
-  if (abs(c) > 1) stop("The parameter `c` must belong to [-1, 1].")
-
-  lwr_bound <- ifelse(boundary == "lower", -c, -1)
-  upr_bound <- ifelse(boundary == "lower", 1, c)
-
-  bk <- function(x) 1 - abs(x) ## Bartlett kernel (given that -1 < x < 1).
+  ## Bartlett kernel
+  bk <- function(x) pmax(0, 1 - abs(x)) ## 1 - abs(x) if abs(x) < 1, 0 otherwise
   bk2 <- function(x) bk(x)^2
 
-  term1 <- stats::integrate(bk, lwr_bound, upr_bound)$value^-2
-
+  ## Common terms
   H <- calc_H(smoothed_obj = smoothed_obj)
   e <- calc_e(smoothed_obj = smoothed_obj, H = H)
+  D <- calc_D(smoothed_obj = smoothed_obj)
   L_And <- calc_L_And(e = e, AR.method = AR.method)
   GammaINF <- calc_GammaINF(e = e, L = L_And)
+  N <- nrow(smoothed_obj)
 
-  res <- array(0, dim = c(5, 5, nrow(smoothed_obj)))
-  for (t in seq_len(nrow(smoothed_obj))) {
-    res[, , t] <- term1*t(H[, , t]) %*% GammaINF %*% H[, , t] * stats::integrate(bk2, lwr_bound, upr_bound)$value
+  SE <- numeric(N)
+  for (t in seq_len(N)) {
+    Dt <- D[t, ]
+    Ht <- H[, , t]
+
+    ## boundary cases at the beginning of the time series
+    if (t < h) {
+      c <- t/h
+      DLt <- stats::integrate(bk, -c, 1)$value^-2*t(Ht) %*% GammaINF %*% Ht * stats::integrate(bk2, -c, 1)$value
+      SE[t] <- sqrt(t(Dt) %*% DLt %*% Dt/h)
+    ## boundary cases at the end of the time series
+    } else if (t > N - h) {
+      c <- (N - t)/h
+      DUt <- stats::integrate(bk, -1, c)$value^-2*t(Ht) %*% GammaINF %*% Ht * stats::integrate(bk2, -1, c)$value
+      SE[t] <- sqrt(t(Dt) %*% DUt %*% Dt/h)
+    ## non-boundary cases
+    } else {
+      DMt <- t(Ht) %*% GammaINF %*% Ht * stats::integrate(bk2, -1, 1)$value
+      SE[t] <- sqrt(t(Dt) %*% DMt %*% Dt/h)
+    }
   }
-  res
+  SE
 }

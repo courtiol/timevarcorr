@@ -2,11 +2,11 @@
 
 export(.onAttach)
 export(calc_D)
-export(calc_Dbound)
 export(calc_Gamma)
 export(calc_GammaINF)
 export(calc_H)
 export(calc_L_And)
+export(calc_SE)
 export(calc_e)
 export(calc_rho)
 export(kern_smooth)

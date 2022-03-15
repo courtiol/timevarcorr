@@ -27,15 +27,19 @@ status](https://www.r-pkg.org/badges/version/fw)](https://CRAN.R-project.org/pac
 <!-- badges: end -->
 
 This R package is at a very early stage of development.
-Many key features are missing (e.g. confidence intervals and test) and it may be buggy.
-I also don't understand much of the statistical concepts involved.
+Some key features are missing (e.g. tests) and it has not been thoroughly tested.
 So, please only use at your own risk.
 
-It aims at computing the correlation between 2 time-series.
-It performs a non-parametric kernel smoothing (using a common bandwidth) of all underlying components required for the computation of a correlation coefficient (i.e. $x$, $y$, $x^2$, $y^2$, $x*y$).
-An automatic selection procedure for the bandwidth parameter is implemented.
-Epanechnikov, Gaussian, and box kernels can be used.
-Both Pearson and Spearman correlation coefficients can be estimated.
+It aims at computing the correlation between 2 time-series following the method described in the following paper:
+
+Choi, JE., Shin, D.W. Nonparametric estimation of time varying correlation coefficient. J. Korean Stat. Soc. 50, 333–353 (2021). https://doi.org/10.1007/s42952-020-00073-6
+
+The chief idea is to perform a non-parametric kernel smoothing (using a common bandwidth) of all underlying components required for the computation of a correlation coefficient (i.e. $x$, $y$, $x^2$, $y^2$, $x*y$).
+
+The automatic selection procedure for the bandwidth parameter proposed in the paper is implemented in this package.
+The same goes for the computation of confidence intervals.
+
+We also implemented the possibility to use Epanechnikov, Gaussian, or box kernels, as well as to estimate either the Pearson or the Spearman correlation coefficient.
 
 
 ## Installation
@@ -76,16 +80,17 @@ test <- with(d, tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal"))
 plot(test, type = "l", ylab = "Correlation", xlab = "Time", main = "SP500 vs FTSE100", las = 1)
 ```
 
-Same example using tidyverse syntax:
+Same example using tidyverse syntax (with confidence interval):
 
 ```{r example2, message=FALSE}
 library(tidyverse)
 
 stockprice |> 
   slice(1:500) |>
-  summarise(tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal")) |>
+  summarise(tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal", CI = TRUE)) |>
   ggplot() +
-    aes(x = t, y = r) +
+    aes(x = t, y = rho_smoothed, ymin = lwr, ymax = upr) +
+    geom_ribbon(fill = "grey") +
     geom_line() +
     labs(title = "SP500 vs FTSE100", x = "Time", y = "Correlation") +
     theme_classic()
@@ -96,9 +101,9 @@ Alternative using `dplyr::mutate` showing gaps of observations in the series:
 ```{r example3}
 stockprice |> 
   slice(1:500) |>
-  mutate(r = tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal", keep.missing = TRUE)$r) |>
+  mutate(rho_smoothed = tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal", keep.missing = TRUE)$rho_smoothed) |>
   ggplot() +
-    aes(x = DateID, y = r) +
+    aes(x = DateID, y = rho_smoothed) +
     geom_line() +
     labs(title = "SP500 vs FTSE100", x = "Time", y = "Correlation") +
     theme_classic()
@@ -111,13 +116,6 @@ test2 <- with(d, tcor(x = SP500, y = FTSE100, t = DateID,
                       cor.method = "spearman", kernel = "box", h = 10))
 plot(test2, type = "l", ylab = "Correlation (Spearman)", xlab = "Time", las = 1)
 ```
-
-
-## Inspiration
-
-The inspiration for this work was the reading of the following paper:
-
-Choi, JE., Shin, D.W. Nonparametric estimation of time varying correlation coefficient. J. Korean Stat. Soc. 50, 333–353 (2021). https://doi.org/10.1007/s42952-020-00073-6
 
 
 ## Devel corner

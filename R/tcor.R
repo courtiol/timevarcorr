@@ -41,6 +41,8 @@
 #' @inheritParams kern_smooth
 #' @param x a numeric vector.
 #' @param y a numeric vector of to be correlated with `x`.
+#' @param CI a logical specifying if a condidence interval should be computed or not (default = `FALSE`).
+#' @param CI.level a scalar defining the level for `CI` (default = 0.95 for 95% CI).
 #' @param cor.method a character string indicating which correlation coefficient
 #' is to be computed ("pearson", the default; or "spearman").
 #' @param keep.missing a logical specifying if time steps associated with missing
@@ -105,6 +107,15 @@
 #' abline(h = rho, col = "green", lty = 2, lwd = 2)
 #'
 #'
+#' ## Computing and plotting the confidence interval
+#'
+#' res_withCI <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, h = 200, CI = TRUE))
+#' with(res_withCI, {
+#'      plot(rho_smoothed ~ t, type = "l", ylab = "Cor", xlab = "Time", las = 1, ylim = c(0, 1))
+#'      points(lwr ~ t, type = "l", lty = 2)
+#'      points(upr ~ t, type = "l", lty = 2)})
+#'
+#'
 #' \dontrun{
 #' ## Automatic selection of the bandwidth using parallel processing and comparison
 #' ## of the 3 alternative kernels on full dataset
@@ -112,7 +123,7 @@
 #'
 #' options("mc.cores" = 2L)
 #' res_hauto_epanech <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID,
-#'                                           verbose = TRUE))
+#'                                            verbose = TRUE))
 #' res_hauto_box <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID,
 #'                                        kernel = "box", verbose = TRUE))
 #' res_hauto_norm <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID,
@@ -125,7 +136,6 @@
 #'        legend = c("epanechnikov", "box", "normal"), bty = "n",
 #'        title = "Kernel")
 #'
-#'
 #' ## Cross validation error according to each kernel
 #'
 #' attr(res_hauto_epanech, "CV_error")
@@ -137,6 +147,16 @@
 #' attr(res_hauto_epanech, "h")
 #' attr(res_hauto_box, "h")
 #' attr(res_hauto_norm, "h")
+#'
+#'
+#' ## Automatic selection of the bandwidth using parallel processing with CI
+#'
+#' res_hauto_epanechCI <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID,
+#'                                              CI = TRUE, verbose = TRUE))
+#' plot(res_hauto_epanechCI[, 1:2], type = "l", col = "red",
+#'      ylab = "Cor", xlab = "Time", las = 1, ylim = c(0, 1))
+#' points(res_hauto_epanechCI[, c(1, 3)], type = "l", col = "red", lty = 2)
+#' points(res_hauto_epanechCI[, c(1, 4)], type = "l", col = "red", lty = 2)
 #'
 #'
 #' ## Comparison of the 3 alternative kernels under same bandwidth
@@ -169,8 +189,8 @@
 #' }
 #'
 tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "spearman"),
-                 kernel = c("epanechnikov", "box", "normal"), param_smoother = list(),
-                 keep.missing = FALSE,
+                 kernel = c("epanechnikov", "box", "normal"), CI = FALSE, CI.level = 0.95,
+                 param_smoother = list(), keep.missing = FALSE,
                  verbose = FALSE) {
 
   ## stripping out missing data
@@ -275,6 +295,13 @@ tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "sp
 
   ## format data for output
   res <- res_all[, c("t", "rho_smoothed")]
+
+  ## compute CI if requested
+  if (CI) {
+    SEt <- calc_SE(smoothed_obj = res_all, h = h, AR.method = "yule-walker") ## for now fixed AR.method
+    res$lwr <- res$rho_smoothed + stats::qnorm((1 - CI.level)/2)*SEt
+    res$upr <- res$rho_smoothed + stats::qnorm((1 + CI.level)/2)*SEt
+  }
 
   ## restore missing values
   if (keep.missing) {

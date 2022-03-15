@@ -12,6 +12,8 @@ tcor(
   h = NULL,
   cor.method = c("pearson", "spearman"),
   kernel = c("epanechnikov", "box", "normal"),
+  CI = FALSE,
+  CI.level = 0.95,
   param_smoother = list(),
   keep.missing = FALSE,
   verbose = FALSE
@@ -43,6 +45,10 @@ is to be computed ("pearson", the default; or "spearman").}
 
 \item{kernel}{a character string indicating which kernel to use: "epanechnikov"
 (the default), "box", or "normal" (abbreviations also work).}
+
+\item{CI}{a logical specifying if a condidence interval should be computed or not (default = \code{FALSE}).}
+
+\item{CI.level}{a scalar defining the level for \code{CI} (default = 0.95 for 95\% CI).}
 
 \item{param_smoother}{a list of additional parameters to provide to the
 internal smoothing function (see \strong{Details}).}
@@ -155,6 +161,15 @@ abline(h = r, col = "red", lty = 2, lwd = 2)
 abline(h = rho, col = "green", lty = 2, lwd = 2)
 
 
+## Computing and plotting the confidence interval
+
+res_withCI <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, h = 200, CI = TRUE))
+with(res_withCI, {
+     plot(rho_smoothed ~ t, type = "l", ylab = "Cor", xlab = "Time", las = 1, ylim = c(0, 1))
+     points(lwr ~ t, type = "l", lty = 2)
+     points(upr ~ t, type = "l", lty = 2)})
+
+
 \dontrun{
 ## Automatic selection of the bandwidth using parallel processing and comparison
 ## of the 3 alternative kernels on full dataset
@@ -162,7 +177,7 @@ abline(h = rho, col = "green", lty = 2, lwd = 2)
 
 options("mc.cores" = 2L)
 res_hauto_epanech <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID,
-                                          verbose = TRUE))
+                                           verbose = TRUE))
 res_hauto_box <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID,
                                        kernel = "box", verbose = TRUE))
 res_hauto_norm <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID,
@@ -175,7 +190,6 @@ legend("topright", fill = c("red", "blue", "orange"),
        legend = c("epanechnikov", "box", "normal"), bty = "n",
        title = "Kernel")
 
-
 ## Cross validation error according to each kernel
 
 attr(res_hauto_epanech, "CV_error")
@@ -187,6 +201,16 @@ attr(res_hauto_norm, "CV_error")
 attr(res_hauto_epanech, "h")
 attr(res_hauto_box, "h")
 attr(res_hauto_norm, "h")
+
+
+## Automatic selection of the bandwidth using parallel processing with CI
+
+res_hauto_epanechCI <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID,
+                                             CI = TRUE, verbose = TRUE))
+plot(res_hauto_epanechCI[, 1:2], type = "l", col = "red",
+     ylab = "Cor", xlab = "Time", las = 1, ylim = c(0, 1))
+points(res_hauto_epanechCI[, c(1, 3)], type = "l", col = "red", lty = 2)
+points(res_hauto_epanechCI[, c(1, 4)], type = "l", col = "red", lty = 2)
 
 
 ## Comparison of the 3 alternative kernels under same bandwidth
