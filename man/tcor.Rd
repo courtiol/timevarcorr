@@ -3,11 +3,6 @@
 \name{tcor}
 \alias{tcor}
 \alias{calc_rho}
-\alias{calc_H}
-\alias{calc_e}
-\alias{calc_Gamma}
-\alias{calc_GammaINF}
-\alias{calc_L_And}
 \title{Compute time varying correlation coefficients}
 \usage{
 tcor(
@@ -32,16 +27,6 @@ calc_rho(
   kernel = c("epanechnikov", "box", "normal"),
   param_smoother = list()
 )
-
-calc_H(smoothed_obj)
-
-calc_e(smoothed_obj, H)
-
-calc_Gamma(e, l)
-
-calc_GammaINF(e, L)
-
-calc_L_And(e, AR.method = c("yule-walker", "burg", "ols", "mle", "yw"))
 }
 \arguments{
 \item{x}{a numeric vector.}
@@ -70,18 +55,6 @@ monitor the progress of the cross validation (default = \code{FALSE}).}
 
 \item{t.for.pred}{a (numeric or Date) vector of time points at which to
 evaluate the smoothed fit. If missing, \code{t} is used.}
-
-\item{smoothed_obj}{an object created with \code{\link{calc_rho}}.}
-
-\item{H}{an object created with \code{\link{calc_H}}.}
-
-\item{e}{an object created with \code{\link{calc_e}}.}
-
-\item{l}{a scalar indicating a number of time steps.}
-
-\item{L}{a scalar indicating a bandwidth parameter (used for CI computation, not for smoothing).}
-
-\item{AR.method}{character string specifying the method to fit the autoregressive model used to compute \verb{$\\hat\{\\gamma\}_1$} in \verb{$L_\{And\}$} (see \code{\link[stats:ar]{stats::ar}} for details).}
 }
 \value{
 A dataframe of time points (\code{t}) and corresponding correlation values (\code{rho_smoothed}).
@@ -140,37 +113,6 @@ beforehand, replacing \code{XX} by the relevant number of CPU cores you want to 
 The function calls the kernel smoothing procedure on each component required
 to compute the time-varying correlation. It returns a dataframe with the time,
 the correlation value and the underlying components used for the computation.
-
-\item \code{calc_H}: Internal function computing the \verb{$\\hat\{H_t\}$} array.
-
-\verb{$\\hat\{H_t\}$} is a component needed to compute confidence intervals;
-\verb{$H_t$} is defined in eq. 6 from Choi & Shin, 2021.
-The function returns a 5 x 5 x t array (5 because of the 5 key components: "x2", "y2", "x", "y", "xy").
-
-\item \code{calc_e}: Internal function computing \verb{$\\hat\{e\}_t$}.
-
-\verb{$\\hat\{e\}_t$} is a component needed to compute confidence intervals;
-it is defined in eq. 9 from Choi & Shin, 2021.
-The function returns a 5 x t matrix storing the residuals (5 because of the 5 key components: "x2", "y2", "x", "y", "xy").
-
-\item \code{calc_Gamma}: Internal function computing \verb{$\\hat\{\\Gamma\}_l$}.
-
-\verb{$\\hat\{\\Gamma\}_l$} is a component needed to compute confidence intervals;
-it is defined in eq. 9 from Choi & Shin, 2021.
-The function returns a 5 x 5 matrix (5 because of the 5 key components: "x2", "y2", "x", "y", "xy").
-
-\item \code{calc_GammaINF}: Internal function computing \verb{$\\hat\{\\Gamma\}^\\Inf$}.
-
-\verb{$\\hat\{\\Gamma\}^\\Inf$} is a component needed to compute confidence intervals (the long run variance estimator);
-it is defined in eq. 9 from Choi & Shin, 2021.
-The function returns a 5 x 5 matrix (5 because of the 5 key components: "x2", "y2", "x", "y", "xy").
-
-\item \code{calc_L_And}: Internal function computing \verb{$L_\{And\}$}.
-
-\verb{$L_\{And\}$} is a component needed to compute confidence intervals;
-it is defined in Choi & Shin, 2021, p 342.
-It also corresponds to \verb{$S_T^*$}, eq 5.3 in Andrews 1991.
-The function returns a scalar which should be used as an input for \code{L} in \code{\link{calc_GammaINF}}.
 }}
 
 \examples{
@@ -301,71 +243,10 @@ with(head(stockprice)[c(1, 3, 6, 2, 4, 5), ], calc_rho(x = SP500, y = FTSE100, t
 
 # calc_rho(x = c(NA, rnorm(9)), y = rnorm(10), t = c(1:2, 23:30), h = 2) ## should err (if ran)
 
-
-
-################################################################
-## Examples for the internal function computing `$\hat{H_t}$` ##
-################################################################
-
-foo <- with(na.omit(stockprice),
-            calc_rho(x = SP500, y = FTSE100, t = DateID, h = 20, kernel = "box"))
-head(foo)
-calc_H(foo)
-
-
-
-################################################################
-## Examples for the internal function computing `$\hat{e}_t$` ##
-################################################################
-
-foo <- with(na.omit(stockprice),
-            calc_rho(x = SP500, y = FTSE100, t = DateID, h = 20, kernel = "box"))
-H <- calc_H(foo)
-calc_e(foo, H = H)
-
-
-
-#####################################################################
-## Examples for the internal function computing `$\hat{\Gamma}_l$` ##
-#####################################################################
-
-foo <- with(na.omit(stockprice),
-            calc_rho(x = SP500, y = FTSE100, t = DateID, h = 20, kernel = "box"))
-H <- calc_H(foo)
-e <- calc_e(foo, H = H)
-calc_Gamma(e, l = 3)
-
-
-
-########################################################################
-## Examples for the internal function computing `$\hat{\Gamma}^\Inf$` ##
-########################################################################
-
-foo <- with(na.omit(stockprice),
-            calc_rho(x = SP500, y = FTSE100, t = DateID, h = 20, kernel = "box"))
-H <- calc_H(foo)
-e <- calc_e(foo, H = H)
-calc_GammaINF(e, L = 2)
-
-
-
-##############################################################
-## Examples for the internal function computing `$L_{And}$` ##
-##############################################################
-
-foo <- with(na.omit(stockprice),
-            calc_rho(x = SP500, y = FTSE100, t = DateID, h = 20, kernel = "box"))
-H <- calc_H(foo)
-e <- calc_e(foo, H = H)
-calc_L_And(e)
-
 }
 \references{
 Choi, JE., Shin, D.W. Nonparametric estimation of time varying correlation coefficient.
 J. Korean Stat. Soc. 50, 333–353 (2021). https://doi.org/10.1007/s42952-020-00073-6
-
-Andrews, D. W. K. Heteroskedasticity and autocorrelation consistent covariance matrix estimation.
-Econometrica: Journal of the Econometric Society, 817-858 (1991).
 }
 \seealso{
 \code{\link{kern_smooth}}
