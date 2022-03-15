@@ -383,8 +383,6 @@ calc_rho <- function(x, y, t = seq_along(x), t.for.pred = t, h, cor.method = c("
 #' @export
 #' @param smoothed_obj an object created with [`calc_rho`].
 #'
-#' @export
-#'
 #' @examples
 #'
 #'
@@ -432,8 +430,6 @@ calc_H <- function(smoothed_obj) {
 #' @export
 #' @param H an object created with [`calc_H`].
 #'
-#' @export
-#'
 #' @examples
 #'
 #'
@@ -455,4 +451,36 @@ calc_e <- function(smoothed_obj, H) {
   }
   colnames(res) <- paste0(c("x2", "y2", "x", "y", "xy"), "_resid")
   res
+}
+
+
+#' @describeIn tcor Internal function computing `$\hat{\Gamma}_l$`.
+#'
+#' `$\hat{\Gamma}_l$` is a component needed to compute confidence intervals;
+#' it is defined in eq. 9 from Choi & Shin, 2021.
+#' The function returns a 5 x 5 matrix (5 because of the 5 key components: "x2", "y2", "x", "y", "xy").
+#'
+#' @export
+#' @param e an object created with [`calc_e`].
+#' @param l a scalar indicating a number of time steps.
+#'
+#' @examples
+#'
+#'
+#' #####################################################################
+#' ## Examples for the internal function computing `$\hat{\Gamma}_l$` ##
+#' #####################################################################
+#'
+#' foo <- with(na.omit(stockprice),
+#'             calc_rho(x = SP500, y = FTSE100, t = DateID, h = 20, kernel = "box"))
+#' H <- calc_H(foo)
+#' e <- calc_e(foo, H = H)
+#' calc_Gamma(e, l = 3)
+#'
+calc_Gamma <- function(e, l) {
+  res <- matrix(0, nrow = 5, ncol = 5)
+  for (t in seq_len(nrow(e) - l)) {
+    res <- res + t(e[t, , drop = FALSE]) %*% e[t + l, , drop = FALSE]
+  }
+  res/nrow(e)
 }
