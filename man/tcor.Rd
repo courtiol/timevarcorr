@@ -6,6 +6,7 @@
 \alias{calc_H}
 \alias{calc_e}
 \alias{calc_Gamma}
+\alias{calc_GammaINF}
 \title{Compute time varying correlation coefficients}
 \usage{
 tcor(
@@ -36,6 +37,8 @@ calc_H(smoothed_obj)
 calc_e(smoothed_obj, H)
 
 calc_Gamma(e, l)
+
+calc_GammaINF(e, L)
 }
 \arguments{
 \item{x}{a numeric vector.}
@@ -72,6 +75,8 @@ evaluate the smoothed fit. If missing, \code{t} is used.}
 \item{e}{an object created with \code{\link{calc_e}}.}
 
 \item{l}{a scalar indicating a number of time steps.}
+
+\item{L}{a scalar indicating a bandwidth parameter.}
 }
 \value{
 A dataframe of time points (\code{t}) and corresponding correlation values (\code{rho_smoothed}).
@@ -146,6 +151,12 @@ The function returns a 5 x t matrix storing the residuals (5 because of the 5 ke
 \item \code{calc_Gamma}: Internal function computing \verb{$\\hat\{\\Gamma\}_l$}.
 
 \verb{$\\hat\{\\Gamma\}_l$} is a component needed to compute confidence intervals;
+it is defined in eq. 9 from Choi & Shin, 2021.
+The function returns a 5 x 5 matrix (5 because of the 5 key components: "x2", "y2", "x", "y", "xy").
+
+\item \code{calc_GammaINF}: Internal function computing \verb{$\\hat\{\\Gamma\}^\\Inf$}.
+
+\verb{$\\hat\{\\Gamma\}^\\Inf$} is a component needed to compute confidence intervals;
 it is defined in eq. 9 from Choi & Shin, 2021.
 The function returns a 5 x 5 matrix (5 because of the 5 key components: "x2", "y2", "x", "y", "xy").
 }}
@@ -311,6 +322,18 @@ foo <- with(na.omit(stockprice),
 H <- calc_H(foo)
 e <- calc_e(foo, H = H)
 calc_Gamma(e, l = 3)
+
+
+
+########################################################################
+## Examples for the internal function computing `$\hat{\Gamma}^\Inf$` ##
+########################################################################
+
+foo <- with(na.omit(stockprice),
+            calc_rho(x = SP500, y = FTSE100, t = DateID, h = 20, kernel = "box"))
+H <- calc_H(foo)
+e <- calc_e(foo, H = H)
+calc_GammaINF(e, L = 2)
 
 }
 \references{

@@ -2,6 +2,7 @@
 
 export(.onAttach)
 export(calc_Gamma)
+export(calc_GammaINF)
 export(calc_H)
 export(calc_e)
 export(calc_rho)

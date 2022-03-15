@@ -484,3 +484,39 @@ calc_Gamma <- function(e, l) {
   }
   res/nrow(e)
 }
+
+
+#' @describeIn tcor Internal function computing `$\hat{\Gamma}^\Inf$`.
+#'
+#' `$\hat{\Gamma}^\Inf$` is a component needed to compute confidence intervals;
+#' it is defined in eq. 9 from Choi & Shin, 2021.
+#' The function returns a 5 x 5 matrix (5 because of the 5 key components: "x2", "y2", "x", "y", "xy").
+#'
+#' @export
+#' @param L a scalar indicating a bandwidth parameter.
+#'
+#' @examples
+#'
+#'
+#' ########################################################################
+#' ## Examples for the internal function computing `$\hat{\Gamma}^\Inf$` ##
+#' ########################################################################
+#'
+#' foo <- with(na.omit(stockprice),
+#'             calc_rho(x = SP500, y = FTSE100, t = DateID, h = 20, kernel = "box"))
+#' H <- calc_H(foo)
+#' e <- calc_e(foo, H = H)
+#' calc_GammaINF(e, L = 2)
+#'
+calc_GammaINF <- function(e, L) {
+
+  Gamma_0 <- calc_Gamma(e = e, l = 0)
+
+  sum_term <- matrix(0, nrow = 5, ncol = 5)
+  for (l in seq_len(L)) {
+    Gamma_l <- calc_Gamma(e = e, l = l)
+    sum_term <- sum_term + (1 - l/L) * (Gamma_l + t(Gamma_l))
+  }
+
+  Gamma_0 + sum_term
+}
