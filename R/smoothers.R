@@ -103,14 +103,9 @@ kern_smooth <- function(x, t = seq_along(x), h, t.for.pred = t,
     res <- do.call(lpridge::lpepa, param_list)
     original_order <- order(t.for.pred)
     new.t <- res$x.out[original_order]
-    class(new.t) <- class(t) # restore class otherwise, lost
+    class(new.t) <- class(t) # restore class, otherwise lost
     return(data.frame(t = new.t, x = res$est[original_order]))
   }
 
   stop("Argument `kernel` unknown.")
 }
-
-
-
-
-
