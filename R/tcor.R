@@ -60,6 +60,9 @@
 #' Choi, JE., Shin, D.W. Nonparametric estimation of time varying correlation coefficient.
 #' J. Korean Stat. Soc. 50, 333–353 (2021). https://doi.org/10.1007/s42952-020-00073-6
 #'
+#' Andrews, D. W. K. Heteroskedasticity and autocorrelation consistent covariance matrix estimation.
+#' Econometrica: Journal of the Econometric Society, 817-858 (1991).
+#'
 #' @seealso [`kern_smooth`]
 #'
 #' @importFrom parallel mclapply
@@ -488,12 +491,12 @@ calc_Gamma <- function(e, l) {
 
 #' @describeIn tcor Internal function computing `$\hat{\Gamma}^\Inf$`.
 #'
-#' `$\hat{\Gamma}^\Inf$` is a component needed to compute confidence intervals;
+#' `$\hat{\Gamma}^\Inf$` is a component needed to compute confidence intervals (the long run variance estimator);
 #' it is defined in eq. 9 from Choi & Shin, 2021.
 #' The function returns a 5 x 5 matrix (5 because of the 5 key components: "x2", "y2", "x", "y", "xy").
 #'
 #' @export
-#' @param L a scalar indicating a bandwidth parameter.
+#' @param L a scalar indicating a bandwidth parameter (used for CI computation, not for smoothing).
 #'
 #' @examples
 #'
@@ -519,4 +522,34 @@ calc_GammaINF <- function(e, L) {
   }
 
   Gamma_0 + sum_term
+}
+
+
+#' @describeIn tcor Internal function computing `$L_{And}$`.
+#'
+#' `$L_{And}$` is a component needed to compute confidence intervals;
+#' it is defined in Choi & Shin, 2021, p 342.
+#' It also corresponds to `$S_T^*$`, eq 5.3 in Andrews 1991.
+#' The function returns a scalar which should be used as an input for `L` in [`calc_GammaINF`].
+#'
+#' @export
+#' @param AR.method character string specifying the method to fit the autoregressive model used to compute `$\hat{\gamma}_1$` in `$L_{And}$` (see [`stats::ar`] for details).
+#'
+#' @examples
+#'
+#'
+#' ##############################################################
+#' ## Examples for the internal function computing `$L_{And}$` ##
+#' ##############################################################
+#'
+#' foo <- with(na.omit(stockprice),
+#'             calc_rho(x = SP500, y = FTSE100, t = DateID, h = 20, kernel = "box"))
+#' H <- calc_H(foo)
+#' e <- calc_e(foo, H = H)
+#' calc_L_And(e)
+#'
+calc_L_And <- function(e, AR.method = c("yule-walker", "burg", "ols", "mle", "yw")) {
+  AR.method <- match.arg(AR.method)
+  gamma_1 <- stats::ar(rowSums(e), method = AR.method, order.max = 1L)$ar
+  1.1447*((4*nrow(e)*gamma_1^2)/((1 - gamma_1^2)^2))^(1/3)
 }
