@@ -226,7 +226,7 @@ devtools::session_info()
 #>  tidyr       * 1.2.0      2022-02-01 [2] CRAN (R 4.1.2)
 #>  tidyselect    1.1.1      2021-04-30 [2] CRAN (R 4.1.0)
 #>  tidyverse   * 1.3.1      2021-04-15 [2] CRAN (R 4.1.0)
-#>  timevarcorr * 0.0.0.9001 2022-03-16 [1] local
+#>  timevarcorr * 0.0.0.9002 2022-03-16 [1] local
 #>  tzdb          0.2.0      2021-10-27 [2] CRAN (R 4.1.1)
 #>  usethis       2.1.5      2021-12-09 [2] CRAN (R 4.1.2)
 #>  utf8          1.2.2      2021-07-24 [2] CRAN (R 4.1.0)
