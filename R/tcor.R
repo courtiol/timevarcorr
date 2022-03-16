@@ -1,17 +1,18 @@
 #' Compute time varying correlation coefficients
 #'
-#' The function `tcor` implements the nonparametric estimation of the time
-#' varying correlation coefficient proposed by Choi & Shin, 2021. The general
-#' idea is to compute a (Pearson) correlation coefficient (`r(x,y) = (mean(xy) -
-#' mean(x)*mean(y)) / (sqrt(mean(x^2)-mean(x)^2) * sqrt(mean(y^2)-mean(y)^2))`),
-#' but instead of using the means required for such a computation, each
-#' component (i.e. `x`, `y`, `x^2`, `y^2`, `x*y`) is smoothed and the smoothed
-#' terms are considered in place the original means. The intensity of the
-#' smoothing depends on a unique parameter: the bandwidth (`h`). If `h = Inf`,
-#' the method produces the original (i.e. time-invariant) correlation value. The
-#' smaller the parameter `h`, the more variation in time is being captured. The
-#' parameter `h` can be provided by the user; otherwise it is automatically
-#' estimated (see **Details**).
+#' The function `tcor` implements (together with its internal helper function
+#' `calc_rho`) the nonparametric estimation of the time varying correlation
+#' coefficient proposed by Choi & Shin, 2021. The general idea is to compute a
+#' (Pearson) correlation coefficient (`r(x,y) = (mean(xy) - mean(x)*mean(y)) /
+#' (sqrt(mean(x^2)-mean(x)^2) * sqrt(mean(y^2)-mean(y)^2))`), but instead of
+#' using the means required for such a computation, each component (i.e. `x`,
+#' `y`, `x^2`, `y^2`, `x*y`) is smoothed and the smoothed terms are considered
+#' in place the original means. The intensity of the smoothing depends on a
+#' unique parameter: the bandwidth (`h`). If `h = Inf`, the method produces the
+#' original (i.e. time-invariant) correlation value. The smaller the parameter
+#' `h`, the more variation in time is being captured. The parameter `h` can be
+#' provided by the user; otherwise it is automatically estimated (see
+#' **Details**).
 #'
 #' - **Smoothing**: the smoothing of each component is performed by kernel
 #' regression. The default is to use the Epanechnikov kernel following Choi &
@@ -22,13 +23,14 @@
 #' results from different kernel methods.
 #'
 #' - **Bandwidth selection**: when the value used to define the bandwidth (`h`)
-#' is set to `NULL` (the default), it is first estimated by leave-one-out cross
-#' validation. If cross validation error is minimal for the maximal value of `h`
-#' considered (`8*sqrt(N)`), rather than taking this as the optimal `h` value,
-#' the bandwidth becomes estimated using the so-called elbow criterion. This
-#' latter method identifies the value `h` after which the cross validation error
-#' decreasing very little. The procedure is detailed in section 2.1 in Choi &
-#' Shin, 2021.
+#' is set to `NULL` (the default), the internal function `select_h` is used to
+#' to select the optimal value for `h`. It is first estimated by leave-one-out
+#' cross validation. If cross validation error is minimal for the maximal value
+#' of `h` considered (`8*sqrt(N)`), rather than taking this as the optimal `h`
+#' value, the bandwidth becomes estimated using the so-called elbow criterion.
+#' This latter method identifies the value `h` after which the cross validation
+#' error decreasing very little. The procedure is detailed in section 2.1 in
+#' Choi & Shin, 2021.
 #'
 #' - **Parallel computation**: if `h` is not provided, an automatic bandwidth
 #' selection occurs (see above). For large datasets, this step can be
@@ -37,6 +39,10 @@
 #' on parallel processing also implies that you call `options("mc.cores" = XX)`
 #' beforehand, replacing `XX` by the relevant number of CPU cores you want to use
 #' (see **Examples**).
+#'
+#' - **Confidence interval**: if `CI` is set to `TRUE`, a confidence interval is
+#' calculated as described in Choi & Shin, 2021. This involves multiple internal
+#' functions (see [`CI`] for details).
 #'
 #' @inheritParams kern_smooth
 #' @param x a numeric vector.
@@ -58,17 +64,18 @@
 #' - `h_select_duration` the computing time spent to select the bandwidth
 #' parameter.
 #'
+#' @name tcor
+#' @rdname tcor
+#'
 #' @references
 #' Choi, JE., Shin, D.W. Nonparametric estimation of time varying correlation coefficient.
 #' J. Korean Stat. Soc. 50, 333–353 (2021). https://doi.org/10.1007/s42952-020-00073-6
 #'
-#' @seealso [`kern_smooth`]
+#' @seealso [`kern_smooth`], [`CI`]
 #'
 #' @importFrom parallel mclapply
-#' @export
 #'
 #' @examples
-#'
 #' ## Effect of the bandwidth
 #'
 #' res_h50  <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, h = 50))
@@ -188,6 +195,13 @@
 #'
 #' }
 #'
+NULL
+
+
+#' @describeIn tcor **The user-level function to be used**.
+#'
+#' @export
+#'
 tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "spearman"),
                  kernel = c("epanechnikov", "box", "normal"), CI = FALSE, CI.level = 0.95,
                  param_smoother = list(), keep.missing = FALSE,
@@ -200,97 +214,14 @@ tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "sp
   t_ori <- t[!missing]
 
   ## if the bandwidth is not given, we must estimate it
-  CV_error <- NA # default value for export if not computed
   if (is.null(h)) {
-
-    ## check nb.cores input
-    if (is.null(options("mc.cores")[[1]])) {
-      nb.cores <- 1
-    } else {
-      nb.cores <- options("mc.cores")[[1]]
-    }
-
-    if (Sys.info()[['sysname']] != "Windows" && parallel::detectCores() < nb.cores) {
-      stop(paste("\nYour computer does not allow such a large value for the argument `nb.cores`. The maximum value you may consider is", parallel::detectCores(), ".\n"))
-    }
-
-    if (Sys.info()[['sysname']] != "Windows" && parallel::detectCores() > 1 && nb.cores == 1) {
-      message("\nYou may set `nb.cores` to a number higher than 1 for faster computation.\n")
-    }
-
-    if (Sys.info()[['sysname']] == "Windows" && nb.cores > 1) {
-      message("\nThe argument `nb.cores` is ignore on Windows-based infrastructure.\n")
-    }
-
-    time <- system.time({
-
-     h_selection <- "LOO-CV"
-
-     if (length(x_ori) > 500) message("Bandwidth selection using LOO-CV... (may take a while)")
-
-     ## define function for performing leave-one-out cross-validation ## TODO: extract code into standalone function
-     CV <- function(h) {
-       CVi <- mclapply(seq_along(t_ori), function(oob) {
-         obj <- calc_rho(x = x_ori[-oob], y = y_ori[-oob], t = t_ori[-oob], h = h, t.for.pred = t_ori[oob],
-                         cor.method = cor.method, kernel = kernel, param_smoother = param_smoother)
-         (obj$rho_smoothed - ((x_ori[oob] - obj$x_smoothed) * (y_ori[oob] - obj$y_smoothed)) / (obj$sd_x_smoothed * obj$sd_y_smoothed))^2
-       })
-       CVi_num <- as.numeric(CVi)
-       failing <- is.na(CVi_num)
-       res <- mean(CVi_num[!failing])
-       if (verbose) {
-         print(paste("h =", round(h, digits = 1L), "    # failing =", sum(failing),"    CV =", res))
-       }
-       res
-     }
-
-     ## estimate h by cross-validation
-     h_max <- 8*sqrt(length(x_ori))
-     opt <- stats::optimize(CV, interval = c(1, h_max), tol = 1) ## TODO: check if other optimizer would be best
-
-     ## if h_max is best, use elbow criterion instead
-     h <- opt$minimum
-     CV_error <- opt$objective
-     print(paste("h selected using LOO-CV =", round(h, digits = 1L)))
-     verbose <- FALSE
-     CV_bound <- CV(h_max)
-
-     if (CV_bound <= opt$objective) {
-      CV_error <- NA # remove stored value since not used in this case
-      h_selection <- "elbow criterion"
-
-      if (length(x_ori) > 500) message("Bandwidth selection using elbow criterion... (may take a while)")
-
-      RMSE_Lh0 <- function(h0) {
-        d <- data.frame(h = 1:h0)
-        d$CV_h <- sapply(h, CV)
-        fit_Lh0 <- stats::lm(CV_h ~ h, data = d)
-        sqrt(mean(stats::residuals(fit_Lh0)^2))
-      }
-
-      RMSE_Rh0 <- function(h0) {
-        d <- data.frame(h = (h0 + 1):h_max)
-        d$CV_h <- sapply(h, CV)
-        fit_Rh0 <- stats::lm(CV_h ~ h, data = d)
-        sqrt(mean(stats::residuals(fit_Rh0)^2))
-      }
-
-      RMSE_h0 <- function(h0) {
-        (h0 - 1)/(h_max - 1)*RMSE_Lh0(h0) + (h_max - h0)/(h_max - 1)*RMSE_Rh0(h0)
-      }
-
-      opt <- stats::optimize(RMSE_h0, interval = c(3, h_max - 1), tol = 1)
-      h <- opt$minimum
-      print(paste("h selected using elbow criterion =", round(h, digits = 1L)))
-     }
-   })
+    bandwidth_obj <- select_h(x = x_ori, y = y_ori, t = t_ori, cor.method = cor.method, kernel = kernel, param_smoother = param_smoother, verbose = verbose)
   } else {
-    time <- NULL
-    h_selection <- "fixed by user"
+    bandwidth_obj <- list(h = h, h_selection = "fixed by user", CV_error = NA, time = NULL)
   }
 
   ## compute correlation with the selected bandwidth
-  res_all <- calc_rho(x = x_ori, y = y_ori, t = t_ori, h = h, cor.method = cor.method,
+  res_all <- calc_rho(x = x_ori, y = y_ori, t = t_ori, h = bandwidth_obj$h, cor.method = cor.method,
                        kernel = kernel, param_smoother = param_smoother)
 
   ## format data for output
@@ -306,7 +237,8 @@ tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "sp
 
   ## compute CI if requested
   if (CI) {
-    SEt <- calc_SE(smoothed_obj = res_all, h = h, AR.method = "yule-walker") ## for now fixed AR.method
+
+    SEt <- calc_SE(smoothed_obj = res_all, h = bandwidth_obj$h, AR.method = "yule-walker") ## for now fixed AR.method
     res$lwr <- res$rho_smoothed + stats::qnorm((1 - CI.level)/2)*SEt
     res$upr <- res$rho_smoothed + stats::qnorm((1 + CI.level)/2)*SEt
 
@@ -330,10 +262,10 @@ tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "sp
   }
 
   ## store other useful info as attributes
-  attr(res, "h") <- h
-  attr(res, "CV_error") <- CV_error
-  attr(res, "h_selection") <- h_selection
-  attr(res, "h_select_duration") <- time
+  attr(res, "h") <- bandwidth_obj$h
+  attr(res, "CV_error") <- bandwidth_obj$CV_error
+  attr(res, "h_selection") <- bandwidth_obj$h_selection
+  attr(res, "h_select_duration") <- bandwidth_obj$time
   res
 }
 
@@ -373,7 +305,7 @@ tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "sp
 #' # calc_rho(x = c(NA, rnorm(9)), y = rnorm(10), t = c(1:2, 23:30), h = 2) ## should err (if ran)
 #'
 calc_rho <- function(x, y, t = seq_along(x), t.for.pred = t, h, cor.method = c("pearson", "spearman"),
-                      kernel = c("epanechnikov", "box", "normal"), param_smoother = list()) {
+                     kernel = c("epanechnikov", "box", "normal"), param_smoother = list()) {
 
   ## checking inputs
   if (any(is.na(c(x, y, t)))) {
@@ -402,7 +334,7 @@ calc_rho <- function(x, y, t = seq_along(x), t.for.pred = t, h, cor.method = c("
                             kernel = kernel, param_smoother = param_smoother) ## separate call to retrieve t once (and x)
   other_smoothed_list <- apply(U[, -1], 2L, function(v) {
     kern_smooth(x = v, t = t, h = h, t.for.pred = t.for.pred, kernel = kernel, param_smoother = param_smoother)$x
-    }, simplify = FALSE) ## combine call for everything else
+  }, simplify = FALSE) ## combine call for everything else
   other_smoothed <- do.call("cbind", other_smoothed_list)
 
   smoothed <- cbind(x_smoothed, as.data.frame(other_smoothed)) ## don't coerce into matrix -> t can be non numeric
