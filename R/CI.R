@@ -84,7 +84,7 @@ calc_e <- function(smoothed_obj, H) {
   for (i in seq_len(dim(H)[3])) {
     Ut   <- t(smoothed_obj[i, c("x2", "y2", "x", "y", "xy"), drop = FALSE])
     mu_t <- t(smoothed_obj[i, c("x2_smoothed", "y2_smoothed", "x_smoothed", "y_smoothed", "xy_smoothed"), drop = FALSE])
-    res[i, ] <- solve(t(H[, , i])) %*% (Ut - mu_t)
+    res[i, ] <- tryCatch({solve(t(H[, , i])) %*% (Ut - mu_t)}, error = function(e) stop("The bandwidth parameter `h` is too small. CI cannot be computed."))
   }
   colnames(res) <- paste0(c("x2", "y2", "x", "y", "xy"), "_resid")
   res
