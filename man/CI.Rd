@@ -46,7 +46,7 @@ calc_SE(
 }
 \description{
 These functions compute the different terms required to compute the confidence
-interval around the time-varying correlation coefficients.
+interval around the time-varying correlation coefficient.
 }
 \section{Functions}{
 \itemize{
@@ -96,28 +96,32 @@ The function returns a vector of length \code{t}.
 }}
 
 \examples{
-
 rho_obj <- with(na.omit(stockprice),
                 calc_rho(x = SP500, y = FTSE100, t = DateID, h = 20, kernel = "box"))
 head(rho_obj)
+
 
 ## Computing `$\hat{H_t}$`
 
 H <- calc_H(smoothed_obj = rho_obj)
 H
 
+
 ## Computing `$\hat{e}_t$`
 
 e <- calc_e(smoothed_obj = rho_obj, H = H)
 head(e)
 
+
 ## Computing `$\hat{\Gamma}_l$`
 
 calc_Gamma(e = e, l = 3)
 
+
 ## Computing `$\hat{\Gamma}^\Inf$`
 
 calc_GammaINF(e = e, L = 2)
+
 
 ## Computing `$L_{And}$`
 
@@ -125,14 +129,16 @@ calc_L_And(e = e)
 sapply(c("yule-walker", "burg", "ols", "mle", "yw"),
        function(m) calc_L_And(e = e, AR.method = m)) ## comparing AR.methods
 
+
 ## Computing `$D_t$`
 
 head(calc_D(smoothed_obj = rho_obj))
 
+
 ## Computing `se(\hat{rho}_t(h))`
 
 \dontrun{
-calc_SE(smoothed_obj = rho_obj, h = 50)
+calc_SE(smoothed_obj = rho_obj, h = 50) ## ~ 10 sec to run
 }
 
 }

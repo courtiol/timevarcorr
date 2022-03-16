@@ -1,7 +1,7 @@
 #' Internal functions for the computation of confidence intervals
 #'
 #' These functions compute the different terms required to compute the confidence
-#' interval around the time-varying correlation coefficients.
+#' interval around the time-varying correlation coefficient.
 #'
 #' @seealso [`tcor`]
 #' @name CI
@@ -14,7 +14,6 @@
 #' Econometrica: Journal of the Econometric Society, 817-858 (1991).
 #'
 #' @examples
-#'
 #' rho_obj <- with(na.omit(stockprice),
 #'                 calc_rho(x = SP500, y = FTSE100, t = DateID, h = 20, kernel = "box"))
 #' head(rho_obj)
@@ -32,6 +31,7 @@ NULL
 #' @param smoothed_obj an object created with [`calc_rho`].
 #'
 #' @examples
+#'
 #' ## Computing `$\hat{H_t}$`
 #'
 #' H <- calc_H(smoothed_obj = rho_obj)
@@ -73,6 +73,7 @@ calc_H <- function(smoothed_obj) {
 #' @param H an object created with [`calc_H`].
 #'
 #' @examples
+#'
 #' ## Computing `$\hat{e}_t$`
 #'
 #' e <- calc_e(smoothed_obj = rho_obj, H = H)
@@ -101,6 +102,7 @@ calc_e <- function(smoothed_obj, H) {
 #' @param l a scalar indicating a number of time steps.
 #'
 #' @examples
+#'
 #' ## Computing `$\hat{\Gamma}_l$`
 #'
 #' calc_Gamma(e = e, l = 3)
@@ -124,6 +126,7 @@ calc_Gamma <- function(e, l) {
 #' @param L a scalar indicating a bandwidth parameter.
 #'
 #' @examples
+#'
 #' ## Computing `$\hat{\Gamma}^\Inf$`
 #'
 #' calc_GammaINF(e = e, L = 2)
@@ -153,6 +156,7 @@ calc_GammaINF <- function(e, L) {
 #' @param AR.method character string specifying the method to fit the autoregressive model used to compute `$\hat{\gamma}_1$` in `$L_{And}$` (see [`stats::ar`] for details).
 #'
 #' @examples
+#'
 #' ## Computing `$L_{And}$`
 #'
 #' calc_L_And(e = e)
@@ -176,6 +180,7 @@ calc_L_And <- function(e, AR.method = c("yule-walker", "burg", "ols", "mle", "yw
 #' @export
 #'
 #' @examples
+#'
 #' ## Computing `$D_t$`
 #'
 #' head(calc_D(smoothed_obj = rho_obj))
@@ -202,10 +207,11 @@ calc_D <- function(smoothed_obj) {
 #' @inheritParams kern_smooth
 #'
 #' @examples
+#'
 #' ## Computing `se(\hat{rho}_t(h))`
 #'
 #' \dontrun{
-#' calc_SE(smoothed_obj = rho_obj, h = 50)
+#' calc_SE(smoothed_obj = rho_obj, h = 50) ## ~ 10 sec to run
 #' }
 #'
 calc_SE <- function(smoothed_obj, h, AR.method = c("yule-walker", "burg", "ols", "mle", "yw")) {
