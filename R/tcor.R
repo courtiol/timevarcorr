@@ -50,7 +50,7 @@
 #' @param verbose a logical specifying if information should be displayed to
 #' monitor the progress of the cross validation (default = `FALSE`).
 #'
-#' @return A dataframe of time points (`t`) and corresponding correlation values (`rho_smoothed`).
+#' @return A dataframe of time points (`t`) and corresponding correlation values (`r`).
 #' Some metadata are also attached to the dataframe (as attributes):
 #' - `h` the bandwidth parameter.
 #' - `CV_error` the minimal Cross Validation error when `h` selected by CV.
@@ -111,7 +111,7 @@
 #'
 #' res_withCI <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, h = 200, CI = TRUE))
 #' with(res_withCI, {
-#'      plot(rho_smoothed ~ t, type = "l", ylab = "Cor", xlab = "Time", las = 1, ylim = c(0, 1))
+#'      plot(r ~ t, type = "l", ylab = "Cor", xlab = "Time", las = 1, ylim = c(0, 1))
 #'      points(lwr ~ t, type = "l", lty = 2)
 #'      points(upr ~ t, type = "l", lty = 2)})
 #'
@@ -302,6 +302,9 @@ tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "sp
     res$lwr <- res$rho_smoothed + stats::qnorm((1 - CI.level)/2)*SEt
     res$upr <- res$rho_smoothed + stats::qnorm((1 + CI.level)/2)*SEt
   }
+
+  ## rename column with correlation
+  colnames(res)[colnames(res) == "rho_smoothed"] <- "r"
 
   ## restore missing values
   if (keep.missing) {
