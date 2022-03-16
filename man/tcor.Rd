@@ -74,7 +74,19 @@ monitor the progress of the cross validation (default = \code{FALSE}).}
 evaluate the smoothed fit. If missing, \code{t} is used.}
 }
 \value{
-A dataframe of time points (\code{t}) and corresponding correlation values (\code{r}).
+A dataframe containing:
+\itemize{
+\item the time points (\code{t}).
+\item the estimates of the correlation value (\code{r}).
+}
+
+as well as, if \code{CI = TRUE}:
+\itemize{
+\item the Standard Error (\code{SE}).
+\item the lower boundary of the confidence intervals (\code{lwr}).
+\item the upper boundary of the confidence intervals (\code{upr}).
+}
+
 Some metadata are also attached to the dataframe (as attributes):
 \itemize{
 \item \code{h} the bandwidth parameter.

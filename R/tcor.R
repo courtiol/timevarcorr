@@ -56,7 +56,15 @@
 #' @param verbose a logical specifying if information should be displayed to
 #' monitor the progress of the cross validation (default = `FALSE`).
 #'
-#' @return A dataframe of time points (`t`) and corresponding correlation values (`r`).
+#' @return A dataframe containing:
+#' - the time points (`t`).
+#' - the estimates of the correlation value (`r`).
+#'
+#' as well as, if `CI = TRUE`:
+#' - the Standard Error (`SE`).
+#' - the lower boundary of the confidence intervals (`lwr`).
+#' - the upper boundary of the confidence intervals (`upr`).
+#'
 #' Some metadata are also attached to the dataframe (as attributes):
 #' - `h` the bandwidth parameter.
 #' - `CV_error` the minimal Cross Validation error when `h` selected by CV.
@@ -238,9 +246,9 @@ tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "sp
   ## compute CI if requested
   if (CI) {
 
-    SEt <- calc_SE(smoothed_obj = res_all, h = bandwidth_obj$h, AR.method = "yule-walker") ## for now fixed AR.method
-    res$lwr <- res$rho_smoothed + stats::qnorm((1 - CI.level)/2)*SEt
-    res$upr <- res$rho_smoothed + stats::qnorm((1 + CI.level)/2)*SEt
+    res$SE <- calc_SE(smoothed_obj = res_all, h = bandwidth_obj$h, AR.method = "yule-walker") ## for now fixed AR.method
+    res$lwr <- res$rho_smoothed + stats::qnorm((1 - CI.level)/2)*res$SE
+    res$upr <- res$rho_smoothed + stats::qnorm((1 + CI.level)/2)*res$SE
 
     ## fix out of range values if required
     out_of_range <- res$lwr > 1 | res$lwr < -1 | res$upr > 1 | res$upr < -1
