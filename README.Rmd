@@ -89,7 +89,7 @@ stockprice |>
   slice(1:500) |>
   summarise(tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal", CI = TRUE)) |>
   ggplot() +
-    aes(x = t, y = rho_smoothed, ymin = lwr, ymax = upr) +
+    aes(x = t, y = r, ymin = lwr, ymax = upr) +
     geom_ribbon(fill = "grey") +
     geom_line() +
     labs(title = "SP500 vs FTSE100", x = "Time", y = "Correlation") +
@@ -101,9 +101,9 @@ Alternative using `dplyr::mutate` showing gaps of observations in the series:
 ```{r example3}
 stockprice |> 
   slice(1:500) |>
-  mutate(rho_smoothed = tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal", keep.missing = TRUE)$rho_smoothed) |>
+  mutate(r = tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal", keep.missing = TRUE)$r) |>
   ggplot() +
-    aes(x = DateID, y = rho_smoothed) +
+    aes(x = DateID, y = r) +
     geom_line() +
     labs(title = "SP500 vs FTSE100", x = "Time", y = "Correlation") +
     theme_classic()

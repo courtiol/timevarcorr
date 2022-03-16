@@ -93,7 +93,7 @@ stockprice |>
   slice(1:500) |>
   summarise(tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal", CI = TRUE)) |>
   ggplot() +
-    aes(x = t, y = rho_smoothed, ymin = lwr, ymax = upr) +
+    aes(x = t, y = r, ymin = lwr, ymax = upr) +
     geom_ribbon(fill = "grey") +
     geom_line() +
     labs(title = "SP500 vs FTSE100", x = "Time", y = "Correlation") +
@@ -109,9 +109,9 @@ series:
 ``` r
 stockprice |> 
   slice(1:500) |>
-  mutate(rho_smoothed = tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal", keep.missing = TRUE)$rho_smoothed) |>
+  mutate(r = tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal", keep.missing = TRUE)$r) |>
   ggplot() +
-    aes(x = DateID, y = rho_smoothed) +
+    aes(x = DateID, y = r) +
     geom_line() +
     labs(title = "SP500 vs FTSE100", x = "Time", y = "Correlation") +
     theme_classic()
@@ -151,7 +151,7 @@ devtools::session_info()
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       Europe/Berlin
-#>  date     2022-03-15
+#>  date     2022-03-16
 #>  pandoc   2.14.0.3 @ /usr/libexec/rstudio/bin/pandoc/ (via rmarkdown)
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
@@ -226,7 +226,7 @@ devtools::session_info()
 #>  tidyr       * 1.2.0      2022-02-01 [2] CRAN (R 4.1.2)
 #>  tidyselect    1.1.1      2021-04-30 [2] CRAN (R 4.1.0)
 #>  tidyverse   * 1.3.1      2021-04-15 [2] CRAN (R 4.1.0)
-#>  timevarcorr * 0.0.0.9000 2022-03-15 [1] local
+#>  timevarcorr * 0.0.0.9001 2022-03-16 [1] local
 #>  tzdb          0.2.0      2021-10-27 [2] CRAN (R 4.1.1)
 #>  usethis       2.1.5      2021-12-09 [2] CRAN (R 4.1.2)
 #>  utf8          1.2.2      2021-07-24 [2] CRAN (R 4.1.0)
