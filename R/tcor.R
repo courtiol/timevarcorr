@@ -229,7 +229,7 @@ tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "sp
 
   ## fix out of range values if required
   out_of_range <- res$rho_smoothed > 1 | res$rho_smoothed < -1
-  if (any(out_of_range)) {
+  if (any(out_of_range, na.rm = TRUE)) {
     res$rho_smoothed[res$rho_smoothed > 1] <- 1
     res$rho_smoothed[res$rho_smoothed < -1] <- -1
     warning(paste(sum(out_of_range, na.rm = TRUE), "out of", length(out_of_range), "correlation values were estimated out of the [-1, 1] range and where thus forced to [-1, 1]. Using another kernel may avoid such problem."))
@@ -244,7 +244,7 @@ tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "sp
 
     ## fix out of range values if required
     out_of_range <- res$lwr > 1 | res$lwr < -1 | res$upr > 1 | res$upr < -1
-    if (any(out_of_range)) {
+    if (any(out_of_range, na.rm = TRUE)) {
       res$lwr[res$lwr > 1] <- 1
       res$lwr[res$lwr < -1] <- -1
       res$upr[res$upr > 1] <- 1
