@@ -57,7 +57,7 @@ is to be computed ("pearson", the default; or "spearman").}
 \item{kernel}{a character string indicating which kernel to use: "epanechnikov"
 (the default), "box", or "normal" (abbreviations also work).}
 
-\item{CI}{a logical specifying if a condidence interval should be computed or not (default = \code{FALSE}).}
+\item{CI}{a logical specifying if a confidence interval should be computed or not (default = \code{FALSE}).}
 
 \item{CI.level}{a scalar defining the level for \code{CI} (default = 0.95 for 95\% CI).}
 

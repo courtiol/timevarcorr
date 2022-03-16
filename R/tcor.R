@@ -47,7 +47,7 @@
 #' @inheritParams kern_smooth
 #' @param x a numeric vector.
 #' @param y a numeric vector of to be correlated with `x`.
-#' @param CI a logical specifying if a condidence interval should be computed or not (default = `FALSE`).
+#' @param CI a logical specifying if a confidence interval should be computed or not (default = `FALSE`).
 #' @param CI.level a scalar defining the level for `CI` (default = 0.95 for 95% CI).
 #' @param cor.method a character string indicating which correlation coefficient
 #' is to be computed ("pearson", the default; or "spearman").
