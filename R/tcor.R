@@ -296,11 +296,29 @@ tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "sp
   ## format data for output
   res <- res_all[, c("t", "rho_smoothed")]
 
+  ## fix out of range values if required
+  out_of_range <- res$rho_smoothed > 1 | res$rho_smoothed < -1
+  if (any(out_of_range)) {
+    res$rho_smoothed[res$rho_smoothed > 1] <- 1
+    res$rho_smoothed[res$rho_smoothed < -1] <- -1
+    warning(paste(sum(out_of_range, na.rm = TRUE), "out of", length(out_of_range), "correlation values were estimated out of the [-1, 1] range and where thus forced to [-1, 1]. Using another kernel may avoid such problem."))
+  }
+
   ## compute CI if requested
   if (CI) {
     SEt <- calc_SE(smoothed_obj = res_all, h = h, AR.method = "yule-walker") ## for now fixed AR.method
     res$lwr <- res$rho_smoothed + stats::qnorm((1 - CI.level)/2)*SEt
     res$upr <- res$rho_smoothed + stats::qnorm((1 + CI.level)/2)*SEt
+
+    ## fix out of range values if required
+    out_of_range <- res$lwr > 1 | res$lwr < -1 | res$upr > 1 | res$upr < -1
+    if (any(out_of_range)) {
+      res$lwr[res$lwr > 1] <- 1
+      res$lwr[res$lwr < -1] <- -1
+      res$upr[res$upr > 1] <- 1
+      res$upr[res$upr < -1] <- -1
+      warning(paste(sum(out_of_range, na.rm = TRUE), "out of", length(out_of_range), "CI boundary values were estimated out of the [-1, 1] range and where thus forced to [-1, 1] Using another kernel may avoid such problem."))
+    }
   }
 
   ## rename column with correlation

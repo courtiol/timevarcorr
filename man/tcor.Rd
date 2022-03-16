@@ -63,7 +63,7 @@ monitor the progress of the cross validation (default = \code{FALSE}).}
 evaluate the smoothed fit. If missing, \code{t} is used.}
 }
 \value{
-A dataframe of time points (\code{t}) and corresponding correlation values (\code{rho_smoothed}).
+A dataframe of time points (\code{t}) and corresponding correlation values (\code{r}).
 Some metadata are also attached to the dataframe (as attributes):
 \itemize{
 \item \code{h} the bandwidth parameter.
@@ -165,7 +165,7 @@ abline(h = rho, col = "green", lty = 2, lwd = 2)
 
 res_withCI <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, h = 200, CI = TRUE))
 with(res_withCI, {
-     plot(rho_smoothed ~ t, type = "l", ylab = "Cor", xlab = "Time", las = 1, ylim = c(0, 1))
+     plot(r ~ t, type = "l", ylab = "Cor", xlab = "Time", las = 1, ylim = c(0, 1))
      points(lwr ~ t, type = "l", lty = 2)
      points(upr ~ t, type = "l", lty = 2)})
 
