@@ -123,6 +123,13 @@ example3 <- with(d, tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal", 
 equality_test(example3, t1 = "2000-05-02", t2 = "2001-05-02")
 ```
 
+Or you can test if specific time points (or all) differ from a reference value:
+
+```{r example6}
+ref_test(example3, t = c("2000-05-02", "2001-05-02"), r_ref = 0.5)
+```
+
+
 
 ## Devel corner
 

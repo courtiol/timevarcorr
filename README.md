@@ -142,8 +142,23 @@ example3 <- with(d, tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal", 
 #> You may set `nb.cores` to a number higher than 1 for faster computation.
 #> [1] "h selected using LOO-CV = 60.9"
 equality_test(example3, t1 = "2000-05-02", t2 = "2001-05-02")
-#>     delta_r SE_delta_r   T_stat df_student pv_student
-#> 1 0.1367507  0.1224749 1.116561        910  0.2644768
+#>           t1        r1         t2        r2   delta_r SE_delta_r   T_stat  df
+#> 1 2000-05-02 0.4354486 2001-05-02 0.5721993 0.1367507  0.1224749 1.116561 910
+#>           p
+#> 1 0.2644768
+```
+
+Or you can test if specific time points (or all) differ from a reference
+value:
+
+``` r
+ref_test(example3, t = c("2000-05-02", "2001-05-02"), r_ref = 0.5)
+#>            t         r r_ref     delta_r SE_delta_r     T_stat  df         p
+#> 1 2000-05-02 0.4354486   0.5 -0.06455140 0.10082726 -0.6402177 910 0.5221922
+#> 2 2001-05-02 0.5721993   0.5  0.07219934 0.06952677  1.0384394 910 0.2993414
+#>   p_adjustment
+#> 1         none
+#> 2         none
 ```
 
 ## Devel corner
@@ -238,7 +253,7 @@ devtools::session_info()
 #>  tidyr       * 1.2.0      2022-02-01 [2] CRAN (R 4.1.2)
 #>  tidyselect    1.1.1      2021-04-30 [2] CRAN (R 4.1.0)
 #>  tidyverse   * 1.3.1      2021-04-15 [2] CRAN (R 4.1.0)
-#>  timevarcorr * 0.0.0.9003 2022-03-17 [1] local
+#>  timevarcorr * 0.0.0.9004 2022-03-17 [1] local
 #>  tzdb          0.2.0      2021-10-27 [2] CRAN (R 4.1.1)
 #>  usethis       2.1.5      2021-12-09 [2] CRAN (R 4.1.2)
 #>  utf8          1.2.2      2021-07-24 [2] CRAN (R 4.1.0)
