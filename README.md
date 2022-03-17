@@ -128,7 +128,7 @@ correlation coefficient:
 ``` r
 example2 <- with(d, tcor(x = SP500, y = FTSE100, t = DateID,
                  cor.method = "spearman", kernel = "box", h = 10))
-plot(example2, type = "l", las = 1)
+plot(example2, type = "l")
 ```
 
 <img src="man/figures/README-example4-1.png" width="70%" style="display: block; margin: auto;" />

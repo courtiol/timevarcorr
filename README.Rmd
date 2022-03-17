@@ -113,7 +113,7 @@ You can do more. For example, you can use other kernels, fix the bandwidth manua
 ```{r example4}
 example2 <- with(d, tcor(x = SP500, y = FTSE100, t = DateID,
                  cor.method = "spearman", kernel = "box", h = 10))
-plot(example2, type = "l", las = 1)
+plot(example2, type = "l")
 ```
 
 You can also test the difference in correlation coefficents between two time points:
