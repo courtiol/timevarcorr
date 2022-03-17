@@ -95,12 +95,12 @@ equality_test <- function(tcor_obj, t1 = 1, t2 = nrow(tcor_obj), test = c("stude
 
     df <- 2*nrow(tcor_obj[!is.na(tcor_obj$r), ]) - 2
     pv_student <- 2*stats::pt(abs(Tstat), df = df, lower.tail = FALSE)
-    return(data.frame(t1 = t1_date, t2 = t2_date, delta_r = delta_r, SE_delta_r = SE_delta_r, T_stat = Tstat, df = df, p = pv_student))
+    return(data.frame(t1 = t1_date, r1 = tcor_obj$r[t1], t2 = t2_date, r2 = tcor_obj$r[t2], delta_r = delta_r, SE_delta_r = SE_delta_r, T_stat = Tstat, df = df, p = pv_student))
 
   } else if (test == "chi2") {
 
     pv_chi2 <- stats::pchisq(Tstat^2, df = 1, lower.tail = FALSE)
-    return(data.frame(t1 = t1_date, t2 = t2_date, delta_r = delta_r, SE_delta_r = SE_delta_r, chi2_stat = Tstat^2, df = 1, p = pv_chi2))
+    return(data.frame(t1 = t1_date, r1 = tcor_obj$r[t1], t2 = t2_date, r2 = tcor_obj$r[t2], delta_r = delta_r, SE_delta_r = SE_delta_r, chi2_stat = Tstat^2, df = 1, p = pv_chi2))
 
   }
   stop("`test` unknown.")
@@ -204,19 +204,18 @@ ref_test <- function(tcor_obj, t = tcor_obj$t, r_ref = 0, test = c("student", "c
     pv_student <- 2*stats::pt(abs(Tstat), df = df, lower.tail = FALSE)
     pv_student_corrected <- stats::p.adjust(pv_student, method = p.adjust.methods)
 
-    d <- data.frame(t_index = t, delta_r = delta_r, SE_delta_r = SE_delta_r, T_stat = Tstat, df = df, p = pv_student_corrected, p_adjustment = p.adjust.methods)
+    d <- data.frame(r = tcor_obj$r[t], r_ref = r_ref, t_index = t, delta_r = delta_r, SE_delta_r = SE_delta_r, T_stat = Tstat, df = df, p = pv_student_corrected, p_adjustment = p.adjust.methods)
     d <- merge(d, data.frame(t_index = t_index_full, t = t_ori), all.y = TRUE)
-    return(d[, -1])
+    return(cbind(t = d$t, d[, !colnames(d) %in% c("t", "t_index")]))
 
   } else if (test == "chi2") {
 
     pv_chi2 <- stats::pchisq(Tstat^2, df = 1, lower.tail = FALSE)
     pv_chi2_corrected <- stats::p.adjust(pv_chi2, method = p.adjust.methods)
 
-    d <- data.frame(t_index = t, delta_r = delta_r, SE_delta_r = SE_delta_r, chi2_stat = Tstat^2, df = 1, p = pv_chi2_corrected, p_adjustment = p.adjust.methods)
+    d <- data.frame(r = tcor_obj$r[t], r_ref = r_ref, t_index = t, delta_r = delta_r, SE_delta_r = SE_delta_r, chi2_stat = Tstat^2, df = 1, p = pv_chi2_corrected, p_adjustment = p.adjust.methods)
     d <- merge(d, data.frame(t_index = t_index_full, t = t_ori), all.y = TRUE)
-    return(d[, -1])
-
+    return(cbind(t = d$t, d[, !colnames(d) %in% c("t", "t_index")]))
   }
   stop("`test` unknown.")
 }
