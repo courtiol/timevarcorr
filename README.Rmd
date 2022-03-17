@@ -26,9 +26,7 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 status](https://www.r-pkg.org/badges/version/fw)](https://CRAN.R-project.org/package=timevarcorr)
 <!-- badges: end -->
 
-This R package is at a very early stage of development.
-Some key features are missing (e.g. tests) and it has not been thoroughly tested.
-So, please only use at your own risk.
+This R package is at an early stage of development. So, please only use at your own risk.
 
 It aims at computing the correlation between 2 time-series following the method described in the following paper:
 
@@ -70,14 +68,14 @@ The main function of this package is called `tcor` and its documentation is avai
 help(tcor, package = timevarcorr)
 ```
 
-Simple example using base-R syntax:
+Very simple example using base-R syntax:
 
 ```{r example}
 library(timevarcorr)
 
 d <- stockprice[1:500, ]
-test <- with(d, tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal"))
-plot(test, type = "l", ylab = "Correlation", xlab = "Time", main = "SP500 vs FTSE100", las = 1)
+example1 <- with(d, tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal"))
+plot(example1, type = "l")
 ```
 
 Same example using tidyverse syntax (with confidence interval):
@@ -85,8 +83,7 @@ Same example using tidyverse syntax (with confidence interval):
 ```{r example2, message=FALSE}
 library(tidyverse)
 
-stockprice |> 
-  slice(1:500) |>
+d |> 
   summarise(tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal", CI = TRUE)) |>
   ggplot() +
     aes(x = t, y = r, ymin = lwr, ymax = upr) +
@@ -96,14 +93,14 @@ stockprice |>
     theme_classic()
 ```
 
-Alternative using `dplyr::mutate` showing gaps of observations in the series:
+Same example showing gaps of observations in the time series:
 
 ```{r example3}
-stockprice |> 
-  slice(1:500) |>
-  mutate(r = tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal", keep.missing = TRUE)$r) |>
+d |> 
+  summarise(tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal", CI = TRUE, keep.missing = TRUE)) |>
   ggplot() +
-    aes(x = DateID, y = r) +
+    aes(x = t, y = r, ymin = lwr, ymax = upr) +
+    geom_ribbon(fill = "grey") +
     geom_line() +
     labs(title = "SP500 vs FTSE100", x = "Time", y = "Correlation") +
     theme_classic()
@@ -112,9 +109,16 @@ stockprice |>
 You can do more. For example, you can use other kernels, fix the bandwidth manually, or use the Spearman's rather than the Pearson's correlation coefficient:
 
 ```{r example4}
-test2 <- with(d, tcor(x = SP500, y = FTSE100, t = DateID,
-                      cor.method = "spearman", kernel = "box", h = 10))
-plot(test2, type = "l", ylab = "Correlation (Spearman)", xlab = "Time", las = 1)
+example2 <- with(d, tcor(x = SP500, y = FTSE100, t = DateID,
+                 cor.method = "spearman", kernel = "box", h = 10))
+plot(example2, type = "l", las = 1)
+```
+
+You can also test the difference in correlation coefficents between two time points:
+
+```{r example5}
+example3 <- with(d, tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal", CI = TRUE))
+equality_test(example3, t1 = "2000-05-02", t2 = "2001-05-02")
 ```
 
 

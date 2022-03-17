@@ -11,9 +11,8 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 status](https://www.r-pkg.org/badges/version/fw)](https://CRAN.R-project.org/package=timevarcorr)
 <!-- badges: end -->
 
-This R package is at a very early stage of development. Some key
-features are missing (e.g. tests) and it has not been thoroughly tested.
-So, please only use at your own risk.
+This R package is at an early stage of development. So, please only use
+at your own risk.
 
 It aims at computing the correlation between 2 time-series following the
 method described in the following paper:
@@ -68,18 +67,18 @@ is available here:
 help(tcor, package = timevarcorr)
 ```
 
-Simple example using base-R syntax:
+Very simple example using base-R syntax:
 
 ``` r
 library(timevarcorr)
 #> timevarcorr loaded; type ?tcor for help on this package.
 
 d <- stockprice[1:500, ]
-test <- with(d, tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal"))
+example1 <- with(d, tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal"))
 #> 
 #> You may set `nb.cores` to a number higher than 1 for faster computation.
 #> [1] "h selected using LOO-CV = 60.9"
-plot(test, type = "l", ylab = "Correlation", xlab = "Time", main = "SP500 vs FTSE100", las = 1)
+plot(example1, type = "l")
 ```
 
 <img src="man/figures/README-example-1.png" width="70%" style="display: block; margin: auto;" />
@@ -89,8 +88,7 @@ Same example using tidyverse syntax (with confidence interval):
 ``` r
 library(tidyverse)
 
-stockprice |> 
-  slice(1:500) |>
+d |> 
   summarise(tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal", CI = TRUE)) |>
   ggplot() +
     aes(x = t, y = r, ymin = lwr, ymax = upr) +
@@ -103,15 +101,14 @@ stockprice |>
 
 <img src="man/figures/README-example2-1.png" width="70%" style="display: block; margin: auto;" />
 
-Alternative using `dplyr::mutate` showing gaps of observations in the
-series:
+Same example showing gaps of observations in the time series:
 
 ``` r
-stockprice |> 
-  slice(1:500) |>
-  mutate(r = tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal", keep.missing = TRUE)$r) |>
+d |> 
+  summarise(tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal", CI = TRUE, keep.missing = TRUE)) |>
   ggplot() +
-    aes(x = DateID, y = r) +
+    aes(x = t, y = r, ymin = lwr, ymax = upr) +
+    geom_ribbon(fill = "grey") +
     geom_line() +
     labs(title = "SP500 vs FTSE100", x = "Time", y = "Correlation") +
     theme_classic()
@@ -127,12 +124,25 @@ bandwidth manually, or use the Spearman’s rather than the Pearson’s
 correlation coefficient:
 
 ``` r
-test2 <- with(d, tcor(x = SP500, y = FTSE100, t = DateID,
-                      cor.method = "spearman", kernel = "box", h = 10))
-plot(test2, type = "l", ylab = "Correlation (Spearman)", xlab = "Time", las = 1)
+example2 <- with(d, tcor(x = SP500, y = FTSE100, t = DateID,
+                 cor.method = "spearman", kernel = "box", h = 10))
+plot(example2, type = "l", las = 1)
 ```
 
 <img src="man/figures/README-example4-1.png" width="70%" style="display: block; margin: auto;" />
+
+You can also test the difference in correlation coefficents between two
+time points:
+
+``` r
+example3 <- with(d, tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal", CI = TRUE))
+#> 
+#> You may set `nb.cores` to a number higher than 1 for faster computation.
+#> [1] "h selected using LOO-CV = 60.9"
+equality_test(example3, t1 = "2000-05-02", t2 = "2001-05-02")
+#>     delta_r SE_delta_r   T_stat df_student pv_student
+#> 1 0.1367507  0.1224749 1.116561        910  0.2644768
+```
 
 ## Devel corner
 
@@ -151,7 +161,7 @@ devtools::session_info()
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       Europe/Berlin
-#>  date     2022-03-16
+#>  date     2022-03-17
 #>  pandoc   2.14.0.3 @ /usr/libexec/rstudio/bin/pandoc/ (via rmarkdown)
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
@@ -226,7 +236,7 @@ devtools::session_info()
 #>  tidyr       * 1.2.0      2022-02-01 [2] CRAN (R 4.1.2)
 #>  tidyselect    1.1.1      2021-04-30 [2] CRAN (R 4.1.0)
 #>  tidyverse   * 1.3.1      2021-04-15 [2] CRAN (R 4.1.0)
-#>  timevarcorr * 0.0.0.9002 2022-03-16 [1] local
+#>  timevarcorr * 0.0.0.9003 2022-03-17 [1] local
 #>  tzdb          0.2.0      2021-10-27 [2] CRAN (R 4.1.1)
 #>  usethis       2.1.5      2021-12-09 [2] CRAN (R 4.1.2)
 #>  utf8          1.2.2      2021-07-24 [2] CRAN (R 4.1.0)
