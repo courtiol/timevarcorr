@@ -41,7 +41,9 @@
 #' (see **Examples**).
 #'
 #' - **Confidence interval**: if `CI` is set to `TRUE`, a confidence interval is
-#' calculated as described in Choi & Shin, 2021. This involves multiple internal
+#' calculated as described in Choi & Shin, 2021. This is also necessary for using
+#' [`equality_test`] to test differences between correlations at two time points.
+#' The computation of the confidence intervals involves multiple internal
 #' functions (see [`CI`] for details).
 #'
 #' @inheritParams kern_smooth
@@ -79,7 +81,7 @@
 #' Choi, JE., Shin, D.W. Nonparametric estimation of time varying correlation coefficient.
 #' J. Korean Stat. Soc. 50, 333–353 (2021). https://doi.org/10.1007/s42952-020-00073-6
 #'
-#' @seealso [`kern_smooth`], [`CI`]
+#' @seealso [`equality_test`], [`kern_smooth`], [`CI`]
 #'
 #' @importFrom parallel mclapply
 #'
@@ -270,6 +272,8 @@ tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "sp
   }
 
   ## store other useful info as attributes
+  attr(res, "call") <- match.call()
+  attr(res, "CI") <- CI
   attr(res, "h") <- bandwidth_obj$h
   attr(res, "CV_error") <- bandwidth_obj$CV_error
   attr(res, "h_selection") <- bandwidth_obj$h_selection

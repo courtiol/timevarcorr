@@ -90,7 +90,7 @@ The function returns a \code{t} x 5 matrix storing the residuals.
 \item \code{calc_SE}: Internal function computing \verb{se(\\hat\{rho\}_t(h))}.
 
 The standard deviation of the time-varying correlation (\verb{se(\\hat\{rho\}_t(h))}) is defined in eq. 8 from Choi & Shin, 2021.
-It depends on \verb{$D_\{Lt\}$}, \verb{$D_\{Mt\}$} & \verb{$D_\{Ut\}$}, themselve defined in Choi & Shin, 2021, p 337 & 339.
+It depends on \verb{$D_\{Lt\}$}, \verb{$D_\{Mt\}$} & \verb{$D_\{Ut\}$}, themselves defined in Choi & Shin, 2021, p 337 & 339.
 The \verb{$D_\{Xt\}$} terms are all computed within the function since they all rely on the same components.
 The function returns a vector of length \code{t}.
 }}

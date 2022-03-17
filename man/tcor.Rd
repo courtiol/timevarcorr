@@ -136,7 +136,9 @@ on parallel processing also implies that you call \code{options("mc.cores" = XX)
 beforehand, replacing \code{XX} by the relevant number of CPU cores you want to use
 (see \strong{Examples}).
 \item \strong{Confidence interval}: if \code{CI} is set to \code{TRUE}, a confidence interval is
-calculated as described in Choi & Shin, 2021. This involves multiple internal
+calculated as described in Choi & Shin, 2021. This is also necessary for using
+\code{\link{equality_test}} to test differences between correlations at two time points.
+The computation of the confidence intervals involves multiple internal
 functions (see \code{\link{CI}} for details).
 }
 }
@@ -304,5 +306,5 @@ Choi, JE., Shin, D.W. Nonparametric estimation of time varying correlation coeff
 J. Korean Stat. Soc. 50, 333–353 (2021). https://doi.org/10.1007/s42952-020-00073-6
 }
 \seealso{
-\code{\link{kern_smooth}}, \code{\link{CI}}
+\code{\link{equality_test}}, \code{\link{kern_smooth}}, \code{\link{CI}}
 }
