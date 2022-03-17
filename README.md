@@ -89,7 +89,8 @@ Same example using tidyverse syntax (with confidence interval):
 library(tidyverse)
 
 d |> 
-  summarise(tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal", CI = TRUE)) |>
+  summarise(tcor(x = SP500, y = FTSE100, t = DateID,
+                 kernel = "normal", CI = TRUE)) |>
   ggplot() +
     aes(x = t, y = r, ymin = lwr, ymax = upr) +
     geom_ribbon(fill = "grey") +
@@ -105,7 +106,8 @@ Same example showing gaps of observations in the time series:
 
 ``` r
 d |> 
-  summarise(tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal", CI = TRUE, keep.missing = TRUE)) |>
+  summarise(tcor(x = SP500, y = FTSE100, t = DateID,
+                 kernel = "normal", CI = TRUE, keep.missing = TRUE)) |>
   ggplot() +
     aes(x = t, y = r, ymin = lwr, ymax = upr) +
     geom_ribbon(fill = "grey") +
