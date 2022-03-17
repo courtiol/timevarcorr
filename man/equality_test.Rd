@@ -32,6 +32,8 @@ Two different test statistics can be used, one is asymptotically Student-t distr
 In practice, it seems to give very similar results.
 }
 \examples{
+## Simple example
+
 res <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, h = 50, CI = TRUE))
 equality_test(res)
 
@@ -40,11 +42,22 @@ equality_test(res)
 equality_test(res, test = "chi2")
 
 
-## time point can be dates or indices (mixing possible)
+## Time point can be dates or indices (mixing possible) but output as in input data
 
 equality_test(res, t1 = "2000-04-04", t2 = 1000)
+res[1000, "t"] ## t2 matches with date in `res`
+stockprice[1000, "DateID"] ## t2 does not match with date `stockprice` due to missing values
+
+
+## It could be useful to use `keep.missing = TRUE` for index to match original data despite NAs
+
+res2 <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID,
+                              h = 50, CI = TRUE, keep.missing = TRUE))
+equality_test(res2, t1 = "2000-04-04", t2 = 1000)
+res[1000, "t"] ## t2 matches with date in `res`
+stockprice[1000, "DateID"] ## t2 does match with date `stockprice` despite missing values
 
 }
 \seealso{
-\code{\link{tcor}}
+\code{\link{ref_test}}, \code{\link{tcor}}
 }
