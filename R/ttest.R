@@ -47,14 +47,21 @@ equality_test <- function(tcor_obj, t1 = 1, t2 = nrow(tcor_obj), test = c("stude
   if (t1 != 1 || t2 != nrow(tcor_obj)) {
     if (!is.numeric(t1)) {
       t1 <- which(tcor_obj$t == t1)
+      if (length(t1) == 0) stop("`t1` not found in `tcor_obj`.")
     }
     if (!is.numeric(t2)) {
       t2 <- which(tcor_obj$t == t2)
+      if (length(t2) == 0) stop("`t2` not found in `tcor_obj`.")
     }
   }
 
   ## compute t-test statistics
   delta_r <- diff(tcor_obj$r[c(t1, t2)])
+
+  if (is.na(delta_r)) {
+    stop("`t1` and/or `t2` correspond to time points where `r` is not defined. Please check `tcor_obj` and adjust `t1` and/or `t2` before testing.")
+  }
+
   SE_delta_r <- sqrt(sum(tcor_obj$SE[c(t1, t2)]^2))
   Tstat <- delta_r/SE_delta_r
 
