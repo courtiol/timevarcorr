@@ -343,13 +343,12 @@ calc_rho <- function(x, y, t = seq_along(x), t.for.pred = t, h, cor.method = c("
 
   ## we smooth each component (i.e. each column in the matrix)
   x_smoothed <- kern_smooth(x = x, t = t, h = h, t.for.pred = t.for.pred,
-                            kernel = kernel, param_smoother = param_smoother) ## separate call to retrieve t once (and x)
+                            kernel = kernel, param_smoother = param_smoother, output = "list") ## separate call to retrieve t once (and x)
   other_smoothed_list <- apply(U[, -1], 2L, function(v) {
-    kern_smooth(x = v, t = t, h = h, t.for.pred = t.for.pred, kernel = kernel, param_smoother = param_smoother)$x
+    kern_smooth(x = v, t = t, h = h, t.for.pred = t.for.pred, kernel = kernel, param_smoother = param_smoother, output = "list")$x
   }, simplify = FALSE) ## combine call for everything else
-  other_smoothed <- do.call("cbind", other_smoothed_list)
 
-  smoothed <- cbind(x_smoothed, as.data.frame(other_smoothed)) ## don't coerce into matrix -> t can be non numeric
+  smoothed <- c(x_smoothed, other_smoothed_list) ## output as list, in any case: not to be coerced into matrix -> t can be a Date
 
   ## we compute the time varying correlation coefficient
   smoothed$sd_x <- sqrt(smoothed$x2 - smoothed$x^2)
@@ -357,10 +356,10 @@ calc_rho <- function(x, y, t = seq_along(x), t.for.pred = t, h, cor.method = c("
   smoothed$rho <- (smoothed$xy - smoothed$x * smoothed$y) / (smoothed$sd_x * smoothed$sd_y)
 
   ## we rename the components so it is clear they are smoothed
-  colnames(smoothed) <- c(colnames(smoothed)[1], paste0(colnames(smoothed)[-1], "_smoothed"))
+  names(smoothed) <- c(names(smoothed)[1], paste0(names(smoothed)[-1], "_smoothed"))
 
   ## we add original (non-smoothed) components:
   U_at_t_for_pred <- U[match(t.for.pred, t), , drop = FALSE]
-  cbind(U_at_t_for_pred, smoothed)
+  cbind(U_at_t_for_pred, as.data.frame(smoothed))
 
 }

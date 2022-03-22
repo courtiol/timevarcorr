@@ -10,7 +10,8 @@ kern_smooth(
   h,
   t.for.pred = t,
   kernel = c("epanechnikov", "box", "normal"),
-  param_smoother = list()
+  param_smoother = list(),
+  output = c("dataframe", "list")
 )
 }
 \arguments{
@@ -29,6 +30,9 @@ evaluate the smoothed fit. If missing, \code{t} is used.}
 
 \item{param_smoother}{a list of additional parameters to provide to the
 internal smoothing function (see \strong{Details}).}
+
+\item{output}{a character string indicating if the output should be a "dataframe"
+(default) or a list (for faster computation when the function is called repeatedly).}
 }
 \value{
 a dataframe of time points (\code{t.for.pred}) and corresponding fitted

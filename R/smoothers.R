@@ -19,6 +19,8 @@
 #'    (the default), "box", or "normal" (abbreviations also work).
 #' @param param_smoother a list of additional parameters to provide to the
 #'   internal smoothing function (see **Details**).
+#' @param output a character string indicating if the output should be a "dataframe"
+#'   (default) or a list (for faster computation when the function is called repeatedly).
 #'
 #' @return a dataframe of time points (`t.for.pred`) and corresponding fitted
 #'   values.
@@ -80,10 +82,13 @@
 #'        legend = c("epanechnikov", "box", "normal"), bty = "n", title = "Kernel method")
 #'
 kern_smooth <- function(x, t = seq_along(x), h, t.for.pred = t,
-                        kernel = c("epanechnikov", "box", "normal"), param_smoother = list()) {
+                        kernel = c("epanechnikov", "box", "normal"), param_smoother = list(), output = c("dataframe", "list")) {
 
   ## method selection
   kernel <- match.arg(kernel)
+
+  ## output selection
+  output <- match.arg(output)
 
   ## handling missing values
   xx <- x[!is.na(x)]
@@ -104,7 +109,11 @@ kern_smooth <- function(x, t = seq_along(x), h, t.for.pred = t,
     original_order <- order(t.for.pred)
     new.t <- res$x.out[original_order]
     class(new.t) <- class(t) # restore class, otherwise lost
-    return(data.frame(t = new.t, x = res$est[original_order]))
+    if (output == "list") {
+      return(list(t = new.t, x = res$est[original_order]))
+    } else {
+      return(data.frame(t = new.t, x = res$est[original_order]))
+    }
   }
 
   stop("Argument `kernel` unknown.")
