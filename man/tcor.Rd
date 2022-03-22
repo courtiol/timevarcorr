@@ -242,8 +242,8 @@ res_hauto_epanechCI <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID,
                                              CI = TRUE, verbose = TRUE))
 plot(res_hauto_epanechCI[, 1:2], type = "l", col = "red",
      ylab = "Cor", xlab = "Time", las = 1, ylim = c(0, 1))
-points(res_hauto_epanechCI[, c(1, 3)], type = "l", col = "red", lty = 2)
 points(res_hauto_epanechCI[, c(1, 4)], type = "l", col = "red", lty = 2)
+points(res_hauto_epanechCI[, c(1, 5)], type = "l", col = "red", lty = 2)
 
 
 ## Comparison of the 3 alternative kernels under same bandwidth
