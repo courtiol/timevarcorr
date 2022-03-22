@@ -116,7 +116,7 @@ example2 <- with(d, tcor(x = SP500, y = FTSE100, t = DateID,
 plot(example2, type = "l")
 ```
 
-You can also test the difference in correlation coefficents between two time points:
+You can also test the difference in correlation coefficients between two time points:
 
 ```{r example5}
 example3 <- with(d, tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal", CI = TRUE))

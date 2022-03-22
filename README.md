@@ -137,7 +137,7 @@ plot(example2, type = "l")
 
 <img src="man/figures/README-example4-1.png" width="70%" style="display: block; margin: auto;" />
 
-You can also test the difference in correlation coefficents between two
+You can also test the difference in correlation coefficients between two
 time points:
 
 ``` r
