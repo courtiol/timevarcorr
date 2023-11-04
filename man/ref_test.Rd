@@ -2,7 +2,7 @@
 % Please edit documentation in R/ttest.R
 \name{ref_test}
 \alias{ref_test}
-\title{Test difference between correlation coefficient estimates and a value of reference.}
+\title{Test difference between correlation coefficient estimates and a value of reference}
 \usage{
 ref_test(
   tcor_obj,

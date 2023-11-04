@@ -107,7 +107,7 @@ equality_test <- function(tcor_obj, t1 = 1, t2 = nrow(tcor_obj), test = c("stude
 }
 
 
-#' Test difference between correlation coefficient estimates and a value of reference.
+#' Test difference between correlation coefficient estimates and a value of reference
 #'
 #' This function tests whether smoothed correlation values are equal (H0) or not to a reference value (default = `0`).
 #' The test is not described in Choi & Shin, 2021, but it is based on the idea behind [`equality_test`].

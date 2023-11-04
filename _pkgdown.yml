@@ -2,3 +2,39 @@ url: https://courtiol.github.io/timevarcorr/
 template:
   bootstrap: 5
 
+reference:
+- title: Functions
+- subtitle: "*for the computation of the time-varrying correlation"
+  contents:
+  - tcor
+  - calc_rho
+  - select_h
+
+- subtitle: "*for non-parametric smoothing"
+  contents:
+  - kern_smooth
+
+- subtitle: "*for statistical tests on time-varrying correlations"
+  contents:
+  - equality_test
+  - ref_test
+
+- subtitle: "*for the computation of the confidence intervals"
+  contents:
+  - calc_H
+  - calc_e
+  - calc_Gamma
+  - calc_GammaINF
+  - calc_L_And
+  - calc_D
+  - calc_SE
+
+- subtitle: "*miscellaneous"
+  contents:
+  - .onAttach
+
+- title: Data
+  desc: >
+    A dataset to illustrate functionalities:
+  contents:
+  - stockprice

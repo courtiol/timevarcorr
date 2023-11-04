@@ -3,7 +3,7 @@
 \docType{data}
 \name{stockprice}
 \alias{stockprice}
-\title{Stockprice}
+\title{Daily Closing Prices of Major European Stock Indices, April 2000--December 2017}
 \format{
 A data frame with 4618 rows and 7 variables:
 \describe{

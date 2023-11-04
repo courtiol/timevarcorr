@@ -1,4 +1,4 @@
-#' Stockprice
+#' Daily Closing Prices of Major European Stock Indices, April 2000--December 2017
 #'
 #' A dataset containing the stockmarket returns between 2000-04-03 and 2017-12-05.
 #' This dataset is very close to the one used by Choi & Shin 2021, although not
