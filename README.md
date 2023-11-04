@@ -35,6 +35,12 @@ correlation coefficient.
 
 ## Installation
 
+You can install the CRAN version of **timevarcorr** with:
+
+``` r
+install.packages("timevarcorr")
+```
+
 You can install the development version of **timevarcorr** from GitHub
 with:
 
@@ -256,7 +262,7 @@ devtools::session_info()
 #>  xtable        1.8-4      2019-04-21 [4] RSPM (R 4.2.0)
 #>  yaml          2.3.7      2023-01-23 [4] RSPM (R 4.2.0)
 #> 
-#>  [1] /tmp/RtmpkQQ6YK/temp_libpathd403f11bb7002
+#>  [1] /tmp/RtmpkQQ6YK/temp_libpathd403f75c09a52
 #>  [2] /home/courtiol/R/x86_64-pc-linux-gnu-library/4.3
 #>  [3] /usr/local/lib/R/site-library
 #>  [4] /usr/lib/R/site-library

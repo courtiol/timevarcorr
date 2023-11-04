@@ -42,9 +42,15 @@ We also implemented the possibility to use Epanechnikov, Gaussian, or box kernel
 
 ## Installation
 
+You can install the CRAN version of **timevarcorr** with:
+
+```{r CRAN_install, eval=FALSE}
+install.packages("timevarcorr")
+```
+
 You can install the development version of **timevarcorr** from GitHub with:
 
-``` r
+```{r GH_install, eval=FALSE}
 # install.packages("remotes") ## uncomment and run if you don't have this package installed
 remotes::install_github("courtiol/timevarcorr")
 ```
