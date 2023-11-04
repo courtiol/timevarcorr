@@ -22,4 +22,5 @@ LazyData: true
 Suggests: 
     spelling
 Language: en-US
-URL: https://courtiol.github.io/timevarcorr/
+URL: https://courtiol.github.io/timevarcorr/, https://github.com/courtiol/timevarcorr
+BugReports: https://github.com/courtiol/timevarcorr/issues
