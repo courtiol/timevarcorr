@@ -6,7 +6,7 @@
 <!-- badges: start -->
 
 [![CRAN
-status](https://www.r-pkg.org/badges/version/fw)](https://CRAN.R-project.org/package=timevarcorr)
+status](https://www.r-pkg.org/badges/version/timevarcorr)](https://CRAN.R-project.org/package=timevarcorr)
 [![R-CMD-check](https://github.com/courtiol/timevarcorr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/courtiol/timevarcorr/actions/workflows/R-CMD-check.yaml)
 [![test-coverage](https://github.com/courtiol/timevarcorr/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/courtiol/timevarcorr/actions/workflows/test-coverage.yaml)
 [![Lifecycle:
@@ -262,7 +262,7 @@ devtools::session_info()
 #>  xtable        1.8-4      2019-04-21 [4] RSPM (R 4.2.0)
 #>  yaml          2.3.7      2023-01-23 [4] RSPM (R 4.2.0)
 #> 
-#>  [1] /tmp/RtmpkQQ6YK/temp_libpathd403f75c09a52
+#>  [1] /tmp/RtmpkQQ6YK/temp_libpathd403f54937460
 #>  [2] /home/courtiol/R/x86_64-pc-linux-gnu-library/4.3
 #>  [3] /usr/local/lib/R/site-library
 #>  [4] /usr/lib/R/site-library

@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![CRAN
-status](https://www.r-pkg.org/badges/version/fw)](https://CRAN.R-project.org/package=timevarcorr)
+status](https://www.r-pkg.org/badges/version/timevarcorr)](https://CRAN.R-project.org/package=timevarcorr)
 [![R-CMD-check](https://github.com/courtiol/timevarcorr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/courtiol/timevarcorr/actions/workflows/R-CMD-check.yaml)
 [![test-coverage](https://github.com/courtiol/timevarcorr/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/courtiol/timevarcorr/actions/workflows/test-coverage.yaml)
 [![Lifecycle:
