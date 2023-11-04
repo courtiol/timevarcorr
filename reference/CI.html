@@ -131,8 +131,8 @@ The function returns a scalar which should be used as an input for <code>L</code
 <p><code>$D_t$</code> is a component needed to compute confidence intervals;
 it is defined in Choi &amp; Shin, 2021, p 338.
 The function returns a <code>t</code> x 5 matrix storing the residuals.</p></li>
-<li><p><code>calc_SE()</code>: Internal function computing <code>se(\hat{rho}_t(h))</code>.</p>
-<p>The standard deviation of the time-varying correlation (<code>se(\hat{rho}_t(h))</code>) is defined in eq. 8 from Choi &amp; Shin, 2021.
+<li><p><code>calc_SE()</code>: Internal function computing <code>$se(\hat{rho}_t(h))$</code>.</p>
+<p>The standard deviation of the time-varying correlation (<code>$se(\hat{rho}_t(h))$</code>) is defined in eq. 8 from Choi &amp; Shin, 2021.
 It depends on <code>$D_{Lt}$</code>, <code>$D_{Mt}$</code> &amp; <code>$D_{Ut}$</code>, themselves defined in Choi &amp; Shin, 2021, p 337 &amp; 339.
 The <code>$D_{Xt}$</code> terms are all computed within the function since they all rely on the same components.
 The function returns a vector of length <code>t</code>.</p></li>
@@ -36240,7 +36240,7 @@ Econometrica: Journal of the Econometric Society, 817-858 (1991).</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [6,]  -399.9275  -994.4519 10.008519  1.313051  3647.990</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## Computing `se(\hat{rho}_t(h))`</span></span></span>
+<span class="r-in"><span><span class="co">## Computing `$se(\hat{rho}_t(h))$`</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span><span class="fu">calc_SE</span><span class="op">(</span>smoothed_obj <span class="op">=</span> <span class="va">rho_obj</span>, h <span class="op">=</span> <span class="fl">50</span><span class="op">)</span> <span class="co">## ~ 10 sec to run</span></span></span>
