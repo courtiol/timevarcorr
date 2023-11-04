@@ -1,7 +1,9 @@
 #' @describeIn tcor Internal function selecting the optimal bandwidth parameter `h`.
-#' @order 3
 #'
 #' See **Bandwidth selection** for details.
+#'
+#' @order 3
+#'
 #'
 #' @export
 #'

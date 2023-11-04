@@ -17,12 +17,8 @@ A data frame with 4618 rows and 7 variables:
 }
 }
 \source{
-\itemize{
-\item General webpage:
-\url{https://realized.oxford-man.ox.ac.uk/data/download}
-\item Direct download link:
-\url{https://realized.oxford-man.ox.ac.uk/images/oxfordmanrealizedvolatilityindices-0.2-final.zip}
-}
+The file was downloaded from the "Oxford-Man Institute's realized library", which no longer exists.
+At the time, the raw data file was named "oxfordmanrealizedvolatilityindices-0.2-final.zip".
 }
 \usage{
 stockprice

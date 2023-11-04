@@ -11,8 +11,8 @@
 #' unique parameter: the bandwidth (`h`). If `h = Inf`, the method produces the
 #' original (i.e. time-invariant) correlation value. The smaller the parameter
 #' `h`, the more variation in time is being captured. The parameter `h` can be
-#' provided by the user; otherwise it is automatically estimated (see
-#' **Details**).
+#' provided by the user; otherwise it is automatically estimated by the internal
+#' helper function `select_h` (see **Details**).
 #'
 #' - **Smoothing**: the smoothing of each component is performed by kernel
 #' regression. The default is to use the Epanechnikov kernel following Choi &
@@ -210,6 +210,8 @@ NULL
 
 #' @describeIn tcor **The user-level function to be used**.
 #'
+#' @order 1
+#'
 #' @export
 #'
 tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "spearman"),
@@ -287,6 +289,8 @@ tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "sp
 #' The function calls the kernel smoothing procedure on each component required
 #' to compute the time-varying correlation. It returns a dataframe with the time,
 #' the correlation value and the underlying components used for the computation.
+#'
+#' @order 2
 #'
 #' @export
 #'

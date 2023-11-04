@@ -16,11 +16,8 @@
 #' }
 #'
 #' @source
-#' - General webpage:
-#' \url{https://realized.oxford-man.ox.ac.uk/data/download}
-#'
-#' - Direct download link:
-#' \url{https://realized.oxford-man.ox.ac.uk/images/oxfordmanrealizedvolatilityindices-0.2-final.zip}
+#' The file was downloaded from the "Oxford-Man Institute's realized library", which no longer exists.
+#' At the time, the raw data file was named "oxfordmanrealizedvolatilityindices-0.2-final.zip".
 #'
 #' @seealso
 #' [`datasets::EuStockMarkets`] for a similar dataset, albeit formatted differently.
