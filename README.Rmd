@@ -22,9 +22,10 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 [![CRAN
 status](https://www.r-pkg.org/badges/version/fw)](https://CRAN.R-project.org/package=timevarcorr)
+[![R-CMD-check](https://github.com/courtiol/timevarcorr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/courtiol/timevarcorr/actions/workflows/R-CMD-check.yaml)
+[![test-coverage](https://github.com/courtiol/timevarcorr/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/courtiol/timevarcorr/actions/workflows/test-coverage.yaml)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-[![R-CMD-check](https://github.com/courtiol/timevarcorr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/courtiol/timevarcorr/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 This R package aims at computing the correlation between 2 time-series following the method described in the following paper:
@@ -41,7 +42,7 @@ We also implemented the possibility to use Epanechnikov, Gaussian, or box kernel
 
 ## Installation
 
-You can install the development version of **timevarcorr** from [GitHub](https://github.com/) with:
+You can install the development version of **timevarcorr** from GitHub with:
 
 ``` r
 # install.packages("remotes") ## uncomment and run if you don't have this package installed
