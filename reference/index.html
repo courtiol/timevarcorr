@@ -21,10 +21,19 @@
       <ul class="navbar-nav me-auto"><li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
+<li class="nav-item">
+  <a class="nav-link" href="../news/index.html">Changelog</a>
+</li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
-      <ul class="navbar-nav"></ul></div>
+      <ul class="navbar-nav"><li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/courtiol/timevarcorr/" aria-label="github">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul></div>
 
     
   </div>
@@ -35,8 +44,67 @@
     </div>
 
     <div class="section level2">
-      <h2 id="all-functions">All functions<a class="anchor" aria-label="anchor" href="#all-functions"></a></h2>
+      <h2 id="functions">Functions<a class="anchor" aria-label="anchor" href="#functions"></a></h2>
       
+      
+
+      
+    </div><div class="section level2">
+      
+      <h3 id="-for-the-computation-of-the-time-varying-correlation">*for the computation of the time-varying correlation<a class="anchor" aria-label="anchor" href="#-for-the-computation-of-the-time-varying-correlation"></a></h3>
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="tcor.html">tcor()</a></code> <code><a href="tcor.html">calc_rho()</a></code> <code><a href="tcor.html">select_h()</a></code> 
+        </dt>
+        <dd>Compute time varying correlation coefficients</dd>
+      </dl></div><div class="section level2">
+      
+      <h3 id="-for-non-parametric-smoothing">*for non-parametric smoothing<a class="anchor" aria-label="anchor" href="#-for-non-parametric-smoothing"></a></h3>
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="kern_smooth.html">kern_smooth()</a></code> 
+        </dt>
+        <dd>Smoothing by kernel regression</dd>
+      </dl></div><div class="section level2">
+      
+      <h3 id="-for-statistical-tests-on-time-varying-correlations">*for statistical tests on time-varying correlations<a class="anchor" aria-label="anchor" href="#-for-statistical-tests-on-time-varying-correlations"></a></h3>
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="equality_test.html">equality_test()</a></code> 
+        </dt>
+        <dd>Compute equality test between correlation coefficient estimates at two time points</dd>
+      </dl><dl><dt>
+          
+          <code><a href="ref_test.html">ref_test()</a></code> 
+        </dt>
+        <dd>Test difference between correlation coefficient estimates and a value of reference</dd>
+      </dl></div><div class="section level2">
+      
+      <h3 id="-for-the-computation-of-the-confidence-intervals">*for the computation of the confidence intervals<a class="anchor" aria-label="anchor" href="#-for-the-computation-of-the-confidence-intervals"></a></h3>
       
 
       
@@ -50,38 +118,41 @@
           <code><a href="CI.html">calc_H()</a></code> <code><a href="CI.html">calc_e()</a></code> <code><a href="CI.html">calc_Gamma()</a></code> <code><a href="CI.html">calc_GammaINF()</a></code> <code><a href="CI.html">calc_L_And()</a></code> <code><a href="CI.html">calc_D()</a></code> <code><a href="CI.html">calc_SE()</a></code> 
         </dt>
         <dd>Internal functions for the computation of confidence intervals</dd>
-      </dl><dl><dt>
+      </dl></div><div class="section level2">
+      
+      <h3 id="-miscellaneous">*miscellaneous<a class="anchor" aria-label="anchor" href="#-miscellaneous"></a></h3>
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
           
           <code><a href="dot-onAttach.html">.onAttach()</a></code> 
         </dt>
         <dd>Display welcome message</dd>
-      </dl><dl><dt>
-          
-          <code><a href="equality_test.html">equality_test()</a></code> 
-        </dt>
-        <dd>Compute equality test between correlation coefficient estimates at two time points</dd>
-      </dl><dl><dt>
-          
-          <code><a href="kern_smooth.html">kern_smooth()</a></code> 
-        </dt>
-        <dd>Smoothing by kernel regression</dd>
-      </dl><dl><dt>
-          
-          <code><a href="ref_test.html">ref_test()</a></code> 
-        </dt>
-        <dd>Test difference between correlation coefficient estimates and a value of reference.</dd>
-      </dl><dl><dt>
+      </dl></div><div class="section level2">
+      <h2 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a></h2>
+      
+      <p class="section-desc"></p><p>A dataset to illustrate functionalities:</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
           
           <code><a href="stockprice.html">stockprice</a></code> 
         </dt>
-        <dd>Stockprice</dd>
-      </dl><dl><dt>
-          
-          <code><a href="tcor.html">tcor()</a></code> <code><a href="tcor.html">calc_rho()</a></code> <code><a href="tcor.html">select_h()</a></code> 
-        </dt>
-        <dd>Compute time varying correlation coefficients</dd>
+        <dd>Daily Closing Prices of Major European Stock Indices, April 2000--December 2017</dd>
       </dl></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
