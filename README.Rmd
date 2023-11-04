@@ -30,7 +30,7 @@ This R package aims at computing the correlation between 2 time-series following
 
 Choi, JE., Shin, D.W. Nonparametric estimation of time varying correlation coefficient. J. Korean Stat. Soc. 50, 333–353 (2021). https://doi.org/10.1007/s42952-020-00073-6
 
-The chief idea is to perform a non-parametric kernel smoothing (using a common bandwidth) of all underlying components required for the computation of a correlation coefficient (i.e. $x$, $y$, $x^2$, $y^2$, $x*y$).
+The chief idea is to perform a non-parametric kernel smoothing (using a common bandwidth) of all underlying components required for the computation of a correlation coefficient (i.e., $x$, $y$, $x^2$, $y^2$, $x*y$).
 
 The automatic selection procedure for the bandwidth parameter proposed in the paper is implemented in this package.
 The same goes for the computation of confidence intervals.
@@ -40,7 +40,7 @@ We also implemented the possibility to use Epanechnikov, Gaussian, or box kernel
 
 ## Installation
 
-You can install the development version of timevarcorr from [GitHub](https://github.com/) with:
+You can install the development version of **timevarcorr** from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("remotes") ## uncomment and run if you don't have this package installed
@@ -49,9 +49,9 @@ remotes::install_github("courtiol/timevarcorr")
 
 That should suffice!
 
-Note that this package relies so far on only one direct dependency -- [lpridge](https://github.com/cran/lpridge) -- which itself depends on nothing but a plain R install.
+Note that this package relies so far on only one direct dependency -- [**lpridge**](https://github.com/cran/lpridge) -- which itself depends on nothing but a plain R install.
 
-Nonetheless, in some of the examples below, I also rely on the [tidyverse](https://github.com/tidyverse) ecosystem, so you would need to install this as well to reproduce the content of this README:
+Nonetheless, in some of the examples below, we also rely on the [**tidyverse**](https://github.com/tidyverse) ecosystem, so you would need to install this as well to reproduce the content of this README:
 
 ``` r
 install.packages("tidyverse")
@@ -62,11 +62,11 @@ install.packages("tidyverse")
 
 The main function of this package is called `tcor` and its documentation is available here:
 
-```{r help}
+```{r help, eval=FALSE}
 help(tcor, package = timevarcorr)
 ```
 
-Very simple example using base-R syntax:
+Here is a very simple example using base-R syntax:
 
 ```{r example}
 library(timevarcorr)
@@ -76,7 +76,7 @@ example1 <- with(d, tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal"))
 plot(example1, type = "l")
 ```
 
-Same example using tidyverse syntax (with confidence interval):
+Here is the same example using tidyverse syntax (with confidence interval):
 
 ```{r example2, message=FALSE}
 library(tidyverse)
@@ -92,7 +92,7 @@ d |>
     theme_classic()
 ```
 
-Same example showing gaps of observations in the time series:
+And now, the same example showing gaps of observations in the time series:
 
 ```{r example3}
 d |> 
@@ -128,13 +128,10 @@ ref_test(example3, t = c("2000-05-02", "2001-05-02"), r_ref = 0.5)
 ```
 
 
-
 ## Devel corner
 
-README file compiled using `devtools::build_readme()`, with the following setup:
+This README file has been compiled using `devtools::build_readme()`, with the following setup:
 
 ```{r sessioninfo}
 devtools::session_info()
 ```
-
-

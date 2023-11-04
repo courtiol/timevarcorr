@@ -20,7 +20,7 @@ correlation coefficient. J. Korean Stat. Soc. 50, 333–353 (2021).
 
 The chief idea is to perform a non-parametric kernel smoothing (using a
 common bandwidth) of all underlying components required for the
-computation of a correlation coefficient (i.e. $x$, $y$, $x^2$, $y^2$,
+computation of a correlation coefficient (i.e., $x$, $y$, $x^2$, $y^2$,
 $x*y$).
 
 The automatic selection procedure for the bandwidth parameter proposed
@@ -33,7 +33,7 @@ correlation coefficient.
 
 ## Installation
 
-You can install the development version of timevarcorr from
+You can install the development version of **timevarcorr** from
 [GitHub](https://github.com/) with:
 
 ``` r
@@ -44,12 +44,12 @@ remotes::install_github("courtiol/timevarcorr")
 That should suffice!
 
 Note that this package relies so far on only one direct dependency –
-[lpridge](https://github.com/cran/lpridge) – which itself depends on
+[**lpridge**](https://github.com/cran/lpridge) – which itself depends on
 nothing but a plain R install.
 
-Nonetheless, in some of the examples below, I also rely on the
-[tidyverse](https://github.com/tidyverse) ecosystem, so you would need
-to install this as well to reproduce the content of this README:
+Nonetheless, in some of the examples below, we also rely on the
+[**tidyverse**](https://github.com/tidyverse) ecosystem, so you would
+need to install this as well to reproduce the content of this README:
 
 ``` r
 install.packages("tidyverse")
@@ -64,7 +64,7 @@ is available here:
 help(tcor, package = timevarcorr)
 ```
 
-Very simple example using base-R syntax:
+Here is a very simple example using base-R syntax:
 
 ``` r
 library(timevarcorr)
@@ -80,7 +80,8 @@ plot(example1, type = "l")
 
 <img src="man/figures/README-example-1.png" width="70%" style="display: block; margin: auto;" />
 
-Same example using tidyverse syntax (with confidence interval):
+Here is the same example using tidyverse syntax (with confidence
+interval):
 
 ``` r
 library(tidyverse)
@@ -99,7 +100,8 @@ d |>
 
 <img src="man/figures/README-example2-1.png" width="70%" style="display: block; margin: auto;" />
 
-Same example showing gaps of observations in the time series:
+And now, the same example showing gaps of observations in the time
+series:
 
 ``` r
 d |> 
@@ -160,8 +162,8 @@ ref_test(example3, t = c("2000-05-02", "2001-05-02"), r_ref = 0.5)
 
 ## Devel corner
 
-README file compiled using `devtools::build_readme()`, with the
-following setup:
+This README file has been compiled using `devtools::build_readme()`,
+with the following setup:
 
 ``` r
 devtools::session_info()
@@ -180,83 +182,83 @@ devtools::session_info()
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package     * version    date (UTC) lib source
-#>  bspm          0.5.5      2023-08-22 [2] CRAN (R 4.3.1)
-#>  cachem        1.0.8      2023-05-01 [3] RSPM (R 4.2.0)
-#>  callr         3.7.3      2022-11-02 [3] RSPM (R 4.2.0)
-#>  cli           3.6.1      2023-03-23 [3] RSPM (R 4.2.0)
-#>  colorspace    2.1-0      2023-01-23 [3] RSPM (R 4.2.0)
-#>  crayon        1.5.2      2022-09-29 [3] RSPM (R 4.2.0)
-#>  devtools      2.4.5      2022-10-11 [3] RSPM (R 4.2.0)
-#>  digest        0.6.33     2023-07-07 [3] RSPM (R 4.2.0)
-#>  dplyr       * 1.1.3      2023-09-03 [3] RSPM (R 4.3.0)
-#>  ellipsis      0.3.2      2021-04-29 [3] RSPM (R 4.2.0)
-#>  evaluate      0.23       2023-11-01 [3] RSPM (R 4.3.0)
-#>  fansi         1.0.5      2023-10-08 [3] RSPM (R 4.3.0)
-#>  farver        2.1.1      2022-07-06 [3] RSPM (R 4.2.0)
-#>  fastmap       1.1.1      2023-02-24 [3] RSPM (R 4.2.0)
-#>  forcats     * 1.0.0      2023-01-29 [3] RSPM (R 4.2.0)
-#>  fs            1.6.3      2023-07-20 [3] RSPM (R 4.2.0)
-#>  generics      0.1.3      2022-07-05 [3] RSPM (R 4.2.0)
-#>  ggplot2     * 3.4.4      2023-10-12 [3] RSPM (R 4.3.0)
-#>  glue          1.6.2      2022-02-24 [3] RSPM (R 4.2.0)
-#>  gtable        0.3.4      2023-08-21 [3] RSPM (R 4.2.0)
-#>  highr         0.10       2022-12-22 [3] RSPM (R 4.2.0)
-#>  hms           1.1.3      2023-03-21 [3] RSPM (R 4.2.0)
-#>  htmltools     0.5.6.1    2023-10-06 [3] RSPM (R 4.3.0)
-#>  htmlwidgets   1.6.2      2023-03-17 [3] RSPM (R 4.2.0)
-#>  httpuv        1.6.12     2023-10-23 [3] RSPM (R 4.3.0)
-#>  knitr         1.45       2023-10-30 [3] RSPM (R 4.3.0)
-#>  labeling      0.4.3      2023-08-29 [3] RSPM (R 4.2.0)
-#>  later         1.3.1      2023-05-02 [3] RSPM (R 4.2.0)
-#>  lifecycle     1.0.3      2022-10-07 [3] RSPM (R 4.2.0)
-#>  lubridate   * 1.9.3      2023-09-27 [3] RSPM (R 4.3.0)
-#>  magrittr      2.0.3      2022-03-30 [3] RSPM (R 4.2.0)
-#>  memoise       2.0.1      2021-11-26 [3] RSPM (R 4.2.0)
-#>  mime          0.12       2021-09-28 [3] RSPM (R 4.2.0)
-#>  miniUI        0.1.1.1    2018-05-18 [3] RSPM (R 4.2.0)
-#>  munsell       0.5.0      2018-06-12 [3] RSPM (R 4.2.0)
-#>  pillar        1.9.0      2023-03-22 [3] RSPM (R 4.2.0)
-#>  pkgbuild      1.4.2      2023-06-26 [3] RSPM (R 4.2.0)
-#>  pkgconfig     2.0.3      2019-09-22 [3] RSPM (R 4.2.0)
-#>  pkgload       1.3.3      2023-09-22 [3] RSPM (R 4.3.0)
-#>  prettyunits   1.2.0      2023-09-24 [3] RSPM (R 4.3.0)
-#>  processx      3.8.2      2023-06-30 [3] RSPM (R 4.2.0)
-#>  profvis       0.3.8      2023-05-02 [3] RSPM (R 4.2.0)
-#>  promises      1.2.1      2023-08-10 [3] RSPM (R 4.2.0)
-#>  ps            1.7.5      2023-04-18 [3] RSPM (R 4.3.0)
-#>  purrr       * 1.0.2      2023-08-10 [3] RSPM (R 4.2.0)
-#>  R6            2.5.1      2021-08-19 [3] RSPM (R 4.2.0)
-#>  Rcpp          1.0.11     2023-07-06 [3] RSPM (R 4.2.0)
-#>  readr       * 2.1.4      2023-02-10 [3] RSPM (R 4.2.0)
-#>  remotes       2.4.2.1    2023-07-18 [3] RSPM (R 4.2.0)
-#>  rlang         1.1.1      2023-04-28 [3] RSPM (R 4.2.0)
-#>  rmarkdown     2.25       2023-09-18 [3] RSPM (R 4.3.0)
-#>  rstudioapi    0.15.0     2023-07-07 [3] RSPM (R 4.2.0)
-#>  scales        1.2.1      2022-08-20 [3] RSPM (R 4.2.0)
-#>  sessioninfo   1.2.2      2021-12-06 [3] RSPM (R 4.2.0)
-#>  shiny         1.7.5.1    2023-10-14 [3] RSPM (R 4.3.0)
-#>  stringi       1.7.12     2023-01-11 [3] RSPM (R 4.2.0)
-#>  stringr     * 1.5.0      2022-12-02 [3] RSPM (R 4.2.0)
-#>  tibble      * 3.2.1      2023-03-20 [3] RSPM (R 4.3.0)
-#>  tidyr       * 1.3.0      2023-01-24 [3] RSPM (R 4.2.0)
-#>  tidyselect    1.2.0      2022-10-10 [3] RSPM (R 4.2.0)
-#>  tidyverse   * 2.0.0      2023-02-22 [3] RSPM (R 4.2.0)
-#>  timechange    0.2.0      2023-01-11 [3] RSPM (R 4.2.0)
-#>  timevarcorr * 0.0.0.9005 2023-11-04 [1] local
-#>  tzdb          0.4.0      2023-05-12 [3] RSPM (R 4.2.0)
-#>  urlchecker    1.0.1      2021-11-30 [3] RSPM (R 4.2.0)
-#>  usethis       2.2.2      2023-07-06 [3] RSPM (R 4.2.0)
-#>  utf8          1.2.4      2023-10-22 [3] RSPM (R 4.3.0)
-#>  vctrs         0.6.4      2023-10-12 [3] RSPM (R 4.3.0)
-#>  withr         2.5.2      2023-10-30 [3] RSPM (R 4.3.0)
-#>  xfun          0.41       2023-11-01 [3] RSPM (R 4.3.0)
-#>  xtable        1.8-4      2019-04-21 [3] RSPM (R 4.2.0)
-#>  yaml          2.3.7      2023-01-23 [3] RSPM (R 4.2.0)
+#>  cachem        1.0.8      2023-05-01 [4] RSPM (R 4.2.0)
+#>  callr         3.7.3      2022-11-02 [4] RSPM (R 4.2.0)
+#>  cli           3.6.1      2023-03-23 [4] RSPM (R 4.2.0)
+#>  colorspace    2.1-0      2023-01-23 [4] RSPM (R 4.2.0)
+#>  crayon        1.5.2      2022-09-29 [4] RSPM (R 4.2.0)
+#>  devtools      2.4.5      2022-10-11 [4] RSPM (R 4.2.0)
+#>  digest        0.6.33     2023-07-07 [4] RSPM (R 4.2.0)
+#>  dplyr       * 1.1.3      2023-09-03 [4] RSPM (R 4.3.0)
+#>  ellipsis      0.3.2      2021-04-29 [4] RSPM (R 4.2.0)
+#>  evaluate      0.23       2023-11-01 [4] RSPM (R 4.3.0)
+#>  fansi         1.0.5      2023-10-08 [4] RSPM (R 4.3.0)
+#>  farver        2.1.1      2022-07-06 [4] RSPM (R 4.2.0)
+#>  fastmap       1.1.1      2023-02-24 [4] RSPM (R 4.2.0)
+#>  forcats     * 1.0.0      2023-01-29 [4] RSPM (R 4.2.0)
+#>  fs            1.6.3      2023-07-20 [4] RSPM (R 4.2.0)
+#>  generics      0.1.3      2022-07-05 [4] RSPM (R 4.2.0)
+#>  ggplot2     * 3.4.4      2023-10-12 [4] RSPM (R 4.3.0)
+#>  glue          1.6.2      2022-02-24 [4] RSPM (R 4.2.0)
+#>  gtable        0.3.4      2023-08-21 [4] RSPM (R 4.2.0)
+#>  highr         0.10       2022-12-22 [4] RSPM (R 4.2.0)
+#>  hms           1.1.3      2023-03-21 [4] RSPM (R 4.2.0)
+#>  htmltools     0.5.6.1    2023-10-06 [4] RSPM (R 4.3.0)
+#>  htmlwidgets   1.6.2      2023-03-17 [4] RSPM (R 4.2.0)
+#>  httpuv        1.6.12     2023-10-23 [4] RSPM (R 4.3.0)
+#>  knitr         1.45       2023-10-30 [4] RSPM (R 4.3.0)
+#>  labeling      0.4.3      2023-08-29 [4] RSPM (R 4.2.0)
+#>  later         1.3.1      2023-05-02 [4] RSPM (R 4.2.0)
+#>  lifecycle     1.0.3      2022-10-07 [4] RSPM (R 4.2.0)
+#>  lubridate   * 1.9.3      2023-09-27 [4] RSPM (R 4.3.0)
+#>  magrittr      2.0.3      2022-03-30 [4] RSPM (R 4.2.0)
+#>  memoise       2.0.1      2021-11-26 [4] RSPM (R 4.2.0)
+#>  mime          0.12       2021-09-28 [4] RSPM (R 4.2.0)
+#>  miniUI        0.1.1.1    2018-05-18 [4] RSPM (R 4.2.0)
+#>  munsell       0.5.0      2018-06-12 [4] RSPM (R 4.2.0)
+#>  pillar        1.9.0      2023-03-22 [4] RSPM (R 4.2.0)
+#>  pkgbuild      1.4.2      2023-06-26 [4] RSPM (R 4.2.0)
+#>  pkgconfig     2.0.3      2019-09-22 [4] RSPM (R 4.2.0)
+#>  pkgload       1.3.3      2023-09-22 [4] RSPM (R 4.3.0)
+#>  prettyunits   1.2.0      2023-09-24 [4] RSPM (R 4.3.0)
+#>  processx      3.8.2      2023-06-30 [4] RSPM (R 4.2.0)
+#>  profvis       0.3.8      2023-05-02 [4] RSPM (R 4.2.0)
+#>  promises      1.2.1      2023-08-10 [4] RSPM (R 4.2.0)
+#>  ps            1.7.5      2023-04-18 [4] RSPM (R 4.3.0)
+#>  purrr       * 1.0.2      2023-08-10 [4] RSPM (R 4.2.0)
+#>  R6            2.5.1      2021-08-19 [4] RSPM (R 4.2.0)
+#>  Rcpp          1.0.11     2023-07-06 [4] RSPM (R 4.2.0)
+#>  readr       * 2.1.4      2023-02-10 [4] RSPM (R 4.2.0)
+#>  remotes       2.4.2.1    2023-07-18 [4] RSPM (R 4.2.0)
+#>  rlang         1.1.1      2023-04-28 [4] RSPM (R 4.2.0)
+#>  rmarkdown     2.25       2023-09-18 [4] RSPM (R 4.3.0)
+#>  rstudioapi    0.15.0     2023-07-07 [4] RSPM (R 4.2.0)
+#>  scales        1.2.1      2022-08-20 [4] RSPM (R 4.2.0)
+#>  sessioninfo   1.2.2      2021-12-06 [4] RSPM (R 4.2.0)
+#>  shiny         1.7.5.1    2023-10-14 [4] RSPM (R 4.3.0)
+#>  stringi       1.7.12     2023-01-11 [4] RSPM (R 4.2.0)
+#>  stringr     * 1.5.0      2022-12-02 [4] RSPM (R 4.2.0)
+#>  tibble      * 3.2.1      2023-03-20 [4] RSPM (R 4.3.0)
+#>  tidyr       * 1.3.0      2023-01-24 [4] RSPM (R 4.2.0)
+#>  tidyselect    1.2.0      2022-10-10 [4] RSPM (R 4.2.0)
+#>  tidyverse   * 2.0.0      2023-02-22 [4] RSPM (R 4.2.0)
+#>  timechange    0.2.0      2023-01-11 [4] RSPM (R 4.2.0)
+#>  timevarcorr * 0.0.0.9006 2023-11-04 [1] local
+#>  tzdb          0.4.0      2023-05-12 [4] RSPM (R 4.2.0)
+#>  urlchecker    1.0.1      2021-11-30 [4] RSPM (R 4.2.0)
+#>  usethis       2.2.2      2023-07-06 [4] RSPM (R 4.2.0)
+#>  utf8          1.2.4      2023-10-22 [4] RSPM (R 4.3.0)
+#>  vctrs         0.6.4      2023-10-12 [4] RSPM (R 4.3.0)
+#>  withr         2.5.2      2023-10-30 [4] RSPM (R 4.3.0)
+#>  xfun          0.41       2023-11-01 [4] RSPM (R 4.3.0)
+#>  xtable        1.8-4      2019-04-21 [4] RSPM (R 4.2.0)
+#>  yaml          2.3.7      2023-01-23 [4] RSPM (R 4.2.0)
 #> 
-#>  [1] /home/courtiol/R/x86_64-pc-linux-gnu-library/4.3
-#>  [2] /usr/local/lib/R/site-library
-#>  [3] /usr/lib/R/site-library
-#>  [4] /usr/lib/R/library
+#>  [1] /tmp/RtmpkQQ6YK/temp_libpathd403f126c8f14
+#>  [2] /home/courtiol/R/x86_64-pc-linux-gnu-library/4.3
+#>  [3] /usr/local/lib/R/site-library
+#>  [4] /usr/lib/R/site-library
+#>  [5] /usr/lib/R/library
 #> 
 #> ──────────────────────────────────────────────────────────────────────────────
 ```
