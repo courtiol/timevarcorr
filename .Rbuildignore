@@ -5,3 +5,4 @@
 ^scripts$
 ^README\.Rmd$
 ^biblio$
+^\.github$

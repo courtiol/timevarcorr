@@ -24,6 +24,7 @@ knitr::opts_chunk$set(
 status](https://www.r-pkg.org/badges/version/fw)](https://CRAN.R-project.org/package=timevarcorr)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![R-CMD-check](https://github.com/courtiol/timevarcorr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/courtiol/timevarcorr/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 This R package aims at computing the correlation between 2 time-series following the method described in the following paper:

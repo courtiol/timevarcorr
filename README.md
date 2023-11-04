@@ -9,6 +9,7 @@
 status](https://www.r-pkg.org/badges/version/fw)](https://CRAN.R-project.org/package=timevarcorr)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![R-CMD-check](https://github.com/courtiol/timevarcorr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/courtiol/timevarcorr/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 This R package aims at computing the correlation between 2 time-series
@@ -254,7 +255,7 @@ devtools::session_info()
 #>  xtable        1.8-4      2019-04-21 [4] RSPM (R 4.2.0)
 #>  yaml          2.3.7      2023-01-23 [4] RSPM (R 4.2.0)
 #> 
-#>  [1] /tmp/RtmpkQQ6YK/temp_libpathd403f126c8f14
+#>  [1] /tmp/RtmpkQQ6YK/temp_libpathd403f4af7a494
 #>  [2] /home/courtiol/R/x86_64-pc-linux-gnu-library/4.3
 #>  [3] /usr/local/lib/R/site-library
 #>  [4] /usr/lib/R/site-library
