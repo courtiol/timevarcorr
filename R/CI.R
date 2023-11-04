@@ -196,9 +196,9 @@ calc_D <- function(smoothed_obj) {
 }
 
 
-#' @describeIn CI Internal function computing `se(\hat{rho}_t(h))`.
+#' @describeIn CI Internal function computing `$se(\hat{rho}_t(h))$`.
 #'
-#' The standard deviation of the time-varying correlation (`se(\hat{rho}_t(h))`) is defined in eq. 8 from Choi & Shin, 2021.
+#' The standard deviation of the time-varying correlation (`$se(\hat{rho}_t(h))$`) is defined in eq. 8 from Choi & Shin, 2021.
 #' It depends on `$D_{Lt}$`, `$D_{Mt}$` & `$D_{Ut}$`, themselves defined in Choi & Shin, 2021, p 337 & 339.
 #' The `$D_{Xt}$` terms are all computed within the function since they all rely on the same components.
 #' The function returns a vector of length `t`.
@@ -208,7 +208,7 @@ calc_D <- function(smoothed_obj) {
 #'
 #' @examples
 #'
-#' ## Computing `se(\hat{rho}_t(h))`
+#' ## Computing `$se(\hat{rho}_t(h))$`
 #'
 #' \dontrun{
 #' calc_SE(smoothed_obj = rho_obj, h = 50) ## ~ 10 sec to run

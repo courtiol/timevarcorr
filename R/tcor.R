@@ -1,6 +1,6 @@
 #' Compute time varying correlation coefficients
 #'
-#' The function `tcor` implements (together with its internal helper function
+#' The function `tcor` implements (together with its helper function
 #' `calc_rho`) the nonparametric estimation of the time varying correlation
 #' coefficient proposed by Choi & Shin, 2021. The general idea is to compute a
 #' (Pearson) correlation coefficient (`r(x,y) = (mean(xy) - mean(x)*mean(y)) /
@@ -85,7 +85,21 @@
 #'
 #' @importFrom parallel mclapply
 #'
+NULL
+
+
+#' @describeIn tcor **The user-level function to be used**.
+#'
+#' @order 1
+#'
+#' @export
+#'
 #' @examples
+#'
+#' #####################################################
+#' ## Examples for the user-level function to be used ##
+#' #####################################################
+#'
 #' ## Effect of the bandwidth
 #'
 #' res_h50  <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, h = 50))
@@ -205,14 +219,6 @@
 #'
 #' }
 #'
-NULL
-
-
-#' @describeIn tcor **The user-level function to be used**.
-#'
-#' @order 1
-#'
-#' @export
 #'
 tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "spearman"),
                  kernel = c("epanechnikov", "box", "normal"), CI = FALSE, CI.level = 0.95,
@@ -371,10 +377,25 @@ calc_rho <- function(x, y, t = seq_along(x), t.for.pred = t, h, cor.method = c("
 
 #' @describeIn tcor Internal function selecting the optimal bandwidth parameter `h`.
 #'
-#' See **Bandwidth selection** for details.
+#' See *Bandwidth selection* in **Details**.
 #'
 #' @order 3
 #'
+#' @export
+#'
+#' @examples
+#'
+#'
+#' ################################################################
+#' ## Examples for the internal function selecting the bandwidth ##
+#' ################################################################
+#'
+#' \dontrun{
+#' ## Automatic selection of the bandwidth using parallel processing
+#' # nb: takes a few minutes to run
+#' options("mc.cores" = 2L)
+#' with(na.omit(stockprice), select_h(x = SP500, y = FTSE100, t = DateID))
+#' }
 #'
 select_h <- function(x, y, t = seq_along(x), cor.method = c("pearson", "spearman"),
                      kernel = c("epanechnikov", "box", "normal"), param_smoother = list(),

@@ -30,7 +30,7 @@
 #' @export
 #'
 #' @references
-#' A short post I found useful: \url{http://users.stat.umn.edu/~helwig/notes/smooth-notes.html}
+#' A short post we found useful: \url{http://users.stat.umn.edu/~helwig/notes/smooth-notes.html}
 #'
 #' @examples
 #'

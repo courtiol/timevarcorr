@@ -11,6 +11,9 @@
 
 \item{pkgname}{argument needed but automatically defined}
 }
+\value{
+nothing (invisible NULL)
+}
 \description{
 This function should not be called by the user.
 It displays a message when the package is being loaded.

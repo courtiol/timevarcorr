@@ -7,6 +7,7 @@
 #' @param pkgname argument needed but automatically defined
 #'
 #' @export
+#' @return nothing (invisible NULL)
 #'
 .onAttach <- function(libname, pkgname) {
   packageStartupMessage(## display message

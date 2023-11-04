@@ -97,7 +97,7 @@ parameter.
 }
 }
 \description{
-The function \code{tcor} implements (together with its internal helper function
+The function \code{tcor} implements (together with its helper function
 \code{calc_rho}) the nonparametric estimation of the time varying correlation
 coefficient proposed by Choi & Shin, 2021. The general idea is to compute a
 (Pearson) correlation coefficient (\code{r(x,y) = (mean(xy) - mean(x)*mean(y)) / (sqrt(mean(x^2)-mean(x)^2) * sqrt(mean(y^2)-mean(y)^2))}), but instead of
@@ -154,34 +154,14 @@ the correlation value and the underlying components used for the computation.
 
 \item \code{select_h()}: Internal function selecting the optimal bandwidth parameter \code{h}.
 
-See \strong{Bandwidth selection} for details.
+See \emph{Bandwidth selection} in \strong{Details}.
 
 }}
 \examples{
 
-
-##################################################################
-## Examples for the internal function computing the correlation ##
-##################################################################
-
-with(head(stockprice), calc_rho(x = SP500, y = FTSE100, t = DateID, h = 20))
-with(head(stockprice), calc_rho(x = SP500, y = FTSE100, t = DateID, h = 20,
-     t.for.pred = DateID[1]))
-
-## The function can handle non consecutive time points
-
-set.seed(1)
-calc_rho(x = rnorm(10), y = rnorm(10), t = c(1:5, 26:30), h = 3, kernel = "box")
-
-
-## The function can handle non-ordered time series
-
-with(head(stockprice)[c(1, 3, 6, 2, 4, 5), ], calc_rho(x = SP500, y = FTSE100, t = DateID, h = 20))
-
-
-## Note: the function does not handle missing data (by design)
-
-# calc_rho(x = c(NA, rnorm(9)), y = rnorm(10), t = c(1:2, 23:30), h = 2) ## should err (if ran)
+#####################################################
+## Examples for the user-level function to be used ##
+#####################################################
 
 ## Effect of the bandwidth
 
@@ -300,6 +280,45 @@ plot(EuStock_epanech, type = "l", las = 1) ## problem of estimation for first an
 EuStock_norm <- tcor(EuStockMarkets[, "DAX"], EuStockMarkets[, "SMI"], kernel = "normal")
 plot(EuStock_norm, type = "l", las = 1) ## normal kernel seems to work great with these data
 
+}
+
+
+
+
+##################################################################
+## Examples for the internal function computing the correlation ##
+##################################################################
+
+with(head(stockprice), calc_rho(x = SP500, y = FTSE100, t = DateID, h = 20))
+with(head(stockprice), calc_rho(x = SP500, y = FTSE100, t = DateID, h = 20,
+     t.for.pred = DateID[1]))
+
+## The function can handle non consecutive time points
+
+set.seed(1)
+calc_rho(x = rnorm(10), y = rnorm(10), t = c(1:5, 26:30), h = 3, kernel = "box")
+
+
+## The function can handle non-ordered time series
+
+with(head(stockprice)[c(1, 3, 6, 2, 4, 5), ], calc_rho(x = SP500, y = FTSE100, t = DateID, h = 20))
+
+
+## Note: the function does not handle missing data (by design)
+
+# calc_rho(x = c(NA, rnorm(9)), y = rnorm(10), t = c(1:2, 23:30), h = 2) ## should err (if ran)
+
+
+
+################################################################
+## Examples for the internal function selecting the bandwidth ##
+################################################################
+
+\dontrun{
+## Automatic selection of the bandwidth using parallel processing
+# nb: takes a few minutes to run
+options("mc.cores" = 2L)
+with(na.omit(stockprice), select_h(x = SP500, y = FTSE100, t = DateID))
 }
 
 }
