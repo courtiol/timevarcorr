@@ -53,7 +53,7 @@
 #' @param CI.level a scalar defining the level for `CI` (default = 0.95 for 95% CI).
 #' @param cor.method a character string indicating which correlation coefficient
 #' is to be computed ("pearson", the default; or "spearman").
-#' @param keep.missing a logical specifying if time steps associated with missing
+#' @param keep.missing a logical specifying if time points associated with missing
 #' information should be kept in the output (default = `FALSE` to facilitate plotting).
 #' @param verbose a logical specifying if information should be displayed to
 #' monitor the progress of the cross validation (default = `FALSE`).

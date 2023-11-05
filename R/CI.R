@@ -35,7 +35,7 @@ NULL
 #' ## Computing `$\hat{H_t}$`
 #'
 #' H <- calc_H(smoothed_obj = rho_obj)
-#' H[, , 1:2] # H array for the first two time steps
+#' H[, , 1:2] # H array for the first two time points
 #'
 calc_H <- function(smoothed_obj) {
   res <- array(0, dim = c(5, 5, nrow(smoothed_obj)))
@@ -77,7 +77,7 @@ calc_H <- function(smoothed_obj) {
 #' ## Computing `$\hat{e}_t$`
 #'
 #' e <- calc_e(smoothed_obj = rho_obj, H = H)
-#' head(e) # e matrix for the first six time steps
+#' head(e) # e matrix for the first six time points
 #'
 calc_e <- function(smoothed_obj, H) {
   res <- matrix(0, ncol = 5, nrow = dim(H)[3])
@@ -99,7 +99,7 @@ calc_e <- function(smoothed_obj, H) {
 #'
 #' @export
 #' @param e an object created with [`calc_e`].
-#' @param l a scalar indicating a number of time steps.
+#' @param l a scalar indicating a number of time points.
 #'
 #' @examples
 #'
@@ -184,7 +184,7 @@ calc_L_And <- function(e, AR.method = c("yule-walker", "burg", "ols", "mle", "yw
 #' ## Computing `$D_t$`
 #'
 #' D <- calc_D(smoothed_obj = rho_obj)
-#' head(D) # D matrix for the first six time steps
+#' head(D) # D matrix for the first six time points
 #'
 calc_D <- function(smoothed_obj) {
   res <- matrix(0, nrow = nrow(smoothed_obj), ncol = 5)
@@ -216,7 +216,7 @@ calc_D <- function(smoothed_obj) {
 #' # nb: takes a few seconds to run
 #'
 #' SE <- calc_SE(smoothed_obj = rho_obj, h = 50)
-#' head(SE) # SE vector for the first six time steps
+#' head(SE) # SE vector for the first six time points
 #'
 #' }
 #'
