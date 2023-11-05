@@ -3,25 +3,25 @@
 calc_rho) the nonparametric estimation of the time varying correlation
 coefficient proposed by Choi &amp;amp; Shin, 2021. The general idea is to compute a
 (Pearson) correlation coefficient (r(x,y) = (mean(xy) - mean(x)*mean(y)) / (sqrt(mean(x^2)-mean(x)^2) * sqrt(mean(y^2)-mean(y)^2))), but instead of
-using the means required for such a computation, each component (i.e. x,
+using the means required for such a computation, each component (i.e., x,
 y, x^2, y^2, x*y) is smoothed and the smoothed terms are considered
 in place the original means. The intensity of the smoothing depends on a
 unique parameter: the bandwidth (h). If h = Inf, the method produces the
-original (i.e. time-invariant) correlation value. The smaller the parameter
+original (i.e., time-invariant) correlation value. The smaller the parameter
 h, the more variation in time is being captured. The parameter h can be
 provided by the user; otherwise it is automatically estimated by the internal
-helper function select_h (see Details)."><title>Compute time varying correlation coefficients — tcor • timevarcorr</title><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.2.2/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous"><!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Compute time varying correlation coefficients — tcor"><meta property="og:description" content="The function tcor implements (together with its helper function
+helper functions select_h and calc_RMSE (see Details)."><title>Compute time varying correlation coefficients — tcor • timevarcorr</title><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.2.2/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous"><!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Compute time varying correlation coefficients — tcor"><meta property="og:description" content="The function tcor implements (together with its helper function
 calc_rho) the nonparametric estimation of the time varying correlation
 coefficient proposed by Choi &amp;amp; Shin, 2021. The general idea is to compute a
 (Pearson) correlation coefficient (r(x,y) = (mean(xy) - mean(x)*mean(y)) / (sqrt(mean(x^2)-mean(x)^2) * sqrt(mean(y^2)-mean(y)^2))), but instead of
-using the means required for such a computation, each component (i.e. x,
+using the means required for such a computation, each component (i.e., x,
 y, x^2, y^2, x*y) is smoothed and the smoothed terms are considered
 in place the original means. The intensity of the smoothing depends on a
 unique parameter: the bandwidth (h). If h = Inf, the method produces the
-original (i.e. time-invariant) correlation value. The smaller the parameter
+original (i.e., time-invariant) correlation value. The smaller the parameter
 h, the more variation in time is being captured. The parameter h can be
 provided by the user; otherwise it is automatically estimated by the internal
-helper function select_h (see Details)."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
+helper functions select_h and calc_RMSE (see Details)."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body>
@@ -32,7 +32,7 @@ helper function select_h (see Details)."><!-- mathjax --><script src="https://cd
     
     <a class="navbar-brand me-2" href="../index.html">timevarcorr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9006</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,14 +72,14 @@ helper function select_h (see Details)."><!-- mathjax --><script src="https://cd
 <code>calc_rho</code>) the nonparametric estimation of the time varying correlation
 coefficient proposed by Choi &amp; Shin, 2021. The general idea is to compute a
 (Pearson) correlation coefficient (<code>r(x,y) = (mean(xy) - mean(x)*mean(y)) / (sqrt(mean(x^2)-mean(x)^2) * sqrt(mean(y^2)-mean(y)^2))</code>), but instead of
-using the means required for such a computation, each component (i.e. <code>x</code>,
+using the means required for such a computation, each component (i.e., <code>x</code>,
 <code>y</code>, <code>x^2</code>, <code>y^2</code>, <code>x*y</code>) is smoothed and the smoothed terms are considered
 in place the original means. The intensity of the smoothing depends on a
 unique parameter: the bandwidth (<code>h</code>). If <code>h = Inf</code>, the method produces the
-original (i.e. time-invariant) correlation value. The smaller the parameter
+original (i.e., time-invariant) correlation value. The smaller the parameter
 <code>h</code>, the more variation in time is being captured. The parameter <code>h</code> can be
 provided by the user; otherwise it is automatically estimated by the internal
-helper function <code>select_h</code> (see <strong>Details</strong>).</p>
+helper functions <code>select_h</code> and <code>calc_RMSE</code> (see <strong>Details</strong>).</p>
     </div>
 
     <div class="section level2">
@@ -109,6 +109,17 @@ helper function <code>select_h</code> (see <strong>Details</strong>).</p>
 <span>  param_smoother <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
+<span><span class="fu">calc_RMSE</span><span class="op">(</span></span>
+<span>  <span class="va">h</span>,</span>
+<span>  <span class="va">x</span>,</span>
+<span>  <span class="va">y</span>,</span>
+<span>  t <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,</span>
+<span>  cor.method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pearson"</span>, <span class="st">"spearman"</span><span class="op">)</span>,</span>
+<span>  kernel <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"epanechnikov"</span>, <span class="st">"box"</span>, <span class="st">"normal"</span><span class="op">)</span>,</span>
+<span>  param_smoother <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
 <span><span class="fu">select_h</span><span class="op">(</span></span>
 <span>  <span class="va">x</span>,</span>
 <span>  <span class="va">y</span>,</span>
@@ -132,7 +143,7 @@ helper function <code>select_h</code> (see <strong>Details</strong>).</p>
 
 <dt>t</dt>
 <dd><p>a (numeric or Date) vector of time points. If missing, observations
-are considered to correspond to sequential time steps (i.e. 1, 2 ...).</p></dd>
+are considered to correspond to sequential time steps (i.e., 1, 2 ...).</p></dd>
 
 
 <dt>h</dt>
@@ -187,10 +198,9 @@ evaluate the smoothed fit. If missing, <code>t</code> is used.</p></dd>
 <li><p>the lower boundary of the confidence intervals (<code>lwr</code>).</p></li>
 <li><p>the upper boundary of the confidence intervals (<code>upr</code>).</p></li>
 </ul><p>Some metadata are also attached to the dataframe (as attributes):</p><ul><li><p><code>h</code> the bandwidth parameter.</p></li>
-<li><p><code>CV_error</code> the minimal Cross Validation error when <code>h</code> selected by CV.</p></li>
+<li><p><code>RMSE</code> the minimal root mean square error when <code>h</code> is selected by cross validation.</p></li>
 <li><p><code>h_selection</code> the method used to select <code>h</code>.</p></li>
-<li><p><code>h_select_duration</code> the computing time spent to select the bandwidth
-parameter.</p></li>
+<li><p><code>h_select_duration</code> the computing time spent to select the bandwidth parameter.</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -200,27 +210,34 @@ regression. The default is to use the Epanechnikov kernel following Choi &amp;
 Shin 2021, but other kernels have also been implemented and can thus
 alternatively be used (see <code><a href="kern_smooth.html">kern_smooth</a></code> for details). The normal kernel
 seems to sometimes lead to very small bandwidth being selected, but the
-default can lead to numerical issues. We thus recommend always comparing the
-results from different kernel methods.</p></li>
+default kernel can lead to numerical issues (see next point). We thus
+recommend always comparing the results from different kernel methods.</p></li>
+<li><p><strong>Numerical issues</strong>: some numerical issues can happen because the smoothing
+is performed independently on each component of the correlation coefficient.
+As a consequence, some relationship between components may become violated
+for some time points. For instance, if the square of the smoothed $x$ term
+gets larger than the smoothed $x^2$ term, the variance of $x$ would become
+negative. In such cases, coefficient values returned are <code>NA</code>.</p></li>
 <li><p><strong>Bandwidth selection</strong>: when the value used to define the bandwidth (<code>h</code>)
-is set to <code>NULL</code> (the default), the internal function <code>select_h</code> is used to
-to select the optimal value for <code>h</code>. It is first estimated by leave-one-out
-cross validation. If cross validation error is minimal for the maximal value
-of <code>h</code> considered (<code>8*sqrt(N)</code>), rather than taking this as the optimal <code>h</code>
-value, the bandwidth becomes estimated using the so-called elbow criterion.
-This latter method identifies the value <code>h</code> after which the cross validation
-error decreasing very little. The procedure is detailed in section 2.1 in
-Choi &amp; Shin, 2021.</p></li>
+in <code>tcor</code> is set to <code>NULL</code> (the default), the internal function <code>select_h</code>
+is used to to select the optimal value for <code>h</code>. It is first estimated by
+leave-one-out cross validation (using internally <code>calc_RMSE</code>). If the cross
+validation error (RMSE) is minimal for the maximal value of <code>h</code> considered
+(<code>8*sqrt(N)</code>), rather than taking this as the optimal <code>h</code> value, the
+bandwidth becomes estimated using the so-called elbow criterion. This latter
+method identifies the value <code>h</code> after which the cross validation error
+decreasing very little. The procedure is detailed in section 2.1 in Choi &amp;
+Shin, 2021.</p></li>
 <li><p><strong>Parallel computation</strong>: if <code>h</code> is not provided, an automatic bandwidth
 selection occurs (see above). For large datasets, this step can be
 computationally demanding. The current implementation thus relies on
-<code><a href="https://rdrr.io/r/parallel/mclapply.html" class="external-link">parallel::mclapply</a></code> on thus is only effective for Linux and MacOS. Relying
-on parallel processing also implies that you call <code>options("mc.cores" = XX)</code>
-beforehand, replacing <code>XX</code> by the relevant number of CPU cores you want to use
-(see <strong>Examples</strong>).</p></li>
+<code><a href="https://rdrr.io/r/parallel/mclapply.html" class="external-link">parallel::mclapply</a></code> and is thus only effective for Linux and MacOS.
+Relying on parallel processing also implies that you call <code>options("mc.cores" = XX)</code> beforehand, replacing <code>XX</code> by the relevant number of CPU cores you
+want to use (see <strong>Examples</strong>). For debugging, do use <code>options("mc.cores" = 1)</code>, otherwise you may not be able to see the error messages generated in
+child nodes.</p></li>
 <li><p><strong>Confidence interval</strong>: if <code>CI</code> is set to <code>TRUE</code>, a confidence interval is
 calculated as described in Choi &amp; Shin, 2021. This is also necessary for using
-<code><a href="equality_test.html">equality_test</a></code> to test differences between correlations at two time points.
+<code><a href="test_equality.html">test_equality</a></code> to test differences between correlations at two time points.
 The computation of the confidence intervals involves multiple internal
 functions (see <code><a href="CI.html">CI</a></code> for details).</p></li>
 </ul></div>
@@ -232,8 +249,18 @@ functions (see <code><a href="CI.html">CI</a></code> for details).</p></li>
 <p>The function calls the kernel smoothing procedure on each component required
 to compute the time-varying correlation. It returns a dataframe with the time,
 the correlation value and the underlying components used for the computation.</p></li>
+<li><p><code>calc_RMSE()</code>: Internal function computing the root mean square error (RMSE) for a given bandwidth.</p>
+<p>The function removes each time point one by one and predicts the correlation
+at the missing time point based on the other time points. It then computes
+and returns the RMSE between this predicted correlation and the one predicted
+using the full dataset. See also <em>Bandwidth selection</em> and <em>Parallel
+computation</em> in
+<strong>Details</strong>.</p></li>
 <li><p><code>select_h()</code>: Internal function selecting the optimal bandwidth parameter <code>h</code>.</p>
-<p>See <em>Bandwidth selection</em> in <strong>Details</strong>.</p></li>
+<p>The function selects and returns the optimal bandwidth parameter <code>h</code> using an
+optimizer (<code><a href="https://rdrr.io/r/stats/optimize.html" class="external-link">stats::optimize()</a></code>) which searches the <code>h</code> value associated with
+the smallest RMSE returned by <code>calc_RMSE()</code>. See also <em>Bandwidth selection</em>
+in <strong>Details</strong>.</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
@@ -242,7 +269,7 @@ J. Korean Stat. Soc. 50, 333–353 (2021). <a href="https://doi.org/10.1007/s429
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="equality_test.html">equality_test</a></code>, <code><a href="kern_smooth.html">kern_smooth</a></code>, <code><a href="CI.html">CI</a></code></p></div>
+    <div class="dont-index"><p><code><a href="test_equality.html">test_equality</a></code>, <code><a href="kern_smooth.html">kern_smooth</a></code>, <code><a href="CI.html">CI</a></code></p></div>
     </div>
 
     <div class="section level2">
@@ -254,25 +281,25 @@ J. Korean Stat. Soc. 50, 333–353 (2021). <a href="https://doi.org/10.1007/s429
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Effect of the bandwidth</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">res_h50</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">stockprice</span>, <span class="fu">tcor</span><span class="op">(</span>x <span class="op">=</span> <span class="va">SP500</span>, y <span class="op">=</span> <span class="va">FTSE100</span>, t <span class="op">=</span> <span class="va">DateID</span>, h <span class="op">=</span> <span class="fl">50</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">res_h50</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">stockprice</span>, <span class="fu">tcor</span><span class="op">(</span>x <span class="op">=</span> <span class="va">SP500</span>, y <span class="op">=</span> <span class="va">FTSE100</span>, t <span class="op">=</span> <span class="va">DateID</span>, h <span class="op">=</span> <span class="fl">50</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">res_h100</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">stockprice</span>, <span class="fu">tcor</span><span class="op">(</span>x <span class="op">=</span> <span class="va">SP500</span>, y <span class="op">=</span> <span class="va">FTSE100</span>, t <span class="op">=</span> <span class="va">DateID</span>, h <span class="op">=</span> <span class="fl">100</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">res_h200</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">stockprice</span>, <span class="fu">tcor</span><span class="op">(</span>x <span class="op">=</span> <span class="va">SP500</span>, y <span class="op">=</span> <span class="va">FTSE100</span>, t <span class="op">=</span> <span class="va">DateID</span>, h <span class="op">=</span> <span class="fl">200</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">res_h200</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">stockprice</span>, <span class="fu">tcor</span><span class="op">(</span>x <span class="op">=</span> <span class="va">SP500</span>, y <span class="op">=</span> <span class="va">FTSE100</span>, t <span class="op">=</span> <span class="va">DateID</span>, h <span class="op">=</span> <span class="fl">200</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res_h50</span>, type <span class="op">=</span> <span class="st">"l"</span>, ylab <span class="op">=</span> <span class="st">"Cor"</span>, xlab <span class="op">=</span> <span class="st">"Time"</span>, las <span class="op">=</span> <span class="fl">1</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">res_h100</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">res_h200</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topright"</span>, fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey"</span>, <span class="st">"blue"</span>, <span class="st">"red"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"bottom"</span>, horiz <span class="op">=</span> <span class="cn">TRUE</span>, fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey"</span>, <span class="st">"blue"</span>, <span class="st">"red"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>       legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"50"</span>, <span class="st">"100"</span>, <span class="st">"200"</span><span class="op">)</span>, bty <span class="op">=</span> <span class="st">"n"</span>, title <span class="op">=</span> <span class="st">"Bandwidth (h)"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="tcor-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Effect of the correlation method</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">res_pearson</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">stockprice</span>, <span class="fu">tcor</span><span class="op">(</span>x <span class="op">=</span> <span class="va">SP500</span>, y <span class="op">=</span> <span class="va">FTSE100</span>, t <span class="op">=</span> <span class="va">DateID</span>, h <span class="op">=</span> <span class="fl">150</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">res_pearson</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">stockprice</span>, <span class="fu">tcor</span><span class="op">(</span>x <span class="op">=</span> <span class="va">SP500</span>, y <span class="op">=</span> <span class="va">FTSE100</span>, t <span class="op">=</span> <span class="va">DateID</span>, h <span class="op">=</span> <span class="fl">150</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">res_spearman</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">stockprice</span>, <span class="fu">tcor</span><span class="op">(</span>x <span class="op">=</span> <span class="va">SP500</span>, y <span class="op">=</span> <span class="va">FTSE100</span>, t <span class="op">=</span> <span class="va">DateID</span>, h <span class="op">=</span> <span class="fl">150</span>,</span></span>
-<span class="r-in"><span>                                     cor.method <span class="op">=</span> <span class="st">"spearman"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                                      cor.method <span class="op">=</span> <span class="st">"spearman"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res_pearson</span>, type <span class="op">=</span> <span class="st">"l"</span>, ylab <span class="op">=</span> <span class="st">"Cor"</span>, xlab <span class="op">=</span> <span class="st">"Time"</span>, las <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">res_spearman</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topright"</span>, fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"black"</span>, <span class="st">"blue"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"bottom"</span>, horiz <span class="op">=</span> <span class="cn">TRUE</span>, fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"black"</span>, <span class="st">"blue"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>       legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pearson"</span>, <span class="st">"spearman"</span><span class="op">)</span>, bty <span class="op">=</span> <span class="st">"n"</span>, title <span class="op">=</span> <span class="st">"cor.method"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="tcor-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -286,11 +313,10 @@ J. Korean Stat. Soc. 50, 333–353 (2021). <a href="https://doi.org/10.1007/s429
 <span class="r-in"><span>                                           kernel <span class="op">=</span> <span class="st">"normal"</span>, cor.method <span class="op">=</span> <span class="st">"spearman"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">stockprice</span><span class="op">$</span><span class="va">SP500</span>, <span class="va">stockprice</span><span class="op">$</span><span class="va">FTSE100</span>, use <span class="op">=</span> <span class="st">"pairwise.complete.obs"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">rho</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">stockprice</span><span class="op">$</span><span class="va">SP500</span>, <span class="va">stockprice</span><span class="op">$</span><span class="va">FTSE100</span>, method <span class="op">=</span> <span class="st">"spearman"</span>, use <span class="op">=</span> <span class="st">"pairwise.complete.obs"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res_pearson_hInf</span>, type <span class="op">=</span> <span class="st">"l"</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, ylab <span class="op">=</span> <span class="st">"Cor"</span>, xlab <span class="op">=</span> <span class="st">"Time"</span>, las <span class="op">=</span> <span class="fl">1</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">res_spearman_hInf</span>, type <span class="op">=</span> <span class="st">"l"</span>, lwd <span class="op">=</span> <span class="fl">4</span>, col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>h <span class="op">=</span> <span class="va">r</span>, col <span class="op">=</span> <span class="st">"red"</span>, lty <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>h <span class="op">=</span> <span class="va">rho</span>, col <span class="op">=</span> <span class="st">"green"</span>, lty <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="tcor-3.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">res_pearson_hInf</span><span class="op">$</span><span class="va">r</span><span class="op">)</span> <span class="op">-</span> <span class="va">r</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="co">## 0 indicates near equality</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">res_spearman_hInf</span><span class="op">$</span><span class="va">r</span><span class="op">)</span> <span class="op">-</span> <span class="va">rho</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="co">## 0 indicates near equality</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Computing and plotting the confidence interval</span></span></span>
@@ -300,48 +326,85 @@ J. Korean Stat. Soc. 50, 333–353 (2021). <a href="https://doi.org/10.1007/s429
 <span class="r-in"><span>     <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">r</span> <span class="op">~</span> <span class="va">t</span>, type <span class="op">=</span> <span class="st">"l"</span>, ylab <span class="op">=</span> <span class="st">"Cor"</span>, xlab <span class="op">=</span> <span class="st">"Time"</span>, las <span class="op">=</span> <span class="fl">1</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span>     <span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">lwr</span> <span class="op">~</span> <span class="va">t</span>, type <span class="op">=</span> <span class="st">"l"</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span>     <span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">upr</span> <span class="op">~</span> <span class="va">t</span>, type <span class="op">=</span> <span class="st">"l"</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">}</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="tcor-3.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Same using tidyverse packages (dplyr and ggplot2 must be installed)</span></span></span>
+<span class="r-in"><span><span class="co">## see https://github.com/courtiol/timevarcorr for more examples of this kind</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://dplyr.tidyverse.org" class="external-link">"dplyr"</a></span>, warn.conflicts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="va">stockprice</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/reframe.html" class="external-link">reframe</a></span><span class="op">(</span><span class="fu">tcor</span><span class="op">(</span>x <span class="op">=</span> <span class="va">SP500</span>, y <span class="op">=</span> <span class="va">FTSE100</span>, t <span class="op">=</span> <span class="va">DateID</span>,</span></span>
+<span class="r-in"><span>                 h <span class="op">=</span> <span class="fl">200</span>, CI <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">res_tidy</span></span></span>
+<span class="r-in"><span>  <span class="va">res_tidy</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: dplyr</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 4,326 × 5</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    t              r     SE   lwr   upr</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 2000-04-03 0.453 0.082<span style="text-decoration: underline;">3</span> 0.292 0.615</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 2000-04-04 0.453 0.082<span style="text-decoration: underline;">1</span> 0.292 0.614</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 2000-04-05 0.453 0.081<span style="text-decoration: underline;">9</span> 0.293 0.614</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 2000-04-06 0.453 0.081<span style="text-decoration: underline;">7</span> 0.293 0.613</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 2000-04-07 0.453 0.081<span style="text-decoration: underline;">5</span> 0.294 0.613</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 2000-04-10 0.453 0.081<span style="text-decoration: underline;">3</span> 0.294 0.612</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 2000-04-11 0.453 0.081<span style="text-decoration: underline;">1</span> 0.294 0.612</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 2000-04-12 0.452 0.080<span style="text-decoration: underline;">9</span> 0.294 0.611</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 2000-04-13 0.452 0.080<span style="text-decoration: underline;">7</span> 0.294 0.610</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 2000-04-14 0.452 0.080<span style="text-decoration: underline;">5</span> 0.294 0.610</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 4,316 more rows</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://ggplot2.tidyverse.org" class="external-link">"ggplot2"</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">res_tidy</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">t</span>, y <span class="op">=</span> <span class="va">r</span>, ymin <span class="op">=</span> <span class="va">lwr</span>, ymax <span class="op">=</span> <span class="va">upr</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"SP500 vs FTSE100"</span>, x <span class="op">=</span> <span class="st">"Time"</span>, y <span class="op">=</span> <span class="st">"Correlation"</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_classic</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: ggplot2</span>
 <span class="r-plt img"><img src="tcor-4.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Automatic selection of the bandwidth using parallel processing and comparison</span></span></span>
-<span class="r-in"><span><span class="co">## of the 3 alternative kernels on full dataset</span></span></span>
-<span class="r-in"><span><span class="co"># nb: takes a few minutes to run, so not run by default</span></span></span>
+<span class="r-in"><span><span class="co">## of the 3 alternative kernels on the first 500 time points of the dataset</span></span></span>
+<span class="r-in"><span><span class="co"># nb: takes a few seconds to run, so not run by default</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">run</span> <span class="op">&lt;-</span> <span class="fu"><a href="in_pkgdown.html">in_pkgdown</a></span><span class="op">(</span><span class="op">)</span> <span class="op">||</span> <span class="cn">FALSE</span> <span class="co">## change to TRUE to run the example</span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="va">run</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="st">"mc.cores"</span> <span class="op">=</span> <span class="fl">2L</span><span class="op">)</span> <span class="co">## CPU cores to be used for parallel processing</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">res_hauto_epanech</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">stockprice</span>,</span></span>
+<span class="r-in"><span><span class="va">res_hauto_epanech</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">stockprice</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">500</span>, <span class="op">]</span>,</span></span>
 <span class="r-in"><span>         <span class="fu">tcor</span><span class="op">(</span>x <span class="op">=</span> <span class="va">SP500</span>, y <span class="op">=</span> <span class="va">FTSE100</span>, t <span class="op">=</span> <span class="va">DateID</span>, kernel <span class="op">=</span> <span class="st">"epanechnikov"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>         <span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">res_hauto_box</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">stockprice</span>,</span></span>
+<span class="r-in"><span><span class="va">res_hauto_box</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">stockprice</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">500</span>, <span class="op">]</span>,</span></span>
 <span class="r-in"><span>          <span class="fu">tcor</span><span class="op">(</span>x <span class="op">=</span> <span class="va">SP500</span>, y <span class="op">=</span> <span class="va">FTSE100</span>, t <span class="op">=</span> <span class="va">DateID</span>, kernel <span class="op">=</span> <span class="st">"box"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>          <span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">res_hauto_norm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">stockprice</span>,</span></span>
+<span class="r-in"><span><span class="va">res_hauto_norm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">stockprice</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">500</span>, <span class="op">]</span>,</span></span>
 <span class="r-in"><span>          <span class="fu">tcor</span><span class="op">(</span>x <span class="op">=</span> <span class="va">SP500</span>, y <span class="op">=</span> <span class="va">FTSE100</span>, t <span class="op">=</span> <span class="va">DateID</span>, kernel <span class="op">=</span> <span class="st">"norm"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>          <span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res_hauto_epanech</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="st">"red"</span>,</span></span>
 <span class="r-in"><span>     ylab <span class="op">=</span> <span class="st">"Cor"</span>, xlab <span class="op">=</span> <span class="st">"Time"</span>, las <span class="op">=</span> <span class="fl">1</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">res_hauto_box</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">res_hauto_box</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">res_hauto_norm</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="st">"orange"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topright"</span>, fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"blue"</span>, <span class="st">"orange"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"top"</span>, horiz <span class="op">=</span> <span class="cn">TRUE</span>, fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"grey"</span>, <span class="st">"orange"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>       legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"epanechnikov"</span>, <span class="st">"box"</span>, <span class="st">"normal"</span><span class="op">)</span>, bty <span class="op">=</span> <span class="st">"n"</span>,</span></span>
 <span class="r-in"><span>       title <span class="op">=</span> <span class="st">"Kernel"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Bandwidth selection using LOO-CV... (may take a while)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> h selected using LOO-CV = 195.7</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Bandwidth automatic selection completed in 144.4 seconds</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Bandwidth selection using LOO-CV... (may take a while)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> h selected using LOO-CV = 341.7</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Bandwidth automatic selection completed in 182.3 seconds</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Bandwidth selection using LOO-CV... (may take a while)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> h selected using LOO-CV = 66.9</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Bandwidth automatic selection completed in 182.4 seconds</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> h selected using LOO-CV = 57.3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Bandwidth automatic selection completed in 5.8 seconds</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> h selected using LOO-CV = 75.6</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Bandwidth automatic selection completed in 8.8 seconds</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> h selected using LOO-CV = 60.9</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Bandwidth automatic selection completed in 8.6 seconds</span>
 <span class="r-plt img"><img src="tcor-5.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
@@ -350,17 +413,17 @@ J. Korean Stat. Soc. 50, 333–353 (2021). <a href="https://doi.org/10.1007/s429
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="va">run</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">res_epanech</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">stockprice</span>,</span></span>
+<span class="r-in"><span><span class="va">res_epanech</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">stockprice</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">500</span>, <span class="op">]</span>,</span></span>
 <span class="r-in"><span>          <span class="fu">tcor</span><span class="op">(</span>x <span class="op">=</span> <span class="va">SP500</span>, y <span class="op">=</span> <span class="va">FTSE100</span>, t <span class="op">=</span> <span class="va">DateID</span>,</span></span>
 <span class="r-in"><span>          kernel <span class="op">=</span> <span class="st">"epanechnikov"</span>, h <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">res_hauto_epanech</span>, <span class="st">"h"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span>          <span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">res_box</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">stockprice</span>,</span></span>
+<span class="r-in"><span><span class="va">res_box</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">stockprice</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">500</span>, <span class="op">]</span>,</span></span>
 <span class="r-in"><span>           <span class="fu">tcor</span><span class="op">(</span>x <span class="op">=</span> <span class="va">SP500</span>, y <span class="op">=</span> <span class="va">FTSE100</span>, t <span class="op">=</span> <span class="va">DateID</span>,</span></span>
 <span class="r-in"><span>           kernel <span class="op">=</span> <span class="st">"box"</span>, h <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">res_hauto_epanech</span>, <span class="st">"h"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span>           <span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">res_norm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">stockprice</span>,</span></span>
+<span class="r-in"><span><span class="va">res_norm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">stockprice</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">500</span>, <span class="op">]</span>,</span></span>
 <span class="r-in"><span>          <span class="fu">tcor</span><span class="op">(</span>x <span class="op">=</span> <span class="va">SP500</span>, y <span class="op">=</span> <span class="va">FTSE100</span>, t <span class="op">=</span> <span class="va">DateID</span>,</span></span>
 <span class="r-in"><span>          kernel <span class="op">=</span> <span class="st">"norm"</span>, h <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">res_hauto_epanech</span>, <span class="st">"h"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span>          <span class="op">)</span></span></span>
@@ -369,7 +432,7 @@ J. Korean Stat. Soc. 50, 333–353 (2021). <a href="https://doi.org/10.1007/s429
 <span class="r-in"><span>     las <span class="op">=</span> <span class="fl">1</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">res_box</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">res_norm</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="st">"orange"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topright"</span>, fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"grey"</span>, <span class="st">"orange"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"top"</span>, horiz <span class="op">=</span> <span class="cn">TRUE</span>, fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"grey"</span>, <span class="st">"orange"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>       legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"epanechnikov"</span>, <span class="st">"box"</span>, <span class="st">"normal"</span><span class="op">)</span>, bty <span class="op">=</span> <span class="st">"n"</span>,</span></span>
 <span class="r-in"><span>       title <span class="op">=</span> <span class="st">"Kernel"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -377,12 +440,12 @@ J. Korean Stat. Soc. 50, 333–353 (2021). <a href="https://doi.org/10.1007/s429
 <span class="r-plt img"><img src="tcor-6.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Automatic selection of the bandwidth using parallel processing with CI</span></span></span>
-<span class="r-in"><span><span class="co"># nb: takes a few minutes to run, so not run by default</span></span></span>
+<span class="r-in"><span><span class="co"># nb: takes a few seconds to run, so not run by default</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">run</span> <span class="op">&lt;-</span> <span class="fu"><a href="in_pkgdown.html">in_pkgdown</a></span><span class="op">(</span><span class="op">)</span> <span class="op">||</span> <span class="cn">FALSE</span> <span class="co">## change to TRUE to run the example</span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="va">run</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">res_hauto_epanechCI</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">stockprice</span>,</span></span>
+<span class="r-in"><span><span class="va">res_hauto_epanechCI</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">stockprice</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">500</span>, <span class="op">]</span>,</span></span>
 <span class="r-in"><span>          <span class="fu">tcor</span><span class="op">(</span>x <span class="op">=</span> <span class="va">SP500</span>, y <span class="op">=</span> <span class="va">FTSE100</span>, t <span class="op">=</span> <span class="va">DateID</span>, CI <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span>          <span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -392,44 +455,42 @@ J. Korean Stat. Soc. 50, 333–353 (2021). <a href="https://doi.org/10.1007/s429
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">res_hauto_epanechCI</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"t"</span>, <span class="st">"upr"</span><span class="op">)</span><span class="op">]</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="st">"red"</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Bandwidth selection using LOO-CV... (may take a while)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> h selected using LOO-CV = 195.7</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Bandwidth automatic selection completed in 144.7 seconds</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> h selected using LOO-CV = 57.3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Bandwidth automatic selection completed in 6.1 seconds</span>
 <span class="r-plt img"><img src="tcor-7.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Not all kernels work well in all situations</span></span></span>
+<span class="r-in"><span><span class="co">## Here the default kernell estimation leads to issues for last time points</span></span></span>
 <span class="r-in"><span><span class="co">## nb1: EuStockMarkets is a time-series object provided with R</span></span></span>
 <span class="r-in"><span><span class="co">## nb2: takes a few minutes to run, so not run by default</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">run</span> <span class="op">&lt;-</span> <span class="fu"><a href="in_pkgdown.html">in_pkgdown</a></span><span class="op">(</span><span class="op">)</span> <span class="op">||</span> <span class="cn">FALSE</span> <span class="co">## change to TRUE to run the example</span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="va">run</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">EuStock_norm</span> <span class="op">&lt;-</span> <span class="fu">tcor</span><span class="op">(</span><span class="va">EuStockMarkets</span><span class="op">[</span>, <span class="st">"DAX"</span><span class="op">]</span>, <span class="va">EuStockMarkets</span><span class="op">[</span>, <span class="st">"SMI"</span><span class="op">]</span>, kernel <span class="op">=</span> <span class="st">"normal"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">EuStock_norm</span>, type <span class="op">=</span> <span class="st">"l"</span>, las <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="co">## normal kernel seems to work great with these data</span></span></span>
+<span class="r-in"><span><span class="va">EuStock_epanech</span> <span class="op">&lt;-</span> <span class="fu">tcor</span><span class="op">(</span><span class="va">EuStockMarkets</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">500</span>, <span class="st">"DAX"</span><span class="op">]</span>, <span class="va">EuStockMarkets</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">500</span>, <span class="st">"SMI"</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">EuStock_norm</span> <span class="op">&lt;-</span> <span class="fu">tcor</span><span class="op">(</span><span class="va">EuStockMarkets</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">500</span>, <span class="st">"DAX"</span><span class="op">]</span>, <span class="va">EuStockMarkets</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">500</span>, <span class="st">"SMI"</span><span class="op">]</span>, kernel <span class="op">=</span> <span class="st">"normal"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">EuStock_epanech</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="st">"red"</span>, las <span class="op">=</span> <span class="fl">1</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">EuStock_norm</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="st">"orange"</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"bottom"</span>, horiz <span class="op">=</span> <span class="cn">TRUE</span>, fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"orange"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>       legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"epanechnikov"</span>, <span class="st">"normal"</span><span class="op">)</span>, bty <span class="op">=</span> <span class="st">"n"</span>,</span></span>
+<span class="r-in"><span>       title <span class="op">=</span> <span class="st">"Kernel"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Bandwidth selection using LOO-CV... (may take a while)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> h selected using LOO-CV = 344.6</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Bandwidth selection using elbow criterion... (may take a while)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> h selected using elbow criterion = 214.8</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Bandwidth automatic selection completed in 86.9 seconds</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> h selected using LOO-CV = 71.7</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Bandwidth automatic selection completed in 4.3 seconds</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Numerical issues occured when computing the correlation values for the bandwidth value h = 71.7 resulting in `NA`(s) (see Details on *Numerical issues* in `?tcor`).</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  You may want to:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  - try another bandwidth value using the argument `h`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  - try another kernel using the argument `kernel`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  - adjust the smoothing parameters using the argument `param_smoother` (see `?kern_smooth`).</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  This may not be an issue, if you are estimating `h` automatically, as issues may occur only for sub-optimal bandwidth values.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>1 out of 500 correlation values were estimated out of the [-1, 1] range and where thus forced to [-1, 1]. Using another kernel may avoid such problem.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> h selected using LOO-CV = 178.3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> h selected using elbow criterion = 54</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Bandwidth automatic selection completed in 17.5 seconds</span>
 <span class="r-plt img"><img src="tcor-8.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">run</span> <span class="op">&lt;-</span> <span class="fu"><a href="in_pkgdown.html">in_pkgdown</a></span><span class="op">(</span><span class="op">)</span> <span class="op">||</span> <span class="cn">FALSE</span> <span class="co">## change to TRUE to run the example</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="va">run</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">EuStock_epanech</span> <span class="op">&lt;-</span> <span class="fu">tcor</span><span class="op">(</span><span class="va">EuStockMarkets</span><span class="op">[</span>, <span class="st">"DAX"</span><span class="op">]</span>, <span class="va">EuStockMarkets</span><span class="op">[</span>, <span class="st">"SMI"</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">EuStock_epanech</span>, type <span class="op">=</span> <span class="st">"l"</span>, las <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="co">## problem of estimation for first and last years</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Bandwidth selection using LOO-CV... (may take a while)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> h selected using LOO-CV = 260.4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Bandwidth automatic selection completed in 23.3 seconds</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>NaNs produced</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>NaNs produced</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>24 out of 1860 correlation values were estimated out of the [-1, 1] range and where thus forced to [-1, 1]. Using another kernel may avoid such problem.</span>
-<span class="r-plt img"><img src="tcor-9.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
@@ -547,6 +608,25 @@ J. Korean Stat. Soc. 50, 333–353 (2021). <a href="https://doi.org/10.1007/s429
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">###########################################################</span></span></span>
+<span class="r-in"><span><span class="co">## Examples for the internal function computing the RMSE ##</span></span></span>
+<span class="r-in"><span><span class="co">###########################################################</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Compute the RMSE on the correlation estimate</span></span></span>
+<span class="r-in"><span><span class="co"># nb: takes a few seconds to run, so not run by default</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">run</span> <span class="op">&lt;-</span> <span class="fu"><a href="in_pkgdown.html">in_pkgdown</a></span><span class="op">(</span><span class="op">)</span> <span class="op">||</span> <span class="cn">FALSE</span> <span class="co">## change to TRUE to run the example</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="va">run</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">small_clean_dataset</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html" class="external-link">na.omit</a></span><span class="op">(</span><span class="va">stockprice</span><span class="op">)</span>, n <span class="op">=</span> <span class="fl">200</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">small_clean_dataset</span>, <span class="fu">calc_RMSE</span><span class="op">(</span>x <span class="op">=</span> <span class="va">SP500</span>, y <span class="op">=</span> <span class="va">FTSE100</span>, t <span class="op">=</span> <span class="va">DateID</span>, h <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.541382</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">################################################################</span></span></span>
 <span class="r-in"><span><span class="co">## Examples for the internal function selecting the bandwidth ##</span></span></span>
 <span class="r-in"><span><span class="co">################################################################</span></span></span>
@@ -561,20 +641,20 @@ J. Korean Stat. Soc. 50, 333–353 (2021). <a href="https://doi.org/10.1007/s429
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">small_clean_dataset</span>, <span class="fu">select_h</span><span class="op">(</span>x <span class="op">=</span> <span class="va">SP500</span>, y <span class="op">=</span> <span class="va">FTSE100</span>, t <span class="op">=</span> <span class="va">DateID</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> h selected using LOO-CV = 105</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> h selected using LOO-CV = 105.1</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Bandwidth automatic selection completed in 3.4 seconds</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $h</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 104.9554</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 105.0813</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $h_selection</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "LOO-CV"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $CV_error</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.523363</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $RMSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.234257</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $time</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   4.582   1.992   3.439 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> elapsed </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3.387 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
