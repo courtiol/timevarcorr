@@ -104,6 +104,10 @@ kern_smooth <- function(x, t = seq_along(x), h, t.for.pred = t,
 
   } else if (kernel == "epanechnikov") {
 
+    ## if the bandwith is infinite, "epanechnikov" is not possible
+    if (is.infinite(h)) {
+      stop("Bandwidth (`h`) must be finite for kernel 'epanechnikov'.")
+    }
     param_list <- c(param_smoother, list(x = tt, y = xx, bandwidth = h, x.out = t.for.pred))
     res <- do.call(lpridge::lpepa, param_list)
     original_order <- order(t.for.pred)
