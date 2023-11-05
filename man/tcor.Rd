@@ -222,6 +222,7 @@ rho <- cor(stockprice$SP500, stockprice$FTSE100, method = "spearman", use = "pai
 round(unique(res_pearson_hInf$r) - r, digits = 3) ## 0 indicates near equality
 round(unique(res_spearman_hInf$r) - rho, digits = 3) ## 0 indicates near equality
 
+
 ## Computing and plotting the confidence interval
 
 res_withCI <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, h = 200, CI = TRUE))

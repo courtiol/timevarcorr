@@ -137,6 +137,7 @@ NULL
 #' round(unique(res_pearson_hInf$r) - r, digits = 3) ## 0 indicates near equality
 #' round(unique(res_spearman_hInf$r) - rho, digits = 3) ## 0 indicates near equality
 #'
+#'
 #' ## Computing and plotting the confidence interval
 #'
 #' res_withCI <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, h = 200, CI = TRUE))
@@ -411,14 +412,19 @@ calc_rho <- function(x, y, t = seq_along(x), t.for.pred = t, h, cor.method = c("
   x_smoothed <- kern_smooth(x = x, t = t, h = h, t.for.pred = t.for.pred,
                             kernel = kernel, param_smoother = param_smoother, output = "list") ## separate call to retrieve t once (and x)
   other_smoothed_list <- apply(U[, -1], 2L, function(v) {
-    kern_smooth(x = v, t = t, h = h, t.for.pred = t.for.pred, kernel = kernel, param_smoother = param_smoother, output = "list")$x
+   kern_smooth(x = v, t = t, h = h, t.for.pred = t.for.pred, kernel = kernel, param_smoother = param_smoother, output = "list")$x
   }, simplify = FALSE) ## combine call for everything else
 
   smoothed <- c(x_smoothed, other_smoothed_list) ## output as list, in any case: not to be coerced into matrix -> t can be a Date
 
   ## we compute the time varying correlation coefficient
-  smoothed$sd_x <- sqrt(smoothed$x2 - smoothed$x^2)
-  smoothed$sd_y <- sqrt(smoothed$y2 - smoothed$y^2)
+  var_x <- smoothed$x2 - smoothed$x^2
+  var_y <- smoothed$y2 - smoothed$y^2
+  smoothed$sd_x <- sqrt(ifelse(var_x > 0, var_x, NA))
+  smoothed$sd_y <- sqrt(ifelse(var_y > 0, var_y, NA))
+  if (any(is.na(c(smoothed$sd_x, smoothed$sd_y)))) {
+    message(paste("\nNumerical issues occured when computing the correlation values for the bandwidth value h =", round(h, digits = 2), "resulting in `NA`(s).\n You may want to:\n - try another bandwidth value using the argument `h`\n - try another kernel using the argument `kernel`\n - adjust the smoothing parameters using the argument `param_smoother` (see `?kern_smooth`).\n This may not be an issue, if you are estimating `h` automatically, as issues may occur only for sub-optimal bandwidth values.\n"))
+  }
   smoothed$rho <- (smoothed$xy - smoothed$x * smoothed$y) / (smoothed$sd_x * smoothed$sd_y)
 
   ## we rename the components so it is clear they are smoothed
@@ -426,7 +432,7 @@ calc_rho <- function(x, y, t = seq_along(x), t.for.pred = t, h, cor.method = c("
 
   ## we add original (non-smoothed) components:
   U_at_t_for_pred <- U[match(t.for.pred, t), , drop = FALSE]
-  cbind(U_at_t_for_pred, as.data.frame(smoothed))
+  cbind(U_at_t_for_pred, data.frame(smoothed))
 
 }
 
@@ -467,7 +473,7 @@ calc_RMSE <- function(h, x, y, t = seq_along(x), cor.method = c("pearson", "spea
                       kernel = c("epanechnikov", "box", "normal"), param_smoother = list(),
                       verbose = FALSE) {
 
-  CVi <- mclapply(seq_along(t), function(oob) { ## TODO: check scheduling effect and try to make this Windows friendly
+  CVi <- mclapply(seq_along(t), function(oob) { ## TODO: try to make this Windows friendly
     obj <- calc_rho(x = x[-oob], y = y[-oob], t = t[-oob], h = h, t.for.pred = t[oob],
                     cor.method = cor.method, kernel = kernel, param_smoother = param_smoother)
     (obj$rho_smoothed - ((x[oob] - obj$x_smoothed) * (y[oob] - obj$y_smoothed)) / (obj$sd_x_smoothed * obj$sd_y_smoothed))^2
