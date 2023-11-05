@@ -88,7 +88,7 @@ interval around the time-varying correlation coefficient.</p>
 
 
 <dt>l</dt>
-<dd><p>a scalar indicating a number of time steps.</p></dd>
+<dd><p>a scalar indicating a number of time points.</p></dd>
 
 
 <dt>L</dt>
@@ -140,7 +140,7 @@ The function returns a vector of length <code>t</code>.</p></li>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>Choi, JE., Shin, D.W. Nonparametric estimation of time varying correlation coefficient.
-J. Korean Stat. Soc. 50, 333–353 (2021). https://doi.org/10.1007/s42952-020-00073-6</p>
+J. Korean Stat. Soc. 50, 333–353 (2021). <a href="https://doi.org/10.1007/s42952-020-00073-6" class="external-link">doi:10.1007/s42952-020-00073-6</a></p>
 <p>Andrews, D. W. K. Heteroskedasticity and autocorrelation consistent covariance matrix estimation.
 Econometrica: Journal of the Econometric Society, 817-858 (1991).</p>
     </div>
@@ -180,7 +180,7 @@ Econometrica: Journal of the Econometric Society, 817-858 (1991).</p>
 <span class="r-in"><span><span class="co">## Computing `$\hat{H_t}$`</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">H</span> <span class="op">&lt;-</span> <span class="fu">calc_H</span><span class="op">(</span>smoothed_obj <span class="op">=</span> <span class="va">rho_obj</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">H</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span> <span class="co"># H array for the first two time steps</span></span></span>
+<span class="r-in"><span><span class="va">H</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span> <span class="co"># H array for the first two time points</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> , , 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>               [,1]          [,2]        [,3]        [,4]          [,5]</span>
@@ -204,7 +204,7 @@ Econometrica: Journal of the Econometric Society, 817-858 (1991).</p>
 <span class="r-in"><span><span class="co">## Computing `$\hat{e}_t$`</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">e</span> <span class="op">&lt;-</span> <span class="fu">calc_e</span><span class="op">(</span>smoothed_obj <span class="op">=</span> <span class="va">rho_obj</span>, H <span class="op">=</span> <span class="va">H</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="co"># e matrix for the first six time steps</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="co"># e matrix for the first six time points</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         x2_resid      y2_resid    x_resid    y_resid      xy_resid</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1,]  0.80844454 -1.0858300496 -0.3464174 -0.1790269 -0.8778333739</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [2,]  0.01029819  0.2348247345 -0.9998939  0.9448573  0.0024182690</span>
@@ -249,7 +249,7 @@ Econometrica: Journal of the Econometric Society, 817-858 (1991).</p>
 <span class="r-in"><span><span class="co">## Computing `$D_t$`</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">D</span> <span class="op">&lt;-</span> <span class="fu">calc_D</span><span class="op">(</span>smoothed_obj <span class="op">=</span> <span class="va">rho_obj</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">D</span><span class="op">)</span> <span class="co"># D matrix for the first six time steps</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">D</span><span class="op">)</span> <span class="co"># D matrix for the first six time points</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            [,1]       [,2]      [,3]      [,4]      [,5]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1,] -3200.4218 -1881.9156 22.727368 13.320330 11062.153</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [2,]  -878.8636 -2158.8784  9.647499 10.810085  4283.231</span>
@@ -266,7 +266,7 @@ Econometrica: Journal of the Econometric Society, 817-858 (1991).</p>
 <span class="r-in"><span><span class="co"># nb: takes a few seconds to run</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">SE</span> <span class="op">&lt;-</span> <span class="fu">calc_SE</span><span class="op">(</span>smoothed_obj <span class="op">=</span> <span class="va">rho_obj</span>, h <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">SE</span><span class="op">)</span> <span class="co"># SE vector for the first six time steps</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">SE</span><span class="op">)</span> <span class="co"># SE vector for the first six time points</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.09718916 0.07043209 0.06966624 0.06889940 0.10133594 0.10045678</span>
