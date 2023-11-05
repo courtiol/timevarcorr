@@ -90,7 +90,7 @@ as well as, if \code{CI = TRUE}:
 Some metadata are also attached to the dataframe (as attributes):
 \itemize{
 \item \code{h} the bandwidth parameter.
-\item \code{CV_error} the minimal Cross Validation error when \code{h} selected by CV.
+\item \code{RMSE} the minimal root mean square error when \code{h} selected by cross validation.
 \item \code{h_selection} the method used to select \code{h}.
 \item \code{h_select_duration} the computing time spent to select the bandwidth
 parameter.

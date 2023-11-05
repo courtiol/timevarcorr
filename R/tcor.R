@@ -69,7 +69,7 @@
 #'
 #' Some metadata are also attached to the dataframe (as attributes):
 #' - `h` the bandwidth parameter.
-#' - `CV_error` the minimal Cross Validation error when `h` selected by CV.
+#' - `RMSE` the minimal root mean square error when `h` selected by cross validation.
 #' - `h_selection` the method used to select `h`.
 #' - `h_select_duration` the computing time spent to select the bandwidth
 #' parameter.
@@ -263,7 +263,7 @@ tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "sp
   if (is.null(h)) {
     bandwidth_obj <- select_h(x = x_ori, y = y_ori, t = t_ori, cor.method = cor.method, kernel = kernel, param_smoother = param_smoother, verbose = verbose)
   } else {
-    bandwidth_obj <- list(h = h, h_selection = "fixed by user", CV_error = NA, time = NULL)
+    bandwidth_obj <- list(h = h, h_selection = "fixed by user", RMSE = NA, time = NULL)
   }
 
 
@@ -312,7 +312,7 @@ tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "sp
   attr(res, "call") <- match.call()
   attr(res, "CI") <- CI
   attr(res, "h") <- bandwidth_obj$h
-  attr(res, "CV_error") <- bandwidth_obj$CV_error
+  attr(res, "RMSE") <- bandwidth_obj$RMSE
   attr(res, "h_selection") <- bandwidth_obj$h_selection
   attr(res, "h_select_duration") <- bandwidth_obj$time
   res
@@ -441,7 +441,7 @@ select_h <- function(x, y, t = seq_along(x), cor.method = c("pearson", "spearman
                      kernel = c("epanechnikov", "box", "normal"), param_smoother = list(),
                      verbose = FALSE) {
 
-  CV_error <- NA # default value for export if not computed
+  RMSE <- NA # default value for export if not computed
 
   ## check nb.cores input
   if (is.null(options("mc.cores")[[1]])) {
@@ -469,7 +469,7 @@ select_h <- function(x, y, t = seq_along(x), cor.method = c("pearson", "spearman
     if (length(x) > 500) message("Bandwidth selection using LOO-CV... (may take a while)")
 
     ## define function for performing leave-one-out cross-validation ## TODO: extract code into standalone function
-    CV <- function(h) {
+    calc_RMSE <- function(h) {
       CVi <- mclapply(seq_along(t), function(oob) { ## TODO: check scheduling effect and try to make this Windows friendly
         obj <- calc_rho(x = x[-oob], y = y[-oob], t = t[-oob], h = h, t.for.pred = t[oob],
                         cor.method = cor.method, kernel = kernel, param_smoother = param_smoother)
@@ -477,53 +477,53 @@ select_h <- function(x, y, t = seq_along(x), cor.method = c("pearson", "spearman
       })
       CVi_num <- as.numeric(CVi)
       failing <- is.na(CVi_num)
-      res <- mean(CVi_num[!failing])
+      res <- sqrt(mean(CVi_num[!failing]))
       if (verbose) {
-        print(paste("h =", round(h, digits = 1L), "    # failing =", sum(failing),"    CV =", res))
+        print(paste("h =", round(h, digits = 1L), "    # failing =", sum(failing),"    RMSE =", res))
       }
       res
     }
 
     ## estimate h by cross-validation
     h_max <- 8*sqrt(length(x))
-    opt <- stats::optimize(CV, interval = c(1, h_max), tol = 1) ## TODO: check if other optimizer would be best
+    opt <- stats::optimize(calc_RMSE, interval = c(1, h_max), tol = 1) ## TODO: check if other optimizer would be best
 
     ## if h_max is best, use elbow criterion instead
     h <- opt$minimum
-    CV_error <- opt$objective
+    RMSE <- opt$objective
     message(paste("h selected using LOO-CV =", round(h, digits = 1L)))
-    CV_bound <- CV(h_max)
+    RMSE_bound <- calc_RMSE(h_max)
 
-    if (CV_bound <= opt$objective) {
-      CV_error <- NA # remove stored value since not used in this case
+    if (RMSE_bound <= opt$objective) {
+      RMSE <- NA # remove stored value since not used in this case
       h_selection <- "elbow criterion"
 
       if (length(x) > 500) message("Bandwidth selection using elbow criterion... (may take a while)")
 
-      RMSE_Lh0 <- function(h0) {
+      calc_RMSE_Lh0 <- function(h0) {
         d <- data.frame(h = 1:h0)
-        d$CV_h <- sapply(h, CV)
-        fit_Lh0 <- stats::lm(CV_h ~ h, data = d)
+        d$RMSE_h <- sapply(h, calc_RMSE)
+        fit_Lh0 <- stats::lm(RMSE_h ~ h, data = d)
         sqrt(mean(stats::residuals(fit_Lh0)^2))
       }
 
-      RMSE_Rh0 <- function(h0) {
+      calc_RMSE_Rh0 <- function(h0) {
         d <- data.frame(h = (h0 + 1):h_max)
-        d$CV_h <- sapply(h, CV)
-        fit_Rh0 <- stats::lm(CV_h ~ h, data = d)
+        d$RMSE_h <- sapply(h, calc_RMSE)
+        fit_Rh0 <- stats::lm(RMSE_h ~ h, data = d)
         sqrt(mean(stats::residuals(fit_Rh0)^2))
       }
 
-      RMSE_h0 <- function(h0) {
-        (h0 - 1)/(h_max - 1)*RMSE_Lh0(h0) + (h_max - h0)/(h_max - 1)*RMSE_Rh0(h0)
+      calc_RMSE_h0 <- function(h0) {
+        (h0 - 1)/(h_max - 1)*calc_RMSE_Lh0(h0) + (h_max - h0)/(h_max - 1)*calc_RMSE_Rh0(h0)
       }
 
-      opt <- stats::optimize(RMSE_h0, interval = c(3, h_max - 1), tol = 1)
+      opt <- stats::optimize(calc_RMSE_h0, interval = c(3, h_max - 1), tol = 1)
       h <- opt$minimum
       message(paste("h selected using elbow criterion =", round(h, digits = 1L)))
     }
   })
   message(paste("Bandwidth automatic selection completed in", round(time[3], digits = 1L), "seconds"))
-  list(h = h, h_selection = h_selection, CV_error = CV_error, time = time)
+  list(h = h, h_selection = h_selection, RMSE = RMSE, time = time)
 }
 
