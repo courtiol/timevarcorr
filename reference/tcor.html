@@ -303,7 +303,9 @@ J. Korean Stat. Soc. 50, 333–353 (2021). https://doi.org/10.1007/s42952-020-00
 <span class="r-plt img"><img src="tcor-4.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="va">run</span> <span class="op">&lt;-</span> <span class="cn">FALSE</span> <span class="co">## change to TRUE to run the example</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="in_pkgdown.html">in_pkgdown</a></span><span class="op">(</span><span class="op">)</span> <span class="op">||</span> <span class="va">run</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Automatic selection of the bandwidth using parallel processing and comparison</span></span></span>
 <span class="r-in"><span><span class="co">## of the 3 alternative kernels on full dataset</span></span></span>
 <span class="r-in"><span><span class="co"># nb: takes a few minutes to run</span></span></span>
@@ -374,6 +376,76 @@ J. Korean Stat. Soc. 50, 333–353 (2021). https://doi.org/10.1007/s42952-020-00
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">EuStock_norm</span>, type <span class="op">=</span> <span class="st">"l"</span>, las <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="co">## normal kernel seems to work great with these data</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Bandwidth selection using LOO-CV... (may take a while)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 201.6     # failing = 0     CV = 2.08764519643487"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 325.6     # failing = 0     CV = 2.21924613330435"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 125     # failing = 0     CV = 2.14091620213884"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 203     # failing = 0     CV = 2.08826170690361"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 187.1     # failing = 0     CV = 2.08840042466167"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 196     # failing = 0     CV = 2.0861990034398"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 193.9     # failing = 0     CV = 2.086392818859"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 195.7     # failing = 0     CV = 2.08619517661523"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 195.4     # failing = 0     CV = 2.08619663848641"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 195.7     # failing = 0     CV = 2.08619517661523"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h selected using LOO-CV = 195.7"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 526.2     # failing = 0     CV = 2.46167213684195"</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Bandwidth selection using LOO-CV... (may take a while)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 201.6     # failing = 0     CV = 2.25542819153192"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 325.6     # failing = 0     CV = 2.1975295849905"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 402.2     # failing = 0     CV = 2.25728068995106"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 301.2     # failing = 0     CV = 2.21834188573994"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 354.8     # failing = 0     CV = 2.19244511353017"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 347.1     # failing = 0     CV = 2.18058740702519"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 341.3     # failing = 0     CV = 2.17640655635091"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 338.1     # failing = 0     CV = 2.17881121545308"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 342     # failing = 0     CV = 2.17640655635091"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 342.3     # failing = 0     CV = 2.17822314997221"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 341.7     # failing = 0     CV = 2.17640655635091"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 341.7     # failing = 0     CV = 2.17640655635091"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h selected using LOO-CV = 341.7"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 526.2     # failing = 0     CV = 2.37222938399386"</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Bandwidth selection using LOO-CV... (may take a while)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 201.6     # failing = 0     CV = 2.04852841335145"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 325.6     # failing = 0     CV = 2.07432447776168"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 125     # failing = 0     CV = 2.03593140574675"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 77.6     # failing = 0     CV = 1.98840794067827"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 48.4     # failing = 0     CV = 2.01457549389893"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 81     # failing = 0     CV = 1.99152784653414"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 71.1     # failing = 0     CV = 1.98411606519554"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 62.4     # failing = 0     CV = 1.98426401509373"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 66.9     # failing = 0     CV = 1.98309428279775"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 66.6     # failing = 0     CV = 1.9831074256887"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 67.3     # failing = 0     CV = 1.98311658023401"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 66.9     # failing = 0     CV = 1.98309428279775"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h selected using LOO-CV = 66.9"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 526.2     # failing = 0     CV = 2.15912112901739"</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Bandwidth selection using LOO-CV... (may take a while)</span>
+<span class="r-plt img"><img src="tcor-5.png" alt="" width="700" height="433"></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 201.6     # failing = 0     CV = 2.08764519643487"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 325.6     # failing = 0     CV = 2.21924613330435"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 125     # failing = 0     CV = 2.14091620213884"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 203     # failing = 0     CV = 2.08826170690361"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 187.1     # failing = 0     CV = 2.08840042466167"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 196     # failing = 0     CV = 2.0861990034398"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 193.9     # failing = 0     CV = 2.086392818859"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 195.7     # failing = 0     CV = 2.08619517661523"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 195.4     # failing = 0     CV = 2.08619663848641"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 195.7     # failing = 0     CV = 2.08619517661523"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h selected using LOO-CV = 195.7"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h = 526.2     # failing = 0     CV = 2.46167213684195"</span>
+<span class="r-plt img"><img src="tcor-6.png" alt="" width="700" height="433"></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Bandwidth selection using LOO-CV... (may take a while)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h selected using LOO-CV = 260.4"</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>NaNs produced</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>NaNs produced</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>24 out of 1860 correlation values were estimated out of the [-1, 1] range and where thus forced to [-1, 1]. Using another kernel may avoid such problem.</span>
+<span class="r-plt img"><img src="tcor-7.png" alt="" width="700" height="433"></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Bandwidth selection using LOO-CV... (may take a while)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h selected using LOO-CV = 344.6"</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Bandwidth selection using elbow criterion... (may take a while)</span>
+<span class="r-plt img"><img src="tcor-8.png" alt="" width="700" height="433"></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h selected using elbow criterion = 214.8"</span>
+<span class="r-plt img"><img src="tcor-9.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
@@ -488,12 +560,31 @@ J. Korean Stat. Soc. 50, 333–353 (2021). https://doi.org/10.1007/s42952-020-00
 <span class="r-in"><span><span class="co">## Examples for the internal function selecting the bandwidth ##</span></span></span>
 <span class="r-in"><span><span class="co">################################################################</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="va">run</span> <span class="op">&lt;-</span> <span class="cn">FALSE</span> <span class="co">## change to TRUE to run the example</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="in_pkgdown.html">in_pkgdown</a></span><span class="op">(</span><span class="op">)</span> <span class="op">||</span> <span class="va">run</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Automatic selection of the bandwidth using parallel processing</span></span></span>
-<span class="r-in"><span><span class="co"># nb: takes a few minutes to run</span></span></span>
+<span class="r-in"><span><span class="co"># nb: takes a few seconds to run</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="st">"mc.cores"</span> <span class="op">=</span> <span class="fl">2L</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html" class="external-link">na.omit</a></span><span class="op">(</span><span class="va">stockprice</span><span class="op">)</span>, <span class="fu">select_h</span><span class="op">(</span>x <span class="op">=</span> <span class="va">SP500</span>, y <span class="op">=</span> <span class="va">FTSE100</span>, t <span class="op">=</span> <span class="va">DateID</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">small_clean_dataset</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html" class="external-link">na.omit</a></span><span class="op">(</span><span class="va">stockprice</span><span class="op">)</span>, n <span class="op">=</span> <span class="fl">200</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">small_clean_dataset</span>, <span class="fu">select_h</span><span class="op">(</span>x <span class="op">=</span> <span class="va">SP500</span>, y <span class="op">=</span> <span class="va">FTSE100</span>, t <span class="op">=</span> <span class="va">DateID</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "h selected using LOO-CV = 105"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $h</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 104.9554</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $h_selection</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "LOO-CV"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $CV_error</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.523363</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $time</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   7.882   3.315   6.119 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
