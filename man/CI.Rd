@@ -36,7 +36,7 @@ calc_SE(
 
 \item{e}{an object created with \code{\link{calc_e}}.}
 
-\item{l}{a scalar indicating a number of time steps.}
+\item{l}{a scalar indicating a number of time points.}
 
 \item{L}{a scalar indicating a bandwidth parameter.}
 
@@ -104,13 +104,13 @@ head(rho_obj)
 ## Computing `$\hat{H_t}$`
 
 H <- calc_H(smoothed_obj = rho_obj)
-H[, , 1:2] # H array for the first two time steps
+H[, , 1:2] # H array for the first two time points
 
 
 ## Computing `$\hat{e}_t$`
 
 e <- calc_e(smoothed_obj = rho_obj, H = H)
-head(e) # e matrix for the first six time steps
+head(e) # e matrix for the first six time points
 
 
 ## Computing `$\hat{\Gamma}_l$`
@@ -133,7 +133,7 @@ sapply(c("yule-walker", "burg", "ols", "mle", "yw"),
 ## Computing `$D_t$`
 
 D <- calc_D(smoothed_obj = rho_obj)
-head(D) # D matrix for the first six time steps
+head(D) # D matrix for the first six time points
 
 
 run <- FALSE ## change to TRUE to run the example
@@ -143,7 +143,7 @@ if (in_pkgdown() || run) {
 # nb: takes a few seconds to run
 
 SE <- calc_SE(smoothed_obj = rho_obj, h = 50)
-head(SE) # SE vector for the first six time steps
+head(SE) # SE vector for the first six time points
 
 }
 
@@ -151,7 +151,7 @@ head(SE) # SE vector for the first six time steps
 }
 \references{
 Choi, JE., Shin, D.W. Nonparametric estimation of time varying correlation coefficient.
-J. Korean Stat. Soc. 50, 333–353 (2021). https://doi.org/10.1007/s42952-020-00073-6
+J. Korean Stat. Soc. 50, 333–353 (2021). \doi{10.1007/s42952-020-00073-6}
 
 Andrews, D. W. K. Heteroskedasticity and autocorrelation consistent covariance matrix estimation.
 Econometrica: Journal of the Econometric Society, 817-858 (1991).
