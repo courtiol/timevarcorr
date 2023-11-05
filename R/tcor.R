@@ -518,23 +518,23 @@ select_h <- function(x, y, t = seq_along(x), cor.method = c("pearson", "spearman
 
   RMSE <- NA # default value for export if not computed
 
-  ## check nb.cores input
+  ## check mc.cores input
   if (is.null(options("mc.cores")[[1]])) {
-    nb.cores <- 1
+    mc.cores <- 1
   } else {
-    nb.cores <- options("mc.cores")[[1]]
+    mc.cores <- options("mc.cores")[[1]]
   }
 
-  if (Sys.info()[['sysname']] != "Windows" && parallel::detectCores() < nb.cores) {
-    stop(paste("\nYour computer does not allow such a large value for the argument `nb.cores`. The maximum value you may consider is", parallel::detectCores(), ".\n"))
+  if (Sys.info()[['sysname']] != "Windows" && parallel::detectCores() < mc.cores) {
+    stop(paste("\nYour computer does not allow such a large value for the argument `mc.cores`. The maximum value you may consider is", parallel::detectCores(), ".\n"))
   }
 
-  if (Sys.info()[['sysname']] != "Windows" && parallel::detectCores() > 1 && nb.cores == 1) {
-    message("\nYou may set `nb.cores` to a number higher than 1 for faster computation.\n")
+  if (Sys.info()[['sysname']] != "Windows" && parallel::detectCores() > 1 && mc.cores == 1) {
+    message("\nYou may use several CPU cores for faster computation by calling `options('mc.cores' = XX)` with `XX` corresponding to the number of CPU cores to be used.\n")
   }
 
-  if (Sys.info()[['sysname']] == "Windows" && nb.cores > 1) {
-    message("\nThe argument `nb.cores` is ignore on Windows-based infrastructure.\n")
+  if (Sys.info()[['sysname']] == "Windows" && mc.cores > 1) {
+    message("\nThe argument `mc.cores` is ignore on Windows-based infrastructure.\n")
   }
 
   h_selection <- "LOO-CV"
