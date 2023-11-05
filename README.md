@@ -18,7 +18,7 @@ following the method described in the following paper:
 
 Choi, JE., Shin, D.W. Nonparametric estimation of time varying
 correlation coefficient. J. Korean Stat. Soc. 50, 333–353 (2021).
-<https://doi.org/10.1007/s42952-020-00073-6>
+<doi:10.1007/s42952-020-00073-6>
 
 The chief idea is to perform a non-parametric kernel smoothing (using a
 common bandwidth) of all underlying components required for the
@@ -82,7 +82,8 @@ d <- stockprice[1:500, ]
 example1 <- with(d, tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal"))
 #> 
 #> You may set `nb.cores` to a number higher than 1 for faster computation.
-#> [1] "h selected using LOO-CV = 60.9"
+#> h selected using LOO-CV = 60.9
+#> Bandwidth automatic selection completed in 9 seconds
 plot(example1, type = "l")
 ```
 
@@ -103,7 +104,6 @@ d |>
     geom_line() +
     labs(title = "SP500 vs FTSE100", x = "Time", y = "Correlation") +
     theme_classic()
-#> [1] "h selected using LOO-CV = 60.9"
 ```
 
 <img src="man/figures/README-example2-1.png" width="70%" style="display: block; margin: auto;" />
@@ -123,7 +123,8 @@ d |>
     theme_classic()
 #> 
 #> You may set `nb.cores` to a number higher than 1 for faster computation.
-#> [1] "h selected using LOO-CV = 60.9"
+#> h selected using LOO-CV = 60.9
+#> Bandwidth automatic selection completed in 8.6 seconds
 ```
 
 <img src="man/figures/README-example3-1.png" width="70%" style="display: block; margin: auto;" />
@@ -147,7 +148,8 @@ time points:
 example3 <- with(d, tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal", CI = TRUE))
 #> 
 #> You may set `nb.cores` to a number higher than 1 for faster computation.
-#> [1] "h selected using LOO-CV = 60.9"
+#> h selected using LOO-CV = 60.9
+#> Bandwidth automatic selection completed in 8.8 seconds
 equality_test(example3, t1 = "2000-05-02", t2 = "2001-05-02")
 #>           t1        r1         t2        r2   delta_r SE_delta_r   T_stat  df
 #> 1 2000-05-02 0.4354486 2001-05-02 0.5721993 0.1367507  0.1224749 1.116561 910
@@ -185,7 +187,7 @@ devtools::session_info()
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       Europe/Berlin
-#>  date     2023-11-04
+#>  date     2023-11-05
 #>  pandoc   3.1.8 @ /usr/lib/rstudio/resources/app/bin/quarto/bin/tools/x86_64/ (via rmarkdown)
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
@@ -251,7 +253,7 @@ devtools::session_info()
 #>  tidyselect    1.2.0      2022-10-10 [4] RSPM (R 4.2.0)
 #>  tidyverse   * 2.0.0      2023-02-22 [4] RSPM (R 4.2.0)
 #>  timechange    0.2.0      2023-01-11 [4] RSPM (R 4.2.0)
-#>  timevarcorr * 0.0.0.9006 2023-11-04 [1] local
+#>  timevarcorr * 0.0.0.9006 2023-11-05 [1] local
 #>  tzdb          0.4.0      2023-05-12 [4] RSPM (R 4.2.0)
 #>  urlchecker    1.0.1      2021-11-30 [4] RSPM (R 4.2.0)
 #>  usethis       2.2.2      2023-07-06 [4] RSPM (R 4.2.0)
@@ -262,7 +264,7 @@ devtools::session_info()
 #>  xtable        1.8-4      2019-04-21 [4] RSPM (R 4.2.0)
 #>  yaml          2.3.7      2023-01-23 [4] RSPM (R 4.2.0)
 #> 
-#>  [1] /tmp/RtmpkQQ6YK/temp_libpathd403f54937460
+#>  [1] /tmp/Rtmp7vCNkc/temp_libpathf1f7962b8c726
 #>  [2] /home/courtiol/R/x86_64-pc-linux-gnu-library/4.3
 #>  [3] /usr/local/lib/R/site-library
 #>  [4] /usr/lib/R/site-library

@@ -8,7 +8,7 @@
 #'
 #' @references
 #' Choi, JE., Shin, D.W. Nonparametric estimation of time varying correlation coefficient.
-#' J. Korean Stat. Soc. 50, 333–353 (2021). https://doi.org/10.1007/s42952-020-00073-6
+#' J. Korean Stat. Soc. 50, 333–353 (2021). \doi{10.1007/s42952-020-00073-6}
 #'
 #' Andrews, D. W. K. Heteroskedasticity and autocorrelation consistent covariance matrix estimation.
 #' Econometrica: Journal of the Econometric Society, 817-858 (1991).

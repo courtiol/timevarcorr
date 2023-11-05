@@ -30,7 +30,8 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 
 This R package aims at computing the correlation between 2 time-series following the method described in the following paper:
 
-Choi, JE., Shin, D.W. Nonparametric estimation of time varying correlation coefficient. J. Korean Stat. Soc. 50, 333–353 (2021). https://doi.org/10.1007/s42952-020-00073-6
+Choi, JE., Shin, D.W. Nonparametric estimation of time varying correlation coefficient.
+J. Korean Stat. Soc. 50, 333–353 (2021). <doi:10.1007/s42952-020-00073-6>
 
 The chief idea is to perform a non-parametric kernel smoothing (using a common bandwidth) of all underlying components required for the computation of a correlation coefficient (i.e., $x$, $y$, $x^2$, $y^2$, $x*y$).
 

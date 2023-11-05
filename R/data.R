@@ -27,6 +27,6 @@
 #' "Oxford-Man Institute's realized library", Oxford-Man Institute, University of Oxford.
 #'
 #' Choi, JE., Shin, D.W. Nonparametric estimation of time varying correlation coefficient.
-#' J. Korean Stat. Soc. 50, 333–353 (2021). https://doi.org/10.1007/s42952-020-00073-6
+#' J. Korean Stat. Soc. 50, 333–353 (2021). \doi{10.1007/s42952-020-00073-6}
 #'
 "stockprice"
