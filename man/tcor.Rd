@@ -234,16 +234,15 @@ with(res_withCI, {
 ## Same using tidyverse packages (dplyr and ggplot2 must be installed)
 ## see https://github.com/courtiol/timevarcorr for more examples of this kind
 
-if (require("dplyr", quietly = TRUE)) {
+if (require("dplyr", warn.conflicts = FALSE)) {
 
   stockprice |>
-    slice(1:500) |> ## select first 500 time points
     reframe(tcor(x = SP500, y = FTSE100, t = DateID,
                  h = 200, CI = TRUE)) -> res_tidy
   res_tidy
 }
 
-if (require("ggplot2", quietly = TRUE)) {
+if (require("ggplot2")) {
 
   ggplot(res_tidy) +
      aes(x = t, y = r, ymin = lwr, ymax = upr) +
