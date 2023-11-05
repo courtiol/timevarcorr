@@ -15,22 +15,22 @@
 #'
 #' @export
 #'
-#' @seealso [`ref_test`], [`tcor`]
+#' @seealso [`test_ref`], [`tcor`]
 #'
 #' @examples
 #' ## Simple example
 #'
 #' res <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, h = 50, CI = TRUE))
-#' equality_test(res)
+#' test_equality(res)
 #'
 #' ## Chi2 instead of Student's t-test
 #'
-#' equality_test(res, test = "chi2")
+#' test_equality(res, test = "chi2")
 #'
 #'
 #' ## Time point can be dates or indices (mixing possible) but output as in input data
 #'
-#' equality_test(res, t1 = "2000-04-04", t2 = 1000)
+#' test_equality(res, t1 = "2000-04-04", t2 = 1000)
 #' res[1000, "t"] ## t2 matches with date in `res`
 #' stockprice[1000, "DateID"] ## t2 does not match with date `stockprice` due to missing values
 #'
@@ -39,11 +39,11 @@
 #'
 #' res2 <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID,
 #'                               h = 50, CI = TRUE, keep.missing = TRUE))
-#' equality_test(res2, t1 = "2000-04-04", t2 = 1000)
+#' test_equality(res2, t1 = "2000-04-04", t2 = 1000)
 #' res[1000, "t"] ## t2 matches with date in `res`
 #' stockprice[1000, "DateID"] ## t2 does match with date `stockprice` despite missing values
 #'
-equality_test <- function(tcor_obj, t1 = 1, t2 = nrow(tcor_obj), test = c("student", "chi2")) {
+test_equality <- function(tcor_obj, t1 = 1, t2 = nrow(tcor_obj), test = c("student", "chi2")) {
 
   ## check and prepare inputs
   test <- match.arg(test)
@@ -53,7 +53,7 @@ equality_test <- function(tcor_obj, t1 = 1, t2 = nrow(tcor_obj), test = c("stude
   }
 
   if (attr(tcor_obj, "h_selection") == "fixed by user") {
-    message("The bandwidth stored in `tcor_obj` and used by `equality_test()` has not been automatically selected but was set by the user. Rerun `tcor()` without specifying `h` if you want otherwise.")
+    message("The bandwidth stored in `tcor_obj` and used by `test_equality()` has not been automatically selected but was set by the user. Rerun `tcor()` without specifying `h` if you want otherwise.")
   }
 
   if (length(t1) != 1 || length(t2) != 1) {
@@ -110,12 +110,12 @@ equality_test <- function(tcor_obj, t1 = 1, t2 = nrow(tcor_obj), test = c("stude
 #' Test difference between correlation coefficient estimates and a value of reference
 #'
 #' This function tests whether smoothed correlation values are equal (H0) or not to a reference value (default = `0`).
-#' The test is not described in Choi & Shin, 2021, but it is based on the idea behind [`equality_test`].
+#' The test is not described in Choi & Shin, 2021, but it is based on the idea behind [`test_equality`].
 #'
 #' Two different test statistics can be used, one is asymptotically Student-t distributed under H0 and one is chi-square distributed.
 #' In practice, it seems to give very similar results.
 #'
-#' @inheritParams equality_test
+#' @inheritParams test_equality
 #' @param t a vector of time point(s) used by the test (by default, all time points are considered).
 #' @param r_ref a scalar indicating the reference value for the correlation coefficient to be used in the test (default = `0`).
 #' @param p.adjust.methods a character string indicating the method used to adjust p-values for multiple testing (see [`p.adjust`]; default = "none").
@@ -124,14 +124,14 @@ equality_test <- function(tcor_obj, t1 = 1, t2 = nrow(tcor_obj), test = c("stude
 #'
 #' @export
 #'
-#' @seealso [`equality_test`], [`tcor`]
+#' @seealso [`test_equality`], [`tcor`]
 #'
 #' @examples
 #' ## Comparison of all correlation values to reference of 0.5
 #'
 #' res <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, h = 300, CI = TRUE))
 #' ref <- 0.5
-#' test_against_ref <- ref_test(res, r_ref = ref)
+#' test_against_ref <- test_ref(res, r_ref = ref)
 #' head(test_against_ref)
 #'
 #'
@@ -148,10 +148,10 @@ equality_test <- function(tcor_obj, t1 = 1, t2 = nrow(tcor_obj), test = c("stude
 #'
 #' ## Test correlation of 0 a specific time points (using index or dates)
 #'
-#' ref_test(res, t = c(100, 150))
-#' ref_test(res, t = c("2000-08-18", "2000-10-27"))
+#' test_ref(res, t = c(100, 150))
+#' test_ref(res, t = c("2000-08-18", "2000-10-27"))
 #'
-ref_test <- function(tcor_obj, t = tcor_obj$t, r_ref = 0, test = c("student", "chi2"), p.adjust.methods = c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr")) {
+test_ref <- function(tcor_obj, t = tcor_obj$t, r_ref = 0, test = c("student", "chi2"), p.adjust.methods = c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr")) {
 
   ## check and prepare inputs
   if (length(r_ref) != 1) {
@@ -172,7 +172,7 @@ ref_test <- function(tcor_obj, t = tcor_obj$t, r_ref = 0, test = c("student", "c
   }
 
   if (attr(tcor_obj, "h_selection") == "fixed by user") {
-    message("The bandwidth stored in `tcor_obj` and used by `ref_test()` has not been automatically selected but was set by the user. Rerun `tcor()` without specifying `h` if you want otherwise.")
+    message("The bandwidth stored in `tcor_obj` and used by `test_ref()` has not been automatically selected but was set by the user. Rerun `tcor()` without specifying `h` if you want otherwise.")
   }
 
 

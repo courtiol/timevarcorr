@@ -52,7 +52,7 @@
 #'
 #' - **Confidence interval**: if `CI` is set to `TRUE`, a confidence interval is
 #' calculated as described in Choi & Shin, 2021. This is also necessary for using
-#' [`equality_test`] to test differences between correlations at two time points.
+#' [`test_equality`] to test differences between correlations at two time points.
 #' The computation of the confidence intervals involves multiple internal
 #' functions (see [`CI`] for details).
 #'
@@ -90,7 +90,7 @@
 #' Choi, JE., Shin, D.W. Nonparametric estimation of time varying correlation coefficient.
 #' J. Korean Stat. Soc. 50, 333–353 (2021). \doi{10.1007/s42952-020-00073-6}
 #'
-#' @seealso [`equality_test`], [`kern_smooth`], [`CI`]
+#' @seealso [`test_equality`], [`kern_smooth`], [`CI`]
 #'
 #' @importFrom parallel mclapply
 #'

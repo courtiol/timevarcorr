@@ -17,8 +17,8 @@ reference:
 
 - subtitle: "*for statistical tests on time-varying correlations"
   contents:
-  - equality_test
-  - ref_test
+  - test_equality
+  - test_ref
 
 - subtitle: "*for the computation of the confidence intervals"
   contents:

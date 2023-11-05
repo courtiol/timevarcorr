@@ -83,9 +83,9 @@ library(timevarcorr)
 d <- stockprice[1:500, ]
 example1 <- with(d, tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal"))
 #> 
-#> You may set `nb.cores` to a number higher than 1 for faster computation.
+#> You may use several CPU cores for faster computation by calling `options('mc.cores' = XX)` with `XX` corresponding to the number of CPU cores to be used.
 #> h selected using LOO-CV = 60.9
-#> Bandwidth automatic selection completed in 10.9 seconds
+#> Bandwidth automatic selection completed in 8.1 seconds
 plot(example1, type = "l")
 ```
 
@@ -125,9 +125,9 @@ d |>
     labs(title = "SP500 vs FTSE100", x = "Time", y = "Correlation") +
     theme_classic()
 #> 
-#> You may set `nb.cores` to a number higher than 1 for faster computation.
+#> You may use several CPU cores for faster computation by calling `options('mc.cores' = XX)` with `XX` corresponding to the number of CPU cores to be used.
 #> h selected using LOO-CV = 60.9
-#> Bandwidth automatic selection completed in 8.9 seconds
+#> Bandwidth automatic selection completed in 9.8 seconds
 ```
 
 <img src="man/figures/README-example3-1.png" width="70%" style="display: block; margin: auto;" />
@@ -150,10 +150,10 @@ time points:
 ``` r
 example3 <- with(d, tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal", CI = TRUE))
 #> 
-#> You may set `nb.cores` to a number higher than 1 for faster computation.
+#> You may use several CPU cores for faster computation by calling `options('mc.cores' = XX)` with `XX` corresponding to the number of CPU cores to be used.
 #> h selected using LOO-CV = 60.9
-#> Bandwidth automatic selection completed in 9.6 seconds
-equality_test(example3, t1 = "2000-05-02", t2 = "2001-05-02")
+#> Bandwidth automatic selection completed in 9.2 seconds
+test_equality(example3, t1 = "2000-05-02", t2 = "2001-05-02")
 #>           t1        r1         t2     r2   delta_r SE_delta_r   T_stat  df
 #> 1 2000-05-02 0.4354492 2001-05-02 0.5722 0.1367509  0.1224746 1.116565 910
 #>          p
@@ -164,7 +164,7 @@ Or you can test if specific time points (or all) differ from a reference
 value:
 
 ``` r
-ref_test(example3, t = c("2000-05-02", "2001-05-02"), r_ref = 0.5)
+test_ref(example3, t = c("2000-05-02", "2001-05-02"), r_ref = 0.5)
 #>            t         r r_ref     delta_r SE_delta_r     T_stat  df         p
 #> 1 2000-05-02 0.4354492   0.5 -0.06455083 0.10082705 -0.6402134 910 0.5221950
 #> 2 2001-05-02 0.5722000   0.5  0.07220003 0.06952644  1.0384542 910 0.2993345
@@ -259,7 +259,7 @@ devtools::session_info()
 #>  xtable        1.8-4      2019-04-21 [4] RSPM (R 4.2.0)
 #>  yaml          2.3.7      2023-01-23 [4] RSPM (R 4.2.0)
 #> 
-#>  [1] /tmp/RtmpHaMX48/temp_libpathf918b1f003fd7
+#>  [1] /tmp/Rtmpc9Ly9p/temp_libpathfaae1f0b6e56
 #>  [2] /home/courtiol/R/x86_64-pc-linux-gnu-library/4.3
 #>  [3] /usr/local/lib/R/site-library
 #>  [4] /usr/lib/R/site-library
