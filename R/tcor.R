@@ -5,14 +5,14 @@
 #' coefficient proposed by Choi & Shin, 2021. The general idea is to compute a
 #' (Pearson) correlation coefficient (`r(x,y) = (mean(xy) - mean(x)*mean(y)) /
 #' (sqrt(mean(x^2)-mean(x)^2) * sqrt(mean(y^2)-mean(y)^2))`), but instead of
-#' using the means required for such a computation, each component (i.e. `x`,
+#' using the means required for such a computation, each component (i.e., `x`,
 #' `y`, `x^2`, `y^2`, `x*y`) is smoothed and the smoothed terms are considered
 #' in place the original means. The intensity of the smoothing depends on a
 #' unique parameter: the bandwidth (`h`). If `h = Inf`, the method produces the
-#' original (i.e. time-invariant) correlation value. The smaller the parameter
+#' original (i.e., time-invariant) correlation value. The smaller the parameter
 #' `h`, the more variation in time is being captured. The parameter `h` can be
 #' provided by the user; otherwise it is automatically estimated by the internal
-#' helper function `select_h` (see **Details**).
+#' helper functions `select_h` and `calc_RMSE` (see **Details**).
 #'
 #' - **Smoothing**: the smoothing of each component is performed by kernel
 #' regression. The default is to use the Epanechnikov kernel following Choi &
@@ -23,22 +23,25 @@
 #' results from different kernel methods.
 #'
 #' - **Bandwidth selection**: when the value used to define the bandwidth (`h`)
-#' is set to `NULL` (the default), the internal function `select_h` is used to
-#' to select the optimal value for `h`. It is first estimated by leave-one-out
-#' cross validation. If cross validation error is minimal for the maximal value
-#' of `h` considered (`8*sqrt(N)`), rather than taking this as the optimal `h`
-#' value, the bandwidth becomes estimated using the so-called elbow criterion.
-#' This latter method identifies the value `h` after which the cross validation
-#' error decreasing very little. The procedure is detailed in section 2.1 in
-#' Choi & Shin, 2021.
+#' in `tcor` is set to `NULL` (the default), the internal function `select_h`
+#' is used to to select the optimal value for `h`. It is first estimated by
+#' leave-one-out cross validation (using internally `calc_RMSE`). If the cross
+#' validation error (RMSE) is minimal for the maximal value of `h` considered
+#' (`8*sqrt(N)`), rather than taking this as the optimal `h` value, the
+#' bandwidth becomes estimated using the so-called elbow criterion. This latter
+#' method identifies the value `h` after which the cross validation error
+#' decreasing very little. The procedure is detailed in section 2.1 in Choi &
+#' Shin, 2021.
 #'
 #' - **Parallel computation**: if `h` is not provided, an automatic bandwidth
 #' selection occurs (see above). For large datasets, this step can be
 #' computationally demanding. The current implementation thus relies on
-#' [`parallel::mclapply`] on thus is only effective for Linux and MacOS. Relying
-#' on parallel processing also implies that you call `options("mc.cores" = XX)`
-#' beforehand, replacing `XX` by the relevant number of CPU cores you want to use
-#' (see **Examples**).
+#' [`parallel::mclapply`] and is thus only effective for Linux and MacOS.
+#' Relying on parallel processing also implies that you call `options("mc.cores"
+#' = XX)` beforehand, replacing `XX` by the relevant number of CPU cores you
+#' want to use (see **Examples**). For debugging, do use `options("mc.cores" =
+#' 1)`, otherwise you may not be able to see the error messages generated in
+#' child nodes.
 #'
 #' - **Confidence interval**: if `CI` is set to `TRUE`, a confidence interval is
 #' calculated as described in Choi & Shin, 2021. This is also necessary for using
@@ -69,10 +72,9 @@
 #'
 #' Some metadata are also attached to the dataframe (as attributes):
 #' - `h` the bandwidth parameter.
-#' - `RMSE` the minimal root mean square error when `h` selected by cross validation.
+#' - `RMSE` the minimal root mean square error when `h` is selected by cross validation.
 #' - `h_selection` the method used to select `h`.
-#' - `h_select_duration` the computing time spent to select the bandwidth
-#' parameter.
+#' - `h_select_duration` the computing time spent to select the bandwidth parameter.
 #'
 #' @name tcor
 #' @rdname tcor
@@ -411,11 +413,66 @@ calc_rho <- function(x, y, t = seq_along(x), t.for.pred = t, h, cor.method = c("
 }
 
 
-#' @describeIn tcor Internal function selecting the optimal bandwidth parameter `h`.
+#' @describeIn tcor Internal function computing the root mean square error (RMSE) for a given bandwidth.
 #'
-#' See *Bandwidth selection* in **Details**.
+#' The function removes each time point one by one and predicts the correlation
+#' at the missing time point based on the other time points. It then computes
+#' and returns the RMSE between this predicted correlation and the one predicted
+#' using the full dataset. See also *Bandwidth selection* and *Parallel
+#' computation* in
+#' **Details**.
 #'
 #' @order 3
+#'
+#' @export
+#'
+#' @examples
+#'
+#'
+#' ###########################################################
+#' ## Examples for the internal function computing the RMSE ##
+#' ###########################################################
+#'
+#' ## Compute the RMSE on the correlation estimate
+#' # nb: takes a few seconds to run, so not run by default
+#'
+#' run <- in_pkgdown() || FALSE ## change to TRUE to run the example
+#' if (run) {
+#'
+#' small_clean_dataset <- head(na.omit(stockprice), n = 200)
+#' with(small_clean_dataset, calc_RMSE(x = SP500, y = FTSE100, t = DateID, h = 10))
+#'
+#' }
+#'
+#'
+calc_RMSE <- function(h, x, y, t = seq_along(x), cor.method = c("pearson", "spearman"),
+                      kernel = c("epanechnikov", "box", "normal"), param_smoother = list(),
+                      verbose = FALSE) {
+
+  CVi <- mclapply(seq_along(t), function(oob) { ## TODO: check scheduling effect and try to make this Windows friendly
+    obj <- calc_rho(x = x[-oob], y = y[-oob], t = t[-oob], h = h, t.for.pred = t[oob],
+                    cor.method = cor.method, kernel = kernel, param_smoother = param_smoother)
+    (obj$rho_smoothed - ((x[oob] - obj$x_smoothed) * (y[oob] - obj$y_smoothed)) / (obj$sd_x_smoothed * obj$sd_y_smoothed))^2
+  })
+  CVi_num <- as.numeric(CVi)
+  failing <- is.na(CVi_num)
+  res <- sqrt(mean(CVi_num[!failing]))
+  if (verbose) {
+    print(paste("h =", round(h, digits = 1L), "    # failing =", sum(failing),"    RMSE =", res))
+  }
+
+  res
+}
+
+
+#' @describeIn tcor Internal function selecting the optimal bandwidth parameter `h`.
+#'
+#' The function selects and returns the optimal bandwidth parameter `h` using an
+#' optimizer ([stats::optimize()]) which searches the `h` value associated with
+#' the smallest RMSE returned by [calc_RMSE()]. See also *Bandwidth selection*
+#' in **Details**.
+#'
+#' @order 4
 #'
 #' @export
 #'
@@ -462,37 +519,27 @@ select_h <- function(x, y, t = seq_along(x), cor.method = c("pearson", "spearman
     message("\nThe argument `nb.cores` is ignore on Windows-based infrastructure.\n")
   }
 
+  h_selection <- "LOO-CV"
+
+  if (length(x) > 500) message("Bandwidth selection using cross validation... (may take a while)")
+
   time <- system.time({
-
-    h_selection <- "LOO-CV"
-
-    if (length(x) > 500) message("Bandwidth selection using LOO-CV... (may take a while)")
-
-    ## define function for performing leave-one-out cross-validation ## TODO: extract code into standalone function
-    calc_RMSE <- function(h) {
-      CVi <- mclapply(seq_along(t), function(oob) { ## TODO: check scheduling effect and try to make this Windows friendly
-        obj <- calc_rho(x = x[-oob], y = y[-oob], t = t[-oob], h = h, t.for.pred = t[oob],
-                        cor.method = cor.method, kernel = kernel, param_smoother = param_smoother)
-        (obj$rho_smoothed - ((x[oob] - obj$x_smoothed) * (y[oob] - obj$y_smoothed)) / (obj$sd_x_smoothed * obj$sd_y_smoothed))^2
-      })
-      CVi_num <- as.numeric(CVi)
-      failing <- is.na(CVi_num)
-      res <- sqrt(mean(CVi_num[!failing]))
-      if (verbose) {
-        print(paste("h =", round(h, digits = 1L), "    # failing =", sum(failing),"    RMSE =", res))
-      }
-      res
-    }
-
     ## estimate h by cross-validation
     h_max <- 8*sqrt(length(x))
-    opt <- stats::optimize(calc_RMSE, interval = c(1, h_max), tol = 1) ## TODO: check if other optimizer would be best
+    opt <- stats::optimize(calc_RMSE, interval = c(1, h_max),
+                           x = x, y = y, t = t, cor.method = cor.method,
+                           kernel = kernel, param_smoother = param_smoother,
+                           verbose = verbose,
+                           tol = 1) ## TODO: check if other optimizer would be best
 
     ## if h_max is best, use elbow criterion instead
     h <- opt$minimum
     RMSE <- opt$objective
     message(paste("h selected using LOO-CV =", round(h, digits = 1L)))
-    RMSE_bound <- calc_RMSE(h_max)
+
+    RMSE_bound <- calc_RMSE(h = h_max, x = x, y = y, t = t, cor.method = cor.method,
+                            kernel = kernel, param_smoother = param_smoother,
+                            verbose = FALSE)
 
     if (RMSE_bound <= opt$objective) {
       RMSE <- NA # remove stored value since not used in this case
@@ -502,14 +549,20 @@ select_h <- function(x, y, t = seq_along(x), cor.method = c("pearson", "spearman
 
       calc_RMSE_Lh0 <- function(h0) {
         d <- data.frame(h = 1:h0)
-        d$RMSE_h <- sapply(h, calc_RMSE)
+        d$RMSE_h <- sapply(h, calc_RMSE,
+                           x = x, y = y, t = t, cor.method = cor.method,
+                           kernel = kernel, param_smoother = param_smoother,
+                           verbose = FALSE)
         fit_Lh0 <- stats::lm(RMSE_h ~ h, data = d)
         sqrt(mean(stats::residuals(fit_Lh0)^2))
       }
 
       calc_RMSE_Rh0 <- function(h0) {
         d <- data.frame(h = (h0 + 1):h_max)
-        d$RMSE_h <- sapply(h, calc_RMSE)
+        d$RMSE_h <- sapply(h, calc_RMSE,
+                           x = x, y = y, t = t, cor.method = cor.method,
+                           kernel = kernel, param_smoother = param_smoother,
+                           verbose = FALSE)
         fit_Rh0 <- stats::lm(RMSE_h ~ h, data = d)
         sqrt(mean(stats::residuals(fit_Rh0)^2))
       }
@@ -524,6 +577,6 @@ select_h <- function(x, y, t = seq_along(x), cor.method = c("pearson", "spearman
     }
   })
   message(paste("Bandwidth automatic selection completed in", round(time[3], digits = 1L), "seconds"))
-  list(h = h, h_selection = h_selection, RMSE = RMSE, time = time)
-}
 
+  list(h = h, h_selection = h_selection, RMSE = RMSE, time = time[3])
+}

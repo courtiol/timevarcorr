@@ -8,6 +8,7 @@ reference:
   contents:
   - tcor
   - calc_rho
+  - calc_RMSE
   - select_h
 
 - subtitle: "*for non-parametric smoothing"
