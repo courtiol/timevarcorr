@@ -13,8 +13,9 @@ status](https://www.r-pkg.org/badges/version/timevarcorr)](https://CRAN.R-projec
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-This R package aims at computing the correlation between 2 time-series
-following the method described in the following paper:
+This R package aims at measuring how the correlation between 2
+time-series changes over time, following the method described in Choi &
+Shin (2021):
 
 Choi, JE., Shin, D.W. Nonparametric estimation of time varying
 correlation coefficient. J. Korean Stat. Soc. 50, 333–353 (2021).
@@ -85,7 +86,7 @@ example1 <- with(d, tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal"))
 #> 
 #> You may use several CPU cores for faster computation by calling `options('mc.cores' = XX)` with `XX` corresponding to the number of CPU cores to be used.
 #> h selected using LOO-CV = 60.9
-#> Bandwidth automatic selection completed in 8.1 seconds
+#> Bandwidth automatic selection completed in 8.8 seconds
 plot(example1, type = "l")
 ```
 
@@ -127,7 +128,7 @@ d |>
 #> 
 #> You may use several CPU cores for faster computation by calling `options('mc.cores' = XX)` with `XX` corresponding to the number of CPU cores to be used.
 #> h selected using LOO-CV = 60.9
-#> Bandwidth automatic selection completed in 9.8 seconds
+#> Bandwidth automatic selection completed in 9.1 seconds
 ```
 
 <img src="man/figures/README-example3-1.png" width="70%" style="display: block; margin: auto;" />
@@ -259,7 +260,7 @@ devtools::session_info()
 #>  xtable        1.8-4      2019-04-21 [4] RSPM (R 4.2.0)
 #>  yaml          2.3.7      2023-01-23 [4] RSPM (R 4.2.0)
 #> 
-#>  [1] /tmp/Rtmpc9Ly9p/temp_libpathfaae1f0b6e56
+#>  [1] /tmp/Rtmpc9Ly9p/temp_libpathfaae16a0c1a94
 #>  [2] /home/courtiol/R/x86_64-pc-linux-gnu-library/4.3
 #>  [3] /usr/local/lib/R/site-library
 #>  [4] /usr/lib/R/site-library

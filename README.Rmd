@@ -28,7 +28,7 @@ status](https://www.r-pkg.org/badges/version/timevarcorr)](https://CRAN.R-projec
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-This R package aims at computing the correlation between 2 time-series following the method described in the following paper:
+This R package aims at measuring how the correlation between 2 time-series changes over time, following the method described in Choi & Shin (2021):
 
 Choi, JE., Shin, D.W. Nonparametric estimation of time varying correlation coefficient.
 J. Korean Stat. Soc. 50, 333–353 (2021). <doi:10.1007/s42952-020-00073-6>
