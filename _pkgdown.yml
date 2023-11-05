@@ -32,6 +32,7 @@ reference:
 - subtitle: "*miscellaneous"
   contents:
   - .onAttach
+  - in_pkgdown
 
 - title: Data
   desc: >
