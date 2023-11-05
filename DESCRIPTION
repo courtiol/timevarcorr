@@ -22,7 +22,9 @@ LazyData: true
 Suggests: 
     dplyr,
     ggplot2,
-    spelling
+    spelling,
+    testthat (>= 3.0.0)
 Language: en-US
 URL: https://courtiol.github.io/timevarcorr/, https://github.com/courtiol/timevarcorr
 BugReports: https://github.com/courtiol/timevarcorr/issues
+Config/testthat/edition: 3
