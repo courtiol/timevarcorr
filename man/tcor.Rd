@@ -3,6 +3,7 @@
 \name{tcor}
 \alias{tcor}
 \alias{calc_rho}
+\alias{calc_RMSE}
 \alias{select_h}
 \title{Compute time varying correlation coefficients}
 \usage{
@@ -31,6 +32,17 @@ calc_rho(
   param_smoother = list()
 )
 
+calc_RMSE(
+  h,
+  x,
+  y,
+  t = seq_along(x),
+  cor.method = c("pearson", "spearman"),
+  kernel = c("epanechnikov", "box", "normal"),
+  param_smoother = list(),
+  verbose = FALSE
+)
+
 select_h(
   x,
   y,
@@ -47,7 +59,7 @@ select_h(
 \item{y}{a numeric vector of to be correlated with \code{x}.}
 
 \item{t}{a (numeric or Date) vector of time points. If missing, observations
-are considered to correspond to sequential time steps (i.e. 1, 2 ...).}
+are considered to correspond to sequential time steps (i.e., 1, 2 ...).}
 
 \item{h}{a scalar indicating the bandwidth used by the smoothing function.}
 
@@ -90,10 +102,9 @@ as well as, if \code{CI = TRUE}:
 Some metadata are also attached to the dataframe (as attributes):
 \itemize{
 \item \code{h} the bandwidth parameter.
-\item \code{RMSE} the minimal root mean square error when \code{h} selected by cross validation.
+\item \code{RMSE} the minimal root mean square error when \code{h} is selected by cross validation.
 \item \code{h_selection} the method used to select \code{h}.
-\item \code{h_select_duration} the computing time spent to select the bandwidth
-parameter.
+\item \code{h_select_duration} the computing time spent to select the bandwidth parameter.
 }
 }
 \description{
@@ -101,14 +112,14 @@ The function \code{tcor} implements (together with its helper function
 \code{calc_rho}) the nonparametric estimation of the time varying correlation
 coefficient proposed by Choi & Shin, 2021. The general idea is to compute a
 (Pearson) correlation coefficient (\code{r(x,y) = (mean(xy) - mean(x)*mean(y)) / (sqrt(mean(x^2)-mean(x)^2) * sqrt(mean(y^2)-mean(y)^2))}), but instead of
-using the means required for such a computation, each component (i.e. \code{x},
+using the means required for such a computation, each component (i.e., \code{x},
 \code{y}, \code{x^2}, \code{y^2}, \code{x*y}) is smoothed and the smoothed terms are considered
 in place the original means. The intensity of the smoothing depends on a
 unique parameter: the bandwidth (\code{h}). If \code{h = Inf}, the method produces the
-original (i.e. time-invariant) correlation value. The smaller the parameter
+original (i.e., time-invariant) correlation value. The smaller the parameter
 \code{h}, the more variation in time is being captured. The parameter \code{h} can be
 provided by the user; otherwise it is automatically estimated by the internal
-helper function \code{select_h} (see \strong{Details}).
+helper functions \code{select_h} and \code{calc_RMSE} (see \strong{Details}).
 }
 \details{
 \itemize{
@@ -120,21 +131,22 @@ seems to sometimes lead to very small bandwidth being selected, but the
 default can lead to numerical issues. We thus recommend always comparing the
 results from different kernel methods.
 \item \strong{Bandwidth selection}: when the value used to define the bandwidth (\code{h})
-is set to \code{NULL} (the default), the internal function \code{select_h} is used to
-to select the optimal value for \code{h}. It is first estimated by leave-one-out
-cross validation. If cross validation error is minimal for the maximal value
-of \code{h} considered (\code{8*sqrt(N)}), rather than taking this as the optimal \code{h}
-value, the bandwidth becomes estimated using the so-called elbow criterion.
-This latter method identifies the value \code{h} after which the cross validation
-error decreasing very little. The procedure is detailed in section 2.1 in
-Choi & Shin, 2021.
+in \code{tcor} is set to \code{NULL} (the default), the internal function \code{select_h}
+is used to to select the optimal value for \code{h}. It is first estimated by
+leave-one-out cross validation (using internally \code{calc_RMSE}). If the cross
+validation error (RMSE) is minimal for the maximal value of \code{h} considered
+(\code{8*sqrt(N)}), rather than taking this as the optimal \code{h} value, the
+bandwidth becomes estimated using the so-called elbow criterion. This latter
+method identifies the value \code{h} after which the cross validation error
+decreasing very little. The procedure is detailed in section 2.1 in Choi &
+Shin, 2021.
 \item \strong{Parallel computation}: if \code{h} is not provided, an automatic bandwidth
 selection occurs (see above). For large datasets, this step can be
 computationally demanding. The current implementation thus relies on
-\code{\link[parallel:mclapply]{parallel::mclapply}} on thus is only effective for Linux and MacOS. Relying
-on parallel processing also implies that you call \code{options("mc.cores" = XX)}
-beforehand, replacing \code{XX} by the relevant number of CPU cores you want to use
-(see \strong{Examples}).
+\code{\link[parallel:mclapply]{parallel::mclapply}} and is thus only effective for Linux and MacOS.
+Relying on parallel processing also implies that you call \code{options("mc.cores" = XX)} beforehand, replacing \code{XX} by the relevant number of CPU cores you
+want to use (see \strong{Examples}). For debugging, do use \code{options("mc.cores" = 1)}, otherwise you may not be able to see the error messages generated in
+child nodes.
 \item \strong{Confidence interval}: if \code{CI} is set to \code{TRUE}, a confidence interval is
 calculated as described in Choi & Shin, 2021. This is also necessary for using
 \code{\link{equality_test}} to test differences between correlations at two time points.
@@ -152,9 +164,21 @@ The function calls the kernel smoothing procedure on each component required
 to compute the time-varying correlation. It returns a dataframe with the time,
 the correlation value and the underlying components used for the computation.
 
+\item \code{calc_RMSE()}: Internal function computing the root mean square error (RMSE) for a given bandwidth.
+
+The function removes each time point one by one and predicts the correlation
+at the missing time point based on the other time points. It then computes
+and returns the RMSE between this predicted correlation and the one predicted
+using the full dataset. See also \emph{Bandwidth selection} and \emph{Parallel
+computation} in
+\strong{Details}.
+
 \item \code{select_h()}: Internal function selecting the optimal bandwidth parameter \code{h}.
 
-See \emph{Bandwidth selection} in \strong{Details}.
+The function selects and returns the optimal bandwidth parameter \code{h} using an
+optimizer (\code{\link[stats:optimize]{stats::optimize()}}) which searches the \code{h} value associated with
+the smallest RMSE returned by \code{\link[=calc_RMSE]{calc_RMSE()}}. See also \emph{Bandwidth selection}
+in \strong{Details}.
 
 }}
 \examples{
@@ -165,24 +189,24 @@ See \emph{Bandwidth selection} in \strong{Details}.
 
 ## Effect of the bandwidth
 
-res_h50  <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, h = 50))
+res_h50   <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, h = 50))
 res_h100  <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, h = 100))
-res_h200 <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, h = 200))
+res_h200  <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, h = 200))
 plot(res_h50, type = "l", ylab = "Cor", xlab = "Time", las = 1, col = "grey")
 points(res_h100, type = "l", col = "blue")
 points(res_h200, type = "l", col = "red")
-legend("topright", fill = c("grey", "blue", "red"),
+legend("bottom", horiz = TRUE, fill = c("grey", "blue", "red"),
        legend = c("50", "100", "200"), bty = "n", title = "Bandwidth (h)")
 
 
 ## Effect of the correlation method
 
-res_pearson <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, h = 150))
+res_pearson  <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, h = 150))
 res_spearman <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, h = 150,
-                                     cor.method = "spearman"))
+                                      cor.method = "spearman"))
 plot(res_pearson, type = "l", ylab = "Cor", xlab = "Time", las = 1)
 points(res_spearman, type = "l", col = "blue")
-legend("topright", fill = c("black", "blue"),
+legend("bottom", horiz = TRUE, fill = c("black", "blue"),
        legend = c("pearson", "spearman"), bty = "n", title = "cor.method")
 
 
@@ -195,11 +219,8 @@ res_spearman_hInf <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, h
                                            kernel = "normal", cor.method = "spearman"))
 r <- cor(stockprice$SP500, stockprice$FTSE100, use = "pairwise.complete.obs")
 rho <- cor(stockprice$SP500, stockprice$FTSE100, method = "spearman", use = "pairwise.complete.obs")
-plot(res_pearson_hInf, type = "l", ylim = c(0, 1), ylab = "Cor", xlab = "Time", las = 1, lwd = 4)
-points(res_spearman_hInf, type = "l", lwd = 4, col = "blue")
-abline(h = r, col = "red", lty = 2, lwd = 2)
-abline(h = rho, col = "green", lty = 2, lwd = 2)
-
+round(unique(res_pearson_hInf$r) - r, digits = 3) ## 0 indicates near equality
+round(unique(res_spearman_hInf$r) - rho, digits = 3) ## 0 indicates near equality
 
 ## Computing and plotting the confidence interval
 
@@ -210,32 +231,56 @@ with(res_withCI, {
      points(upr ~ t, type = "l", lty = 2)})
 
 
+## Same using tidyverse packages (dplyr and ggplot2 must be installed)
+## see https://github.com/courtiol/timevarcorr for more examples of this kind
+
+if (require("dplyr", quietly = TRUE)) {
+
+  stockprice |>
+    slice(1:500) |> ## select first 500 time points
+    reframe(tcor(x = SP500, y = FTSE100, t = DateID,
+                 h = 200, CI = TRUE)) -> res_tidy
+  res_tidy
+}
+
+if (require("ggplot2", quietly = TRUE)) {
+
+  ggplot(res_tidy) +
+     aes(x = t, y = r, ymin = lwr, ymax = upr) +
+     geom_ribbon(fill = "grey") +
+     geom_line() +
+     labs(title = "SP500 vs FTSE100", x = "Time", y = "Correlation") +
+     theme_classic()
+
+}
+
+
 ## Automatic selection of the bandwidth using parallel processing and comparison
-## of the 3 alternative kernels on full dataset
-# nb: takes a few minutes to run, so not run by default
+## of the 3 alternative kernels on the first 500 time points of the dataset
+# nb: takes a few seconds to run, so not run by default
 
 run <- in_pkgdown() || FALSE ## change to TRUE to run the example
 if (run) {
 
 options("mc.cores" = 2L) ## CPU cores to be used for parallel processing
 
-res_hauto_epanech <- with(stockprice,
+res_hauto_epanech <- with(stockprice[1:500, ],
          tcor(x = SP500, y = FTSE100, t = DateID, kernel = "epanechnikov")
          )
 
-res_hauto_box <- with(stockprice,
+res_hauto_box <- with(stockprice[1:500, ],
           tcor(x = SP500, y = FTSE100, t = DateID, kernel = "box")
           )
 
-res_hauto_norm <- with(stockprice,
+res_hauto_norm <- with(stockprice[1:500, ],
           tcor(x = SP500, y = FTSE100, t = DateID, kernel = "norm")
           )
 
 plot(res_hauto_epanech, type = "l", col = "red",
      ylab = "Cor", xlab = "Time", las = 1, ylim = c(0, 1))
-points(res_hauto_box, type = "l", col = "blue")
+points(res_hauto_box, type = "l", col = "grey")
 points(res_hauto_norm, type = "l", col = "orange")
-legend("topright", fill = c("red", "blue", "orange"),
+legend("top", horiz = TRUE, fill = c("red", "grey", "orange"),
        legend = c("epanechnikov", "box", "normal"), bty = "n",
        title = "Kernel")
 
@@ -247,17 +292,17 @@ legend("topright", fill = c("red", "blue", "orange"),
 
 if (run) {
 
-res_epanech <- with(stockprice,
+res_epanech <- with(stockprice[1:500, ],
           tcor(x = SP500, y = FTSE100, t = DateID,
           kernel = "epanechnikov", h = attr(res_hauto_epanech, "h"))
           )
 
-res_box <- with(stockprice,
+res_box <- with(stockprice[1:500, ],
            tcor(x = SP500, y = FTSE100, t = DateID,
            kernel = "box", h = attr(res_hauto_epanech, "h"))
            )
 
-res_norm <- with(stockprice,
+res_norm <- with(stockprice[1:500, ],
           tcor(x = SP500, y = FTSE100, t = DateID,
           kernel = "norm", h = attr(res_hauto_epanech, "h"))
           )
@@ -266,19 +311,19 @@ plot(res_epanech, type = "l", col = "red", ylab = "Cor", xlab = "Time",
      las = 1, ylim = c(0, 1))
 points(res_box, type = "l", col = "grey")
 points(res_norm, type = "l", col = "orange")
-legend("topright", fill = c("red", "grey", "orange"),
+legend("top", horiz = TRUE, fill = c("red", "grey", "orange"),
        legend = c("epanechnikov", "box", "normal"), bty = "n",
        title = "Kernel")
 
 }
 
 ## Automatic selection of the bandwidth using parallel processing with CI
-# nb: takes a few minutes to run, so not run by default
+# nb: takes a few seconds to run, so not run by default
 
 run <- in_pkgdown() || FALSE ## change to TRUE to run the example
 if (run) {
 
-res_hauto_epanechCI <- with(stockprice,
+res_hauto_epanechCI <- with(stockprice[1:500, ],
           tcor(x = SP500, y = FTSE100, t = DateID, CI = TRUE)
           )
 
@@ -291,23 +336,21 @@ points(res_hauto_epanechCI[, c("t", "upr")], type = "l", col = "red", lty = 2)
 
 
 ## Not all kernels work well in all situations
+## Here the default kernell estimation leads to issues for last time points
 ## nb1: EuStockMarkets is a time-series object provided with R
 ## nb2: takes a few minutes to run, so not run by default
 
 run <- in_pkgdown() || FALSE ## change to TRUE to run the example
 if (run) {
 
-EuStock_norm <- tcor(EuStockMarkets[, "DAX"], EuStockMarkets[, "SMI"], kernel = "normal")
-plot(EuStock_norm, type = "l", las = 1) ## normal kernel seems to work great with these data
+EuStock_epanech <- tcor(EuStockMarkets[1:500, "DAX"], EuStockMarkets[1:500, "SMI"])
+EuStock_norm <- tcor(EuStockMarkets[1:500, "DAX"], EuStockMarkets[1:500, "SMI"], kernel = "normal")
 
-}
-
-run <- in_pkgdown() || FALSE ## change to TRUE to run the example
-if (run) {
-
-EuStock_epanech <- tcor(EuStockMarkets[, "DAX"], EuStockMarkets[, "SMI"])
-plot(EuStock_epanech, type = "l", las = 1) ## problem of estimation for first and last years
-
+plot(EuStock_epanech, type = "l", col = "red", las = 1, ylim = c(-1, 1))
+points(EuStock_norm, type = "l", col = "orange", lty = 2)
+legend("bottom", horiz = TRUE, fill = c("red", "orange"),
+       legend = c("epanechnikov", "normal"), bty = "n",
+       title = "Kernel")
 }
 
 
@@ -342,6 +385,24 @@ with(head(stockprice)[c(1, 3, 6, 2, 4, 5), ], calc_rho(x = SP500, y = FTSE100, t
 ## Note: the function does not handle missing data (by design)
 
 # calc_rho(x = c(NA, rnorm(9)), y = rnorm(10), t = c(1:2, 23:30), h = 2) ## should err (if ran)
+
+
+
+###########################################################
+## Examples for the internal function computing the RMSE ##
+###########################################################
+
+## Compute the RMSE on the correlation estimate
+# nb: takes a few seconds to run, so not run by default
+
+run <- in_pkgdown() || FALSE ## change to TRUE to run the example
+if (run) {
+
+small_clean_dataset <- head(na.omit(stockprice), n = 200)
+with(small_clean_dataset, calc_RMSE(x = SP500, y = FTSE100, t = DateID, h = 10))
+
+}
+
 
 
 

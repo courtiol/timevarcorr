@@ -60,10 +60,11 @@ That should suffice!
 
 Note that this package relies so far on only one direct dependency -- [**lpridge**](https://github.com/cran/lpridge) -- which itself depends on nothing but a plain R install.
 
-Nonetheless, in some of the examples below, we also rely on the [**tidyverse**](https://github.com/tidyverse) ecosystem, so you would need to install this as well to reproduce the content of this README:
+Nonetheless, in some of the examples below, we also rely on [**dplyr**](https://dplyr.tidyverse.org) and  [**ggplot2**](https://ggplot2.tidyverse.org), so you would need to install these packages as well to reproduce the content of this README:
 
 ``` r
-install.packages("tidyverse")
+install.packages("dplyr")
+install.packages("ggplot2")
 ```
 
 
@@ -88,11 +89,12 @@ plot(example1, type = "l")
 Here is the same example using tidyverse syntax (with confidence interval):
 
 ```{r example2, message=FALSE}
-library(tidyverse)
+library(dplyr)
+library(ggplot2)
 
 d |> 
-  summarise(tcor(x = SP500, y = FTSE100, t = DateID,
-                 kernel = "normal", CI = TRUE)) |>
+  reframe(tcor(x = SP500, y = FTSE100, t = DateID,
+               kernel = "normal", CI = TRUE)) |>
   ggplot() +
     aes(x = t, y = r, ymin = lwr, ymax = upr) +
     geom_ribbon(fill = "grey") +
@@ -105,8 +107,8 @@ And now, the same example showing gaps of observations in the time series:
 
 ```{r example3}
 d |> 
-  summarise(tcor(x = SP500, y = FTSE100, t = DateID,
-                 kernel = "normal", CI = TRUE, keep.missing = TRUE)) |>
+  reframe(tcor(x = SP500, y = FTSE100, t = DateID,
+               kernel = "normal", CI = TRUE, keep.missing = TRUE)) |>
   ggplot() +
     aes(x = t, y = r, ymin = lwr, ymax = upr) +
     geom_ribbon(fill = "grey") +

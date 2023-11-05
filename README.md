@@ -55,12 +55,14 @@ Note that this package relies so far on only one direct dependency –
 [**lpridge**](https://github.com/cran/lpridge) – which itself depends on
 nothing but a plain R install.
 
-Nonetheless, in some of the examples below, we also rely on the
-[**tidyverse**](https://github.com/tidyverse) ecosystem, so you would
-need to install this as well to reproduce the content of this README:
+Nonetheless, in some of the examples below, we also rely on
+[**dplyr**](https://dplyr.tidyverse.org) and
+[**ggplot2**](https://ggplot2.tidyverse.org), so you would need to
+install these packages as well to reproduce the content of this README:
 
 ``` r
-install.packages("tidyverse")
+install.packages("dplyr")
+install.packages("ggplot2")
 ```
 
 ## Examples
@@ -83,7 +85,7 @@ example1 <- with(d, tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal"))
 #> 
 #> You may set `nb.cores` to a number higher than 1 for faster computation.
 #> h selected using LOO-CV = 60.9
-#> Bandwidth automatic selection completed in 9 seconds
+#> Bandwidth automatic selection completed in 10.9 seconds
 plot(example1, type = "l")
 ```
 
@@ -93,11 +95,12 @@ Here is the same example using tidyverse syntax (with confidence
 interval):
 
 ``` r
-library(tidyverse)
+library(dplyr)
+library(ggplot2)
 
 d |> 
-  summarise(tcor(x = SP500, y = FTSE100, t = DateID,
-                 kernel = "normal", CI = TRUE)) |>
+  reframe(tcor(x = SP500, y = FTSE100, t = DateID,
+               kernel = "normal", CI = TRUE)) |>
   ggplot() +
     aes(x = t, y = r, ymin = lwr, ymax = upr) +
     geom_ribbon(fill = "grey") +
@@ -113,8 +116,8 @@ series:
 
 ``` r
 d |> 
-  summarise(tcor(x = SP500, y = FTSE100, t = DateID,
-                 kernel = "normal", CI = TRUE, keep.missing = TRUE)) |>
+  reframe(tcor(x = SP500, y = FTSE100, t = DateID,
+               kernel = "normal", CI = TRUE, keep.missing = TRUE)) |>
   ggplot() +
     aes(x = t, y = r, ymin = lwr, ymax = upr) +
     geom_ribbon(fill = "grey") +
@@ -124,7 +127,7 @@ d |>
 #> 
 #> You may set `nb.cores` to a number higher than 1 for faster computation.
 #> h selected using LOO-CV = 60.9
-#> Bandwidth automatic selection completed in 8.6 seconds
+#> Bandwidth automatic selection completed in 8.9 seconds
 ```
 
 <img src="man/figures/README-example3-1.png" width="70%" style="display: block; margin: auto;" />
@@ -149,12 +152,12 @@ example3 <- with(d, tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal", 
 #> 
 #> You may set `nb.cores` to a number higher than 1 for faster computation.
 #> h selected using LOO-CV = 60.9
-#> Bandwidth automatic selection completed in 8.8 seconds
+#> Bandwidth automatic selection completed in 9.6 seconds
 equality_test(example3, t1 = "2000-05-02", t2 = "2001-05-02")
-#>           t1        r1         t2        r2   delta_r SE_delta_r   T_stat  df
-#> 1 2000-05-02 0.4354486 2001-05-02 0.5721993 0.1367507  0.1224749 1.116561 910
-#>           p
-#> 1 0.2644768
+#>           t1        r1         t2     r2   delta_r SE_delta_r   T_stat  df
+#> 1 2000-05-02 0.4354492 2001-05-02 0.5722 0.1367509  0.1224746 1.116565 910
+#>          p
+#> 1 0.264475
 ```
 
 Or you can test if specific time points (or all) differ from a reference
@@ -163,8 +166,8 @@ value:
 ``` r
 ref_test(example3, t = c("2000-05-02", "2001-05-02"), r_ref = 0.5)
 #>            t         r r_ref     delta_r SE_delta_r     T_stat  df         p
-#> 1 2000-05-02 0.4354486   0.5 -0.06455140 0.10082726 -0.6402177 910 0.5221922
-#> 2 2001-05-02 0.5721993   0.5  0.07219934 0.06952677  1.0384394 910 0.2993414
+#> 1 2000-05-02 0.4354492   0.5 -0.06455083 0.10082705 -0.6402134 910 0.5221950
+#> 2 2001-05-02 0.5722000   0.5  0.07220003 0.06952644  1.0384542 910 0.2993345
 #>   p_adjustment
 #> 1         none
 #> 2         none
@@ -205,14 +208,12 @@ devtools::session_info()
 #>  fansi         1.0.5      2023-10-08 [4] RSPM (R 4.3.0)
 #>  farver        2.1.1      2022-07-06 [4] RSPM (R 4.2.0)
 #>  fastmap       1.1.1      2023-02-24 [4] RSPM (R 4.2.0)
-#>  forcats     * 1.0.0      2023-01-29 [4] RSPM (R 4.2.0)
 #>  fs            1.6.3      2023-07-20 [4] RSPM (R 4.2.0)
 #>  generics      0.1.3      2022-07-05 [4] RSPM (R 4.2.0)
 #>  ggplot2     * 3.4.4      2023-10-12 [4] RSPM (R 4.3.0)
 #>  glue          1.6.2      2022-02-24 [4] RSPM (R 4.2.0)
 #>  gtable        0.3.4      2023-08-21 [4] RSPM (R 4.2.0)
 #>  highr         0.10       2022-12-22 [4] RSPM (R 4.2.0)
-#>  hms           1.1.3      2023-03-21 [4] RSPM (R 4.2.0)
 #>  htmltools     0.5.6.1    2023-10-06 [4] RSPM (R 4.3.0)
 #>  htmlwidgets   1.6.2      2023-03-17 [4] RSPM (R 4.2.0)
 #>  httpuv        1.6.12     2023-10-23 [4] RSPM (R 4.3.0)
@@ -220,7 +221,6 @@ devtools::session_info()
 #>  labeling      0.4.3      2023-08-29 [4] RSPM (R 4.2.0)
 #>  later         1.3.1      2023-05-02 [4] RSPM (R 4.2.0)
 #>  lifecycle     1.0.3      2022-10-07 [4] RSPM (R 4.2.0)
-#>  lubridate   * 1.9.3      2023-09-27 [4] RSPM (R 4.3.0)
 #>  magrittr      2.0.3      2022-03-30 [4] RSPM (R 4.2.0)
 #>  memoise       2.0.1      2021-11-26 [4] RSPM (R 4.2.0)
 #>  mime          0.12       2021-09-28 [4] RSPM (R 4.2.0)
@@ -235,10 +235,9 @@ devtools::session_info()
 #>  profvis       0.3.8      2023-05-02 [4] RSPM (R 4.2.0)
 #>  promises      1.2.1      2023-08-10 [4] RSPM (R 4.2.0)
 #>  ps            1.7.5      2023-04-18 [4] RSPM (R 4.3.0)
-#>  purrr       * 1.0.2      2023-08-10 [4] RSPM (R 4.2.0)
+#>  purrr         1.0.2      2023-08-10 [4] RSPM (R 4.2.0)
 #>  R6            2.5.1      2021-08-19 [4] RSPM (R 4.2.0)
 #>  Rcpp          1.0.11     2023-07-06 [4] RSPM (R 4.2.0)
-#>  readr       * 2.1.4      2023-02-10 [4] RSPM (R 4.2.0)
 #>  remotes       2.4.2.1    2023-07-18 [4] RSPM (R 4.2.0)
 #>  rlang         1.1.1      2023-04-28 [4] RSPM (R 4.2.0)
 #>  rmarkdown     2.25       2023-09-18 [4] RSPM (R 4.3.0)
@@ -247,14 +246,10 @@ devtools::session_info()
 #>  sessioninfo   1.2.2      2021-12-06 [4] RSPM (R 4.2.0)
 #>  shiny         1.7.5.1    2023-10-14 [4] RSPM (R 4.3.0)
 #>  stringi       1.7.12     2023-01-11 [4] RSPM (R 4.2.0)
-#>  stringr     * 1.5.0      2022-12-02 [4] RSPM (R 4.2.0)
-#>  tibble      * 3.2.1      2023-03-20 [4] RSPM (R 4.3.0)
-#>  tidyr       * 1.3.0      2023-01-24 [4] RSPM (R 4.2.0)
+#>  stringr       1.5.0      2022-12-02 [4] RSPM (R 4.2.0)
+#>  tibble        3.2.1      2023-03-20 [4] RSPM (R 4.3.0)
 #>  tidyselect    1.2.0      2022-10-10 [4] RSPM (R 4.2.0)
-#>  tidyverse   * 2.0.0      2023-02-22 [4] RSPM (R 4.2.0)
-#>  timechange    0.2.0      2023-01-11 [4] RSPM (R 4.2.0)
 #>  timevarcorr * 0.0.0.9006 2023-11-05 [1] local
-#>  tzdb          0.4.0      2023-05-12 [4] RSPM (R 4.2.0)
 #>  urlchecker    1.0.1      2021-11-30 [4] RSPM (R 4.2.0)
 #>  usethis       2.2.2      2023-07-06 [4] RSPM (R 4.2.0)
 #>  utf8          1.2.4      2023-10-22 [4] RSPM (R 4.3.0)
@@ -264,7 +259,7 @@ devtools::session_info()
 #>  xtable        1.8-4      2019-04-21 [4] RSPM (R 4.2.0)
 #>  yaml          2.3.7      2023-01-23 [4] RSPM (R 4.2.0)
 #> 
-#>  [1] /tmp/Rtmp7vCNkc/temp_libpathf1f7962b8c726
+#>  [1] /tmp/RtmpHaMX48/temp_libpathf918b1f003fd7
 #>  [2] /home/courtiol/R/x86_64-pc-linux-gnu-library/4.3
 #>  [3] /usr/local/lib/R/site-library
 #>  [4] /usr/lib/R/site-library

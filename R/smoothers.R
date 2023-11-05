@@ -11,7 +11,7 @@
 #'
 #' @param x a numeric vector of the series to be smoothed.
 #' @param t a (numeric or Date) vector of time points. If missing, observations
-#'   are considered to correspond to sequential time steps (i.e. 1, 2 ...).
+#'   are considered to correspond to sequential time steps (i.e., 1, 2 ...).
 #' @param h a scalar indicating the bandwidth used by the smoothing function.
 #' @param t.for.pred a (numeric or Date) vector of time points at which to
 #'   evaluate the smoothed fit. If missing, `t` is used.

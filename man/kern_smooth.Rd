@@ -18,7 +18,7 @@ kern_smooth(
 \item{x}{a numeric vector of the series to be smoothed.}
 
 \item{t}{a (numeric or Date) vector of time points. If missing, observations
-are considered to correspond to sequential time steps (i.e. 1, 2 ...).}
+are considered to correspond to sequential time steps (i.e., 1, 2 ...).}
 
 \item{h}{a scalar indicating the bandwidth used by the smoothing function.}
 

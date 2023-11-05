@@ -104,24 +104,24 @@ NULL
 #'
 #' ## Effect of the bandwidth
 #'
-#' res_h50  <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, h = 50))
+#' res_h50   <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, h = 50))
 #' res_h100  <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, h = 100))
-#' res_h200 <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, h = 200))
+#' res_h200  <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, h = 200))
 #' plot(res_h50, type = "l", ylab = "Cor", xlab = "Time", las = 1, col = "grey")
 #' points(res_h100, type = "l", col = "blue")
 #' points(res_h200, type = "l", col = "red")
-#' legend("topright", fill = c("grey", "blue", "red"),
+#' legend("bottom", horiz = TRUE, fill = c("grey", "blue", "red"),
 #'        legend = c("50", "100", "200"), bty = "n", title = "Bandwidth (h)")
 #'
 #'
 #' ## Effect of the correlation method
 #'
-#' res_pearson <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, h = 150))
+#' res_pearson  <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, h = 150))
 #' res_spearman <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, h = 150,
-#'                                      cor.method = "spearman"))
+#'                                       cor.method = "spearman"))
 #' plot(res_pearson, type = "l", ylab = "Cor", xlab = "Time", las = 1)
 #' points(res_spearman, type = "l", col = "blue")
-#' legend("topright", fill = c("black", "blue"),
+#' legend("bottom", horiz = TRUE, fill = c("black", "blue"),
 #'        legend = c("pearson", "spearman"), bty = "n", title = "cor.method")
 #'
 #'
@@ -134,11 +134,8 @@ NULL
 #'                                            kernel = "normal", cor.method = "spearman"))
 #' r <- cor(stockprice$SP500, stockprice$FTSE100, use = "pairwise.complete.obs")
 #' rho <- cor(stockprice$SP500, stockprice$FTSE100, method = "spearman", use = "pairwise.complete.obs")
-#' plot(res_pearson_hInf, type = "l", ylim = c(0, 1), ylab = "Cor", xlab = "Time", las = 1, lwd = 4)
-#' points(res_spearman_hInf, type = "l", lwd = 4, col = "blue")
-#' abline(h = r, col = "red", lty = 2, lwd = 2)
-#' abline(h = rho, col = "green", lty = 2, lwd = 2)
-#'
+#' round(unique(res_pearson_hInf$r) - r, digits = 3) ## 0 indicates near equality
+#' round(unique(res_spearman_hInf$r) - rho, digits = 3) ## 0 indicates near equality
 #'
 #' ## Computing and plotting the confidence interval
 #'
@@ -149,32 +146,56 @@ NULL
 #'      points(upr ~ t, type = "l", lty = 2)})
 #'
 #'
+#' ## Same using tidyverse packages (dplyr and ggplot2 must be installed)
+#' ## see https://github.com/courtiol/timevarcorr for more examples of this kind
+#'
+#' if (require("dplyr", quietly = TRUE)) {
+#'
+#'   stockprice |>
+#'     slice(1:500) |> ## select first 500 time points
+#'     reframe(tcor(x = SP500, y = FTSE100, t = DateID,
+#'                  h = 200, CI = TRUE)) -> res_tidy
+#'   res_tidy
+#' }
+#'
+#' if (require("ggplot2", quietly = TRUE)) {
+#'
+#'   ggplot(res_tidy) +
+#'      aes(x = t, y = r, ymin = lwr, ymax = upr) +
+#'      geom_ribbon(fill = "grey") +
+#'      geom_line() +
+#'      labs(title = "SP500 vs FTSE100", x = "Time", y = "Correlation") +
+#'      theme_classic()
+#'
+#' }
+#'
+#'
 #' ## Automatic selection of the bandwidth using parallel processing and comparison
-#' ## of the 3 alternative kernels on full dataset
-#' # nb: takes a few minutes to run, so not run by default
+#' ## of the 3 alternative kernels on the first 500 time points of the dataset
+#' # nb: takes a few seconds to run, so not run by default
 #'
 #' run <- in_pkgdown() || FALSE ## change to TRUE to run the example
 #' if (run) {
 #'
 #' options("mc.cores" = 2L) ## CPU cores to be used for parallel processing
 #'
-#' res_hauto_epanech <- with(stockprice,
+#' res_hauto_epanech <- with(stockprice[1:500, ],
 #'          tcor(x = SP500, y = FTSE100, t = DateID, kernel = "epanechnikov")
 #'          )
 #'
-#' res_hauto_box <- with(stockprice,
+#' res_hauto_box <- with(stockprice[1:500, ],
 #'           tcor(x = SP500, y = FTSE100, t = DateID, kernel = "box")
 #'           )
 #'
-#' res_hauto_norm <- with(stockprice,
+#' res_hauto_norm <- with(stockprice[1:500, ],
 #'           tcor(x = SP500, y = FTSE100, t = DateID, kernel = "norm")
 #'           )
 #'
 #' plot(res_hauto_epanech, type = "l", col = "red",
 #'      ylab = "Cor", xlab = "Time", las = 1, ylim = c(0, 1))
-#' points(res_hauto_box, type = "l", col = "blue")
+#' points(res_hauto_box, type = "l", col = "grey")
 #' points(res_hauto_norm, type = "l", col = "orange")
-#' legend("topright", fill = c("red", "blue", "orange"),
+#' legend("top", horiz = TRUE, fill = c("red", "grey", "orange"),
 #'        legend = c("epanechnikov", "box", "normal"), bty = "n",
 #'        title = "Kernel")
 #'
@@ -186,17 +207,17 @@ NULL
 #'
 #' if (run) {
 #'
-#' res_epanech <- with(stockprice,
+#' res_epanech <- with(stockprice[1:500, ],
 #'           tcor(x = SP500, y = FTSE100, t = DateID,
 #'           kernel = "epanechnikov", h = attr(res_hauto_epanech, "h"))
 #'           )
 #'
-#' res_box <- with(stockprice,
+#' res_box <- with(stockprice[1:500, ],
 #'            tcor(x = SP500, y = FTSE100, t = DateID,
 #'            kernel = "box", h = attr(res_hauto_epanech, "h"))
 #'            )
 #'
-#' res_norm <- with(stockprice,
+#' res_norm <- with(stockprice[1:500, ],
 #'           tcor(x = SP500, y = FTSE100, t = DateID,
 #'           kernel = "norm", h = attr(res_hauto_epanech, "h"))
 #'           )
@@ -205,19 +226,19 @@ NULL
 #'      las = 1, ylim = c(0, 1))
 #' points(res_box, type = "l", col = "grey")
 #' points(res_norm, type = "l", col = "orange")
-#' legend("topright", fill = c("red", "grey", "orange"),
+#' legend("top", horiz = TRUE, fill = c("red", "grey", "orange"),
 #'        legend = c("epanechnikov", "box", "normal"), bty = "n",
 #'        title = "Kernel")
 #'
 #' }
 #'
 #' ## Automatic selection of the bandwidth using parallel processing with CI
-#' # nb: takes a few minutes to run, so not run by default
+#' # nb: takes a few seconds to run, so not run by default
 #'
 #' run <- in_pkgdown() || FALSE ## change to TRUE to run the example
 #' if (run) {
 #'
-#' res_hauto_epanechCI <- with(stockprice,
+#' res_hauto_epanechCI <- with(stockprice[1:500, ],
 #'           tcor(x = SP500, y = FTSE100, t = DateID, CI = TRUE)
 #'           )
 #'
@@ -230,23 +251,21 @@ NULL
 #'
 #'
 #' ## Not all kernels work well in all situations
+#' ## Here the default kernell estimation leads to issues for last time points
 #' ## nb1: EuStockMarkets is a time-series object provided with R
 #' ## nb2: takes a few minutes to run, so not run by default
 #'
 #' run <- in_pkgdown() || FALSE ## change to TRUE to run the example
 #' if (run) {
 #'
-#' EuStock_norm <- tcor(EuStockMarkets[, "DAX"], EuStockMarkets[, "SMI"], kernel = "normal")
-#' plot(EuStock_norm, type = "l", las = 1) ## normal kernel seems to work great with these data
+#' EuStock_epanech <- tcor(EuStockMarkets[1:500, "DAX"], EuStockMarkets[1:500, "SMI"])
+#' EuStock_norm <- tcor(EuStockMarkets[1:500, "DAX"], EuStockMarkets[1:500, "SMI"], kernel = "normal")
 #'
-#' }
-#'
-#' run <- in_pkgdown() || FALSE ## change to TRUE to run the example
-#' if (run) {
-#'
-#' EuStock_epanech <- tcor(EuStockMarkets[, "DAX"], EuStockMarkets[, "SMI"])
-#' plot(EuStock_epanech, type = "l", las = 1) ## problem of estimation for first and last years
-#'
+#' plot(EuStock_epanech, type = "l", col = "red", las = 1, ylim = c(-1, 1))
+#' points(EuStock_norm, type = "l", col = "orange", lty = 2)
+#' legend("bottom", horiz = TRUE, fill = c("red", "orange"),
+#'        legend = c("epanechnikov", "normal"), bty = "n",
+#'        title = "Kernel")
 #' }
 #'
 #'
@@ -257,7 +276,7 @@ tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "sp
 
   ## stripping out missing data
   missing <- is.na(x) | is.na(y) | is.na(t)
-  x_ori <- x[!missing] ## ori = original, i.e. not smoothed
+  x_ori <- x[!missing] ## ori = original, i.e., not smoothed
   y_ori <- y[!missing]
   t_ori <- t[!missing]
 
@@ -389,7 +408,7 @@ calc_rho <- function(x, y, t = seq_along(x), t.for.pred = t, h, cor.method = c("
   ## we create a matrix with the required components
   U <- cbind(x = x, y = y, x2 = x^2, y2 = y^2, xy = x*y)
 
-  ## we smooth each component (i.e. each column in the matrix)
+  ## we smooth each component (i.e., each column in the matrix)
   x_smoothed <- kern_smooth(x = x, t = t, h = h, t.for.pred = t.for.pred,
                             kernel = kernel, param_smoother = param_smoother, output = "list") ## separate call to retrieve t once (and x)
   other_smoothed_list <- apply(U[, -1], 2L, function(v) {
