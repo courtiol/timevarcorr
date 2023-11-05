@@ -123,8 +123,8 @@ NULL
 #'        legend = c("pearson", "spearman"), bty = "n", title = "cor.method")
 #'
 #'
-#' ## Infinite bandwidth and fixed correlation correspondance
-#' ## nb: does not work with default kernel
+#' ## Infinite bandwidth should match fixed correlation coefficients
+#' ## nb: `h = Inf` is not supported by default kernel (`kernel = 'epanechnikov'`)
 #'
 #' res_pearson_hInf  <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, h = Inf,
 #'                                            kernel = "normal"))
@@ -147,20 +147,27 @@ NULL
 #'      points(upr ~ t, type = "l", lty = 2)})
 #'
 #'
-#' run <- FALSE ## change to TRUE to run the example
-#' if (in_pkgdown() || run) {
-#'
 #' ## Automatic selection of the bandwidth using parallel processing and comparison
 #' ## of the 3 alternative kernels on full dataset
-#' # nb: takes a few minutes to run
+#' # nb: takes a few minutes to run, so not run by default
 #'
-#' options("mc.cores" = 2L)
-#' res_hauto_epanech <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID,
-#'                                            verbose = TRUE))
-#' res_hauto_box <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID,
-#'                                        kernel = "box", verbose = TRUE))
-#' res_hauto_norm <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID,
-#'                                         kernel = "norm", verbose = TRUE))
+#' run <- in_pkgdown() || FALSE ## change to TRUE to run the example
+#' if (run) {
+#'
+#' options("mc.cores" = 2L) ## CPU cores to be used for parallel processing
+#'
+#' res_hauto_epanech <- with(stockprice,
+#'          tcor(x = SP500, y = FTSE100, t = DateID, kernel = "epanechnikov")
+#'          )
+#'
+#' res_hauto_box <- with(stockprice,
+#'           tcor(x = SP500, y = FTSE100, t = DateID, kernel = "box")
+#'           )
+#'
+#' res_hauto_norm <- with(stockprice,
+#'           tcor(x = SP500, y = FTSE100, t = DateID, kernel = "norm")
+#'           )
+#'
 #' plot(res_hauto_epanech, type = "l", col = "red",
 #'      ylab = "Cor", xlab = "Time", las = 1, ylim = c(0, 1))
 #' points(res_hauto_box, type = "l", col = "blue")
@@ -169,37 +176,28 @@ NULL
 #'        legend = c("epanechnikov", "box", "normal"), bty = "n",
 #'        title = "Kernel")
 #'
-#' ## Cross validation error according to each kernel
-#'
-#' attr(res_hauto_epanech, "CV_error")
-#' attr(res_hauto_box, "CV_error")
-#' attr(res_hauto_norm, "CV_error")
-#'
-#' ## Selected bandwidth according to each kernel
-#'
-#' attr(res_hauto_epanech, "h")
-#' attr(res_hauto_box, "h")
-#' attr(res_hauto_norm, "h")
-#'
-#'
-#' ## Automatic selection of the bandwidth using parallel processing with CI
-#'
-#' res_hauto_epanechCI <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID,
-#'                                              CI = TRUE, verbose = TRUE))
-#' plot(res_hauto_epanechCI[, 1:2], type = "l", col = "red",
-#'      ylab = "Cor", xlab = "Time", las = 1, ylim = c(0, 1))
-#' points(res_hauto_epanechCI[, c(1, 4)], type = "l", col = "red", lty = 2)
-#' points(res_hauto_epanechCI[, c(1, 5)], type = "l", col = "red", lty = 2)
+#' }
 #'
 #'
 #' ## Comparison of the 3 alternative kernels under same bandwidth
+#' ## nb: it requires to have run the previous example
 #'
-#' res_epanech <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID,
-#'                                      h = attr(res_hauto_epanech, "h")))
-#' res_box <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, kernel = "box",
-#'                                  h = attr(res_hauto_epanech, "h")))
-#' res_norm <- with(stockprice, tcor(x = SP500, y = FTSE100, t = DateID, kernel = "norm",
-#'                                   h = attr(res_hauto_epanech, "h")))
+#' if (run) {
+#'
+#' res_epanech <- with(stockprice,
+#'           tcor(x = SP500, y = FTSE100, t = DateID,
+#'           kernel = "epanechnikov", h = attr(res_hauto_epanech, "h"))
+#'           )
+#'
+#' res_box <- with(stockprice,
+#'            tcor(x = SP500, y = FTSE100, t = DateID,
+#'            kernel = "box", h = attr(res_hauto_epanech, "h"))
+#'            )
+#'
+#' res_norm <- with(stockprice,
+#'           tcor(x = SP500, y = FTSE100, t = DateID,
+#'           kernel = "norm", h = attr(res_hauto_epanech, "h"))
+#'           )
 #'
 #' plot(res_epanech, type = "l", col = "red", ylab = "Cor", xlab = "Time",
 #'      las = 1, ylim = c(0, 1))
@@ -209,15 +207,43 @@ NULL
 #'        legend = c("epanechnikov", "box", "normal"), bty = "n",
 #'        title = "Kernel")
 #'
+#' }
+#'
+#' ## Automatic selection of the bandwidth using parallel processing with CI
+#' # nb: takes a few minutes to run, so not run by default
+#'
+#' run <- in_pkgdown() || FALSE ## change to TRUE to run the example
+#' if (run) {
+#'
+#' res_hauto_epanechCI <- with(stockprice,
+#'           tcor(x = SP500, y = FTSE100, t = DateID, CI = TRUE)
+#'           )
+#'
+#' plot(res_hauto_epanechCI[, c("t", "r")], type = "l", col = "red",
+#'      ylab = "Cor", xlab = "Time", las = 1, ylim = c(0, 1))
+#' points(res_hauto_epanechCI[, c("t", "lwr")], type = "l", col = "red", lty = 2)
+#' points(res_hauto_epanechCI[, c("t", "upr")], type = "l", col = "red", lty = 2)
+#'
+#' }
+#'
 #'
 #' ## Not all kernels work well in all situations
-#' ## nb: EuStockMarkets is a time-series object provided with R
+#' ## nb1: EuStockMarkets is a time-series object provided with R
+#' ## nb2: takes a few minutes to run, so not run by default
 #'
-#' EuStock_epanech <- tcor(EuStockMarkets[, "DAX"], EuStockMarkets[, "SMI"])
-#' plot(EuStock_epanech, type = "l", las = 1) ## problem of estimation for first and last years
+#' run <- in_pkgdown() || FALSE ## change to TRUE to run the example
+#' if (run) {
 #'
 #' EuStock_norm <- tcor(EuStockMarkets[, "DAX"], EuStockMarkets[, "SMI"], kernel = "normal")
 #' plot(EuStock_norm, type = "l", las = 1) ## normal kernel seems to work great with these data
+#'
+#' }
+#'
+#' run <- in_pkgdown() || FALSE ## change to TRUE to run the example
+#' if (run) {
+#'
+#' EuStock_epanech <- tcor(EuStockMarkets[, "DAX"], EuStockMarkets[, "SMI"])
+#' plot(EuStock_epanech, type = "l", las = 1) ## problem of estimation for first and last years
 #'
 #' }
 #'
@@ -239,6 +265,7 @@ tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "sp
   } else {
     bandwidth_obj <- list(h = h, h_selection = "fixed by user", CV_error = NA, time = NULL)
   }
+
 
   ## compute correlation with the selected bandwidth
   res_all <- calc_rho(x = x_ori, y = y_ori, t = t_ori, h = bandwidth_obj$h, cor.method = cor.method,
@@ -309,9 +336,16 @@ tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "sp
 #' ## Examples for the internal function computing the correlation ##
 #' ##################################################################
 #'
+#' ## Computing the correlation and its component for the first six time points
+#'
 #' with(head(stockprice), calc_rho(x = SP500, y = FTSE100, t = DateID, h = 20))
+#'
+#'
+#' ## Predicting the correlation and its component at a specific time point
+#'
 #' with(head(stockprice), calc_rho(x = SP500, y = FTSE100, t = DateID, h = 20,
 #'      t.for.pred = DateID[1]))
+#'
 #'
 #' ## The function can handle non consecutive time points
 #'
@@ -392,13 +426,12 @@ calc_rho <- function(x, y, t = seq_along(x), t.for.pred = t, h, cor.method = c("
 #' ## Examples for the internal function selecting the bandwidth ##
 #' ################################################################
 #'
-#' run <- FALSE ## change to TRUE to run the example
-#' if (in_pkgdown() || run) {
-#'
 #' ## Automatic selection of the bandwidth using parallel processing
-#' # nb: takes a few seconds to run
+#' # nb: takes a few seconds to run, so not run by default
 #'
-#' options("mc.cores" = 2L)
+#' run <- in_pkgdown() || FALSE ## change to TRUE to run the example
+#' if (run) {
+#'
 #' small_clean_dataset <- head(na.omit(stockprice), n = 200)
 #' with(small_clean_dataset, select_h(x = SP500, y = FTSE100, t = DateID))
 #'
@@ -458,7 +491,7 @@ select_h <- function(x, y, t = seq_along(x), cor.method = c("pearson", "spearman
     ## if h_max is best, use elbow criterion instead
     h <- opt$minimum
     CV_error <- opt$objective
-    print(paste("h selected using LOO-CV =", round(h, digits = 1L)))
+    message(paste("h selected using LOO-CV =", round(h, digits = 1L)))
     CV_bound <- CV(h_max)
 
     if (CV_bound <= opt$objective) {
@@ -487,9 +520,10 @@ select_h <- function(x, y, t = seq_along(x), cor.method = c("pearson", "spearman
 
       opt <- stats::optimize(RMSE_h0, interval = c(3, h_max - 1), tol = 1)
       h <- opt$minimum
-      print(paste("h selected using elbow criterion =", round(h, digits = 1L)))
+      message(paste("h selected using elbow criterion =", round(h, digits = 1L)))
     }
   })
+  message(paste("Bandwidth automatic selection completed in", round(time[3], digits = 1L), "seconds"))
   list(h = h, h_selection = h_selection, CV_error = CV_error, time = time)
 }
 
