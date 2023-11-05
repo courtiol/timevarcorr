@@ -128,8 +128,14 @@ regression. The default is to use the Epanechnikov kernel following Choi &
 Shin 2021, but other kernels have also been implemented and can thus
 alternatively be used (see \code{\link{kern_smooth}} for details). The normal kernel
 seems to sometimes lead to very small bandwidth being selected, but the
-default can lead to numerical issues. We thus recommend always comparing the
-results from different kernel methods.
+default kernel can lead to numerical issues (see next point). We thus
+recommend always comparing the results from different kernel methods.
+\item \strong{Numerical issues}: some numerical issues can happen because the smoothing
+is performed independently on each component of the correlation coefficient.
+As a consequence, some relationship between components may become violated
+for some time points. For instance, if the square of the smoothed $x$ term
+gets larger than the smoothed $x^2$ term, the variance of $x$ would become
+negative. In such cases, coefficient values returned are \code{NA}.
 \item \strong{Bandwidth selection}: when the value used to define the bandwidth (\code{h})
 in \code{tcor} is set to \code{NULL} (the default), the internal function \code{select_h}
 is used to to select the optimal value for \code{h}. It is first estimated by

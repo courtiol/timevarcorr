@@ -19,8 +19,15 @@
 #' Shin 2021, but other kernels have also been implemented and can thus
 #' alternatively be used (see [`kern_smooth`] for details). The normal kernel
 #' seems to sometimes lead to very small bandwidth being selected, but the
-#' default can lead to numerical issues. We thus recommend always comparing the
-#' results from different kernel methods.
+#' default kernel can lead to numerical issues (see next point). We thus
+#' recommend always comparing the results from different kernel methods.
+#'
+#' - **Numerical issues**: some numerical issues can happen because the smoothing
+#' is performed independently on each component of the correlation coefficient.
+#' As a consequence, some relationship between components may become violated
+#' for some time points. For instance, if the square of the smoothed $x$ term
+#' gets larger than the smoothed $x^2$ term, the variance of $x$ would become
+#' negative. In such cases, coefficient values returned are `NA`.
 #'
 #' - **Bandwidth selection**: when the value used to define the bandwidth (`h`)
 #' in `tcor` is set to `NULL` (the default), the internal function `select_h`
@@ -423,7 +430,7 @@ calc_rho <- function(x, y, t = seq_along(x), t.for.pred = t, h, cor.method = c("
   smoothed$sd_x <- sqrt(ifelse(var_x > 0, var_x, NA))
   smoothed$sd_y <- sqrt(ifelse(var_y > 0, var_y, NA))
   if (any(is.na(c(smoothed$sd_x, smoothed$sd_y)))) {
-    message(paste("\nNumerical issues occured when computing the correlation values for the bandwidth value h =", round(h, digits = 2), "resulting in `NA`(s).\n You may want to:\n - try another bandwidth value using the argument `h`\n - try another kernel using the argument `kernel`\n - adjust the smoothing parameters using the argument `param_smoother` (see `?kern_smooth`).\n This may not be an issue, if you are estimating `h` automatically, as issues may occur only for sub-optimal bandwidth values.\n"))
+    message(paste("\nNumerical issues occured when computing the correlation values for the bandwidth value h =", round(h, digits = 2), "resulting in `NA`(s) (see Details on *Numerical issues* in `?tcor`).\n You may want to:\n - try another bandwidth value using the argument `h`\n - try another kernel using the argument `kernel`\n - adjust the smoothing parameters using the argument `param_smoother` (see `?kern_smooth`).\n This may not be an issue, if you are estimating `h` automatically, as issues may occur only for sub-optimal bandwidth values.\n"))
   }
   smoothed$rho <- (smoothed$xy - smoothed$x * smoothed$y) / (smoothed$sd_x * smoothed$sd_y)
 
