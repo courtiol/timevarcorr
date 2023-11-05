@@ -147,7 +147,9 @@ NULL
 #'      points(upr ~ t, type = "l", lty = 2)})
 #'
 #'
-#' \dontrun{
+#' run <- FALSE ## change to TRUE to run the example
+#' if (in_pkgdown() || run) {
+#'
 #' ## Automatic selection of the bandwidth using parallel processing and comparison
 #' ## of the 3 alternative kernels on full dataset
 #' # nb: takes a few minutes to run
@@ -390,11 +392,16 @@ calc_rho <- function(x, y, t = seq_along(x), t.for.pred = t, h, cor.method = c("
 #' ## Examples for the internal function selecting the bandwidth ##
 #' ################################################################
 #'
-#' \dontrun{
+#' run <- FALSE ## change to TRUE to run the example
+#' if (in_pkgdown() || run) {
+#'
 #' ## Automatic selection of the bandwidth using parallel processing
-#' # nb: takes a few minutes to run
+#' # nb: takes a few seconds to run
+#'
 #' options("mc.cores" = 2L)
-#' with(na.omit(stockprice), select_h(x = SP500, y = FTSE100, t = DateID))
+#' small_clean_dataset <- head(na.omit(stockprice), n = 200)
+#' with(small_clean_dataset, select_h(x = SP500, y = FTSE100, t = DateID))
+#'
 #' }
 #'
 select_h <- function(x, y, t = seq_along(x), cor.method = c("pearson", "spearman"),
@@ -430,7 +437,7 @@ select_h <- function(x, y, t = seq_along(x), cor.method = c("pearson", "spearman
 
     ## define function for performing leave-one-out cross-validation ## TODO: extract code into standalone function
     CV <- function(h) {
-      CVi <- mclapply(seq_along(t), function(oob) {
+      CVi <- mclapply(seq_along(t), function(oob) { ## TODO: check scheduling effect and try to make this Windows friendly
         obj <- calc_rho(x = x[-oob], y = y[-oob], t = t[-oob], h = h, t.for.pred = t[oob],
                         cor.method = cor.method, kernel = kernel, param_smoother = param_smoother)
         (obj$rho_smoothed - ((x[oob] - obj$x_smoothed) * (y[oob] - obj$y_smoothed)) / (obj$sd_x_smoothed * obj$sd_y_smoothed))^2

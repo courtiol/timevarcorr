@@ -7,12 +7,12 @@
 .onAttach(libname, pkgname)
 }
 \arguments{
-\item{libname}{argument needed but automatically defined}
+\item{libname}{argument needed but automatically defined.}
 
-\item{pkgname}{argument needed but automatically defined}
+\item{pkgname}{argument needed but automatically defined.}
 }
 \value{
-nothing (invisible NULL)
+nothing (invisible NULL).
 }
 \description{
 This function should not be called by the user.

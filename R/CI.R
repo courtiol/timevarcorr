@@ -35,7 +35,7 @@ NULL
 #' ## Computing `$\hat{H_t}$`
 #'
 #' H <- calc_H(smoothed_obj = rho_obj)
-#' H
+#' H[, , 1:2] # H array for the first two time steps
 #'
 calc_H <- function(smoothed_obj) {
   res <- array(0, dim = c(5, 5, nrow(smoothed_obj)))
@@ -77,7 +77,7 @@ calc_H <- function(smoothed_obj) {
 #' ## Computing `$\hat{e}_t$`
 #'
 #' e <- calc_e(smoothed_obj = rho_obj, H = H)
-#' head(e)
+#' head(e) # e matrix for the first six time steps
 #'
 calc_e <- function(smoothed_obj, H) {
   res <- matrix(0, ncol = 5, nrow = dim(H)[3])
@@ -183,7 +183,8 @@ calc_L_And <- function(e, AR.method = c("yule-walker", "burg", "ols", "mle", "yw
 #'
 #' ## Computing `$D_t$`
 #'
-#' head(calc_D(smoothed_obj = rho_obj))
+#' D <- calc_D(smoothed_obj = rho_obj)
+#' head(D) # D matrix for the first six time steps
 #'
 calc_D <- function(smoothed_obj) {
   res <- matrix(0, nrow = nrow(smoothed_obj), ncol = 5)
@@ -208,11 +209,17 @@ calc_D <- function(smoothed_obj) {
 #'
 #' @examples
 #'
-#' ## Computing `$se(\hat{rho}_t(h))$`
+#' run <- FALSE ## change to TRUE to run the example
+#' if (in_pkgdown() || run) {
 #'
-#' \dontrun{
-#' calc_SE(smoothed_obj = rho_obj, h = 50) ## ~ 10 sec to run
+#' ## Computing `$se(\hat{rho}_t(h))$`
+#' # nb: takes a few seconds to run
+#'
+#' SE <- calc_SE(smoothed_obj = rho_obj, h = 50)
+#' head(SE) # SE vector for the first six time steps
+#'
 #' }
+#'
 #'
 calc_SE <- function(smoothed_obj, h, AR.method = c("yule-walker", "burg", "ols", "mle", "yw")) {
 

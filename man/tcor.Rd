@@ -210,7 +210,9 @@ with(res_withCI, {
      points(upr ~ t, type = "l", lty = 2)})
 
 
-\dontrun{
+run <- FALSE ## change to TRUE to run the example
+if (in_pkgdown() || run) {
+
 ## Automatic selection of the bandwidth using parallel processing and comparison
 ## of the 3 alternative kernels on full dataset
 # nb: takes a few minutes to run
@@ -314,11 +316,16 @@ with(head(stockprice)[c(1, 3, 6, 2, 4, 5), ], calc_rho(x = SP500, y = FTSE100, t
 ## Examples for the internal function selecting the bandwidth ##
 ################################################################
 
-\dontrun{
+run <- FALSE ## change to TRUE to run the example
+if (in_pkgdown() || run) {
+
 ## Automatic selection of the bandwidth using parallel processing
-# nb: takes a few minutes to run
+# nb: takes a few seconds to run
+
 options("mc.cores" = 2L)
-with(na.omit(stockprice), select_h(x = SP500, y = FTSE100, t = DateID))
+small_clean_dataset <- head(na.omit(stockprice), n = 200)
+with(small_clean_dataset, select_h(x = SP500, y = FTSE100, t = DateID))
+
 }
 
 }

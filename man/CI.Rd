@@ -104,13 +104,13 @@ head(rho_obj)
 ## Computing `$\hat{H_t}$`
 
 H <- calc_H(smoothed_obj = rho_obj)
-H
+H[, , 1:2] # H array for the first two time steps
 
 
 ## Computing `$\hat{e}_t$`
 
 e <- calc_e(smoothed_obj = rho_obj, H = H)
-head(e)
+head(e) # e matrix for the first six time steps
 
 
 ## Computing `$\hat{\Gamma}_l$`
@@ -132,14 +132,21 @@ sapply(c("yule-walker", "burg", "ols", "mle", "yw"),
 
 ## Computing `$D_t$`
 
-head(calc_D(smoothed_obj = rho_obj))
+D <- calc_D(smoothed_obj = rho_obj)
+head(D) # D matrix for the first six time steps
 
+
+run <- FALSE ## change to TRUE to run the example
+if (in_pkgdown() || run) {
 
 ## Computing `$se(\hat{rho}_t(h))$`
+# nb: takes a few seconds to run
 
-\dontrun{
-calc_SE(smoothed_obj = rho_obj, h = 50) ## ~ 10 sec to run
+SE <- calc_SE(smoothed_obj = rho_obj, h = 50)
+head(SE) # SE vector for the first six time steps
+
 }
+
 
 }
 \references{
