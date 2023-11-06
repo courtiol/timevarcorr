@@ -7,7 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="description" content="
     Computes how the correlation between 2 time-series changes over time.
-    To do so, the package performs a non-parametric kernel smoothing (using a common bandwidth) of all underlying components required for the computation of a correlation coefficient (i.e., x, y, x^2, y^2, xy).
+    To do so, the package follows the method from Choi &amp; Shin (2021) &lt;doi:10.1007/s42952-020-00073-6&gt;.
+    It performs a non-parametric kernel smoothing (using a common bandwidth) of all underlying components required for the computation of a correlation coefficient (i.e., x, y, x^2, y^2, xy).
     An automatic selection procedure for the bandwidth parameter is implemented.
     Alternative kernels can be used (Epanechnikov, box and normal).
     Both Pearson and Spearman correlation coefficients can be estimated and change in correlation over time can be tested.">
@@ -19,7 +20,8 @@
 <!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Time Varying Correlation">
 <meta property="og:description" content="
     Computes how the correlation between 2 time-series changes over time.
-    To do so, the package performs a non-parametric kernel smoothing (using a common bandwidth) of all underlying components required for the computation of a correlation coefficient (i.e., x, y, x^2, y^2, xy).
+    To do so, the package follows the method from Choi &amp; Shin (2021) &lt;doi:10.1007/s42952-020-00073-6&gt;.
+    It performs a non-parametric kernel smoothing (using a common bandwidth) of all underlying components required for the computation of a correlation coefficient (i.e., x, y, x^2, y^2, xy).
     An automatic selection procedure for the bandwidth parameter is implemented.
     Alternative kernels can be used (Epanechnikov, box and normal).
     Both Pearson and Spearman correlation coefficients can be estimated and change in correlation over time can be tested.">
@@ -36,7 +38,7 @@
     
     <a class="navbar-brand me-2" href="index.html">timevarcorr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -113,7 +115,7 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; You may use several CPU cores for faster computation by calling `options('mc.cores' = XX)` with `XX` corresponding to the number of CPU cores to be used.</span></span>
 <span><span class="co">#&gt; h selected using LOO-CV = 60.9</span></span>
-<span><span class="co">#&gt; Bandwidth automatic selection completed in 8.1 seconds</span></span>
+<span><span class="co">#&gt; Bandwidth automatic selection completed in 9.1 seconds</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">example1</span>, type <span class="op">=</span> <span class="st">"l"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-example-1.png" width="70%" style="display: block; margin: auto;"></p>
 <p>Here is the same example using tidyverse syntax (with confidence interval):</p>
@@ -145,7 +147,7 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; You may use several CPU cores for faster computation by calling `options('mc.cores' = XX)` with `XX` corresponding to the number of CPU cores to be used.</span></span>
 <span><span class="co">#&gt; h selected using LOO-CV = 60.9</span></span>
-<span><span class="co">#&gt; Bandwidth automatic selection completed in 9.8 seconds</span></span></code></pre></div>
+<span><span class="co">#&gt; Bandwidth automatic selection completed in 8.7 seconds</span></span></code></pre></div>
 <p><img src="reference/figures/README-example3-1.png" width="70%" style="display: block; margin: auto;"></p>
 <p>You can do more. For example, you can use other kernels, fix the bandwidth manually, or use the Spearman’s rather than the Pearson’s correlation coefficient:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
@@ -159,7 +161,7 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; You may use several CPU cores for faster computation by calling `options('mc.cores' = XX)` with `XX` corresponding to the number of CPU cores to be used.</span></span>
 <span><span class="co">#&gt; h selected using LOO-CV = 60.9</span></span>
-<span><span class="co">#&gt; Bandwidth automatic selection completed in 9.5 seconds</span></span>
+<span><span class="co">#&gt; Bandwidth automatic selection completed in 8.9 seconds</span></span>
 <span><span class="fu"><a href="reference/test_equality.html">test_equality</a></span><span class="op">(</span><span class="va">example3</span>, t1 <span class="op">=</span> <span class="st">"2000-05-02"</span>, t2 <span class="op">=</span> <span class="st">"2001-05-02"</span><span class="op">)</span></span>
 <span><span class="co">#&gt;           t1        r1         t2     r2   delta_r SE_delta_r   T_stat  df</span></span>
 <span><span class="co">#&gt; 1 2000-05-02 0.4354492 2001-05-02 0.5722 0.1367509  0.1224746 1.116565 910</span></span>
@@ -191,7 +193,7 @@
 <span><span class="co">#&gt;  collate  en_US.UTF-8</span></span>
 <span><span class="co">#&gt;  ctype    en_US.UTF-8</span></span>
 <span><span class="co">#&gt;  tz       Europe/Berlin</span></span>
-<span><span class="co">#&gt;  date     2023-11-05</span></span>
+<span><span class="co">#&gt;  date     2023-11-06</span></span>
 <span><span class="co">#&gt;  pandoc   3.1.8 @ /usr/lib/rstudio/resources/app/bin/quarto/bin/tools/x86_64/ (via rmarkdown)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ─ Packages ───────────────────────────────────────────────────────────────────</span></span>
@@ -250,7 +252,7 @@
 <span><span class="co">#&gt;  stringr       1.5.0   2022-12-02 [4] RSPM (R 4.2.0)</span></span>
 <span><span class="co">#&gt;  tibble        3.2.1   2023-03-20 [4] RSPM (R 4.3.0)</span></span>
 <span><span class="co">#&gt;  tidyselect    1.2.0   2022-10-10 [4] RSPM (R 4.2.0)</span></span>
-<span><span class="co">#&gt;  timevarcorr * 0.1.0   2023-11-05 [1] local</span></span>
+<span><span class="co">#&gt;  timevarcorr * 0.1.1   2023-11-06 [1] local</span></span>
 <span><span class="co">#&gt;  urlchecker    1.0.1   2021-11-30 [4] RSPM (R 4.2.0)</span></span>
 <span><span class="co">#&gt;  usethis       2.2.2   2023-07-06 [4] RSPM (R 4.2.0)</span></span>
 <span><span class="co">#&gt;  utf8          1.2.4   2023-10-22 [4] RSPM (R 4.3.0)</span></span>
@@ -260,7 +262,7 @@
 <span><span class="co">#&gt;  xtable        1.8-4   2019-04-21 [4] RSPM (R 4.2.0)</span></span>
 <span><span class="co">#&gt;  yaml          2.3.7   2023-01-23 [4] RSPM (R 4.2.0)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;  [1] /tmp/Rtmpc9Ly9p/temp_libpathfaae13b7a4154</span></span>
+<span><span class="co">#&gt;  [1] /tmp/RtmpZf1Gw1/temp_libpath1049fd45c346be</span></span>
 <span><span class="co">#&gt;  [2] /home/courtiol/R/x86_64-pc-linux-gnu-library/4.3</span></span>
 <span><span class="co">#&gt;  [3] /usr/local/lib/R/site-library</span></span>
 <span><span class="co">#&gt;  [4] /usr/lib/R/site-library</span></span>
