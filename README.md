@@ -86,7 +86,7 @@ example1 <- with(d, tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal"))
 #> 
 #> You may use several CPU cores for faster computation by calling `options('mc.cores' = XX)` with `XX` corresponding to the number of CPU cores to be used.
 #> h selected using LOO-CV = 60.9
-#> Bandwidth automatic selection completed in 8.1 seconds
+#> Bandwidth automatic selection completed in 9.1 seconds
 plot(example1, type = "l")
 ```
 
@@ -128,7 +128,7 @@ d |>
 #> 
 #> You may use several CPU cores for faster computation by calling `options('mc.cores' = XX)` with `XX` corresponding to the number of CPU cores to be used.
 #> h selected using LOO-CV = 60.9
-#> Bandwidth automatic selection completed in 9.8 seconds
+#> Bandwidth automatic selection completed in 8.7 seconds
 ```
 
 <img src="man/figures/README-example3-1.png" width="70%" style="display: block; margin: auto;" />
@@ -153,7 +153,7 @@ example3 <- with(d, tcor(x = SP500, y = FTSE100, t = DateID, kernel = "normal", 
 #> 
 #> You may use several CPU cores for faster computation by calling `options('mc.cores' = XX)` with `XX` corresponding to the number of CPU cores to be used.
 #> h selected using LOO-CV = 60.9
-#> Bandwidth automatic selection completed in 9.5 seconds
+#> Bandwidth automatic selection completed in 8.9 seconds
 test_equality(example3, t1 = "2000-05-02", t2 = "2001-05-02")
 #>           t1        r1         t2     r2   delta_r SE_delta_r   T_stat  df
 #> 1 2000-05-02 0.4354492 2001-05-02 0.5722 0.1367509  0.1224746 1.116565 910
@@ -191,7 +191,7 @@ devtools::session_info()
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       Europe/Berlin
-#>  date     2023-11-05
+#>  date     2023-11-06
 #>  pandoc   3.1.8 @ /usr/lib/rstudio/resources/app/bin/quarto/bin/tools/x86_64/ (via rmarkdown)
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
@@ -250,7 +250,7 @@ devtools::session_info()
 #>  stringr       1.5.0   2022-12-02 [4] RSPM (R 4.2.0)
 #>  tibble        3.2.1   2023-03-20 [4] RSPM (R 4.3.0)
 #>  tidyselect    1.2.0   2022-10-10 [4] RSPM (R 4.2.0)
-#>  timevarcorr * 0.1.0   2023-11-05 [1] local
+#>  timevarcorr * 0.1.1   2023-11-06 [1] local
 #>  urlchecker    1.0.1   2021-11-30 [4] RSPM (R 4.2.0)
 #>  usethis       2.2.2   2023-07-06 [4] RSPM (R 4.2.0)
 #>  utf8          1.2.4   2023-10-22 [4] RSPM (R 4.3.0)
@@ -260,7 +260,7 @@ devtools::session_info()
 #>  xtable        1.8-4   2019-04-21 [4] RSPM (R 4.2.0)
 #>  yaml          2.3.7   2023-01-23 [4] RSPM (R 4.2.0)
 #> 
-#>  [1] /tmp/Rtmpc9Ly9p/temp_libpathfaae13b7a4154
+#>  [1] /tmp/RtmpZf1Gw1/temp_libpath1049fd45c346be
 #>  [2] /home/courtiol/R/x86_64-pc-linux-gnu-library/4.3
 #>  [3] /usr/local/lib/R/site-library
 #>  [4] /usr/lib/R/site-library

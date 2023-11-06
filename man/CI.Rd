@@ -32,67 +32,66 @@ calc_SE(
 \arguments{
 \item{smoothed_obj}{an object created with \code{\link{calc_rho}}.}
 
-\item{H}{an object created with \code{\link{calc_H}}.}
+\item{H}{an object created with \code{calc_H}.}
 
-\item{e}{an object created with \code{\link{calc_e}}.}
+\item{e}{an object created with \code{calc_e}.}
 
 \item{l}{a scalar indicating a number of time points.}
 
 \item{L}{a scalar indicating a bandwidth parameter.}
 
-\item{AR.method}{character string specifying the method to fit the autoregressive model used to compute \verb{$\\hat\{\\gamma\}_1$} in \verb{$L_\{And\}$} (see \code{\link[stats:ar]{stats::ar}} for details).}
+\item{AR.method}{character string specifying the method to fit the autoregressive model used to compute \eqn{\hat{\gamma}_1} in \eqn{L_{And}} (see \code{\link[stats:ar]{stats::ar}} for details).}
 
 \item{h}{a scalar indicating the bandwidth used by the smoothing function.}
 }
+\value{
+\itemize{
+\item \code{calc_H()} returns a 5 x 5 x \eqn{t} array of elements of class numeric, which corresponds to \eqn{\hat{H_t}} in Choi & Shin (2021).
+\item \code{calc_e()} returns a \eqn{t} x 5 matrix of elements of class numeric storing the residuals, which corresponds to \eqn{\hat{e}_t} in Choi & Shin (2021).
+\item \code{calc_Gamma()} returns a 5 x 5 matrix of elements of class numeric, which corresponds to \eqn{\hat{\Gamma}_l} in Choi & Shin (2021).
+\item \code{calc_GammaINF()} returns a 5 x 5 matrix of elements of class numeric, which corresponds to \eqn{\hat{\Gamma}^\infty} in Choi & Shin (2021).
+\item \code{calc_L_And()} returns a scalar of class numeric, which corresponds to \eqn{L_{And}} in Choi & Shin (2021).
+\item \code{calc_D()} returns a \eqn{t} x 5 matrix of elements of class numeric storing the residuals, which corresponds to \eqn{D_t} in Choi & Shin (2021).
+\item \code{calc_SE()} returns a vector of length \eqn{t} of elements of class numeric, which corresponds to \eqn{se(\hat{\rho}_t(h))} in Choi & Shin (2021).
+}
+}
 \description{
-These functions compute the different terms required to compute the confidence
-interval around the time-varying correlation coefficient.
+These functions compute the different terms required for \code{\link[=tcor]{tcor()}} to compute the confidence
+interval around the time-varying correlation coefficient. These terms are defined in Choi & Shin (2021).
 }
 \section{Functions}{
 \itemize{
-\item \code{calc_H()}: Internal function computing the \verb{$\\hat\{H_t\}$} array.
+\item \code{calc_H()}: computes the \eqn{\hat{H_t}} array.
 
-\verb{$\\hat\{H_t\}$} is a component needed to compute confidence intervals;
-\verb{$H_t$} is defined in eq. 6 from Choi & Shin, 2021.
-The function returns a 5 x 5 x \code{t} array.
+\eqn{\hat{H_t}} is a component needed to compute confidence intervals;
+\eqn{H_t} is defined in eq. 6 from Choi & Shin (2021).
 
-\item \code{calc_e()}: Internal function computing \verb{$\\hat\{e\}_t$}.
+\item \code{calc_e()}: computes \eqn{\hat{e}_t}.
 
-\verb{$\\hat\{e\}_t$} is a component needed to compute confidence intervals;
-it is defined in eq. 9 from Choi & Shin, 2021.
-The function returns a \code{t} x 5 matrix storing the residuals.
+\eqn{\hat{e}_t} is defined in eq. 9 from Choi & Shin (2021).
 
-\item \code{calc_Gamma()}: Internal function computing \verb{$\\hat\{\\Gamma\}_l$}.
+\item \code{calc_Gamma()}: computes \eqn{\hat{\Gamma}_l}.
 
-\verb{$\\hat\{\\Gamma\}_l$} is a component needed to compute confidence intervals;
-it is defined in eq. 9 from Choi & Shin, 2021.
-The function returns a 5 x 5 matrix.
+\eqn{\hat{\Gamma}_l} is defined in eq. 9 from Choi & Shin (2021).
 
-\item \code{calc_GammaINF()}: Internal function computing \verb{$\\hat\{\\Gamma\}^\\Inf$}.
+\item \code{calc_GammaINF()}: computes \eqn{\hat{\Gamma}^\infty}.
 
-\verb{$\\hat\{\\Gamma\}^\\Inf$} is a component needed to compute confidence intervals (the long run variance estimator);
-it is defined in eq. 9 from Choi & Shin, 2021.
-The function returns a 5 x 5 matrix.
+\eqn{\hat{\Gamma}^\infty} is the long run variance estimator, defined in eq. 9 from Choi & Shin (2021).
 
-\item \code{calc_L_And()}: Internal function computing \verb{$L_\{And\}$}.
+\item \code{calc_L_And()}: computes \eqn{L_{And}}.
 
-\verb{$L_\{And\}$} is a component needed to compute confidence intervals;
-it is defined in Choi & Shin, 2021, p 342.
-It also corresponds to \verb{$S_T^*$}, eq 5.3 in Andrews 1991.
-The function returns a scalar which should be used as an input for \code{L} in \code{\link{calc_GammaINF}}.
+\eqn{L_{And}} is defined in Choi & Shin (2021, p 342).
+It also corresponds to \eqn{S_T^*}, eq 5.3 in Andrews (1991).
 
-\item \code{calc_D()}: Internal function computing \verb{$D_t$}.
+\item \code{calc_D()}: computes \eqn{D_t}.
 
-\verb{$D_t$} is a component needed to compute confidence intervals;
-it is defined in Choi & Shin, 2021, p 338.
-The function returns a \code{t} x 5 matrix storing the residuals.
+\eqn{D_t} is defined in Choi & Shin (2021, p 338).
 
-\item \code{calc_SE()}: Internal function computing \verb{$se(\\hat\{rho\}_t(h))$}.
+\item \code{calc_SE()}: computes \eqn{se(\hat{\rho}_t(h))}.
 
-The standard deviation of the time-varying correlation (\verb{$se(\\hat\{rho\}_t(h))$}) is defined in eq. 8 from Choi & Shin, 2021.
-It depends on \verb{$D_\{Lt\}$}, \verb{$D_\{Mt\}$} & \verb{$D_\{Ut\}$}, themselves defined in Choi & Shin, 2021, p 337 & 339.
-The \verb{$D_\{Xt\}$} terms are all computed within the function since they all rely on the same components.
-The function returns a vector of length \code{t}.
+The standard deviation of the time-varying correlation (\eqn{se(\hat{\rho}_t(h))}) is defined in eq. 8 from Choi & Shin (2021).
+It depends on \eqn{D_{Lt}}, \eqn{D_{Mt}} & \eqn{D_{Ut}}, themselves defined in Choi & Shin (2021, p 337 & 339).
+The \eqn{D_{Xt}} terms are all computed within the function since they all rely on the same components.
 
 }}
 \examples{
@@ -100,47 +99,40 @@ rho_obj <- with(na.omit(stockprice),
                 calc_rho(x = SP500, y = FTSE100, t = DateID, h = 20, kernel = "box"))
 head(rho_obj)
 
-
-## Computing `$\hat{H_t}$`
+## Computing \eqn{\hat{H_t}}
 
 H <- calc_H(smoothed_obj = rho_obj)
 H[, , 1:2] # H array for the first two time points
 
-
-## Computing `$\hat{e}_t$`
+## Computing \eqn{\hat{e}_t}
 
 e <- calc_e(smoothed_obj = rho_obj, H = H)
 head(e) # e matrix for the first six time points
 
-
-## Computing `$\hat{\Gamma}_l$`
+## Computing \eqn{\hat{\Gamma}_l}
 
 calc_Gamma(e = e, l = 3)
 
-
-## Computing `$\hat{\Gamma}^\Inf$`
+## Computing \eqn{\hat{\Gamma}^\infty}
 
 calc_GammaINF(e = e, L = 2)
 
-
-## Computing `$L_{And}$`
+## Computing \eqn{L_{And}}
 
 calc_L_And(e = e)
 sapply(c("yule-walker", "burg", "ols", "mle", "yw"),
        function(m) calc_L_And(e = e, AR.method = m)) ## comparing AR.methods
 
-
-## Computing `$D_t$`
+## Computing \eqn{D_t}
 
 D <- calc_D(smoothed_obj = rho_obj)
 head(D) # D matrix for the first six time points
 
+## Computing \eqn{se(\hat{\rho}_t(h))}
+# nb: takes a few seconds to run
 
 run <- FALSE ## change to TRUE to run the example
 if (in_pkgdown() || run) {
-
-## Computing `$se(\hat{rho}_t(h))$`
-# nb: takes a few seconds to run
 
 SE <- calc_SE(smoothed_obj = rho_obj, h = 50)
 head(SE) # SE vector for the first six time points
@@ -157,5 +149,5 @@ Andrews, D. W. K. Heteroskedasticity and autocorrelation consistent covariance m
 Econometrica: Journal of the Econometric Society, 817-858 (1991).
 }
 \seealso{
-\code{\link{tcor}}
+\code{\link[=tcor]{tcor()}}
 }

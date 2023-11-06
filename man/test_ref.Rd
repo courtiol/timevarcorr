@@ -14,7 +14,7 @@ test_ref(
 )
 }
 \arguments{
-\item{tcor_obj}{the output of a call to \code{\link{tcor}} with \code{CI = TRUE}.}
+\item{tcor_obj}{the output of a call to \code{\link[=tcor]{tcor()}} with \code{CI = TRUE}.}
 
 \item{t}{a vector of time point(s) used by the test (by default, all time points are considered).}
 
@@ -22,14 +22,14 @@ test_ref(
 
 \item{test}{a character string indicating which test to use ("student", the default; or "chi2").}
 
-\item{p.adjust.methods}{a character string indicating the method used to adjust p-values for multiple testing (see \code{\link{p.adjust}}; default = "none").}
+\item{p.adjust.methods}{a character string indicating the method used to adjust p-values for multiple testing (see \code{\link[=p.adjust]{p.adjust()}}; default = "none").}
 }
 \value{
 a data.frame with the result of the test, including the effect size (\code{delta_r = r[t] - r_ref}).
 }
 \description{
 This function tests whether smoothed correlation values are equal (H0) or not to a reference value (default = \code{0}).
-The test is not described in Choi & Shin, 2021, but it is based on the idea behind \code{\link{test_equality}}.
+The test is not described in Choi & Shin, 2021, but it is based on the idea behind \code{\link[=test_equality]{test_equality()}}.
 }
 \details{
 Two different test statistics can be used, one is asymptotically Student-t distributed under H0 and one is chi-square distributed.
@@ -62,5 +62,5 @@ test_ref(res, t = c("2000-08-18", "2000-10-27"))
 
 }
 \seealso{
-\code{\link{test_equality}}, \code{\link{tcor}}
+\code{\link[=test_equality]{test_equality()}}, \code{\link[=tcor]{tcor()}}
 }

@@ -86,14 +86,18 @@ monitor the progress of the cross validation (default = \code{FALSE}).}
 evaluate the smoothed fit. If missing, \code{t} is used.}
 }
 \value{
-A dataframe containing:
+\strong{---Output for \code{tcor()}---}
+
+A 2 x \eqn{t} dataframe containing:
 \itemize{
 \item the time points (\code{t}).
 \item the estimates of the correlation value (\code{r}).
 }
 
-as well as, if \code{CI = TRUE}:
+Or, if \code{CI = TRUE}, a 5 x \eqn{t} dataframe containing:
 \itemize{
+\item the time points (\code{t}).
+\item the estimates of the correlation value (\code{r}).
 \item the Standard Error (\code{SE}).
 \item the lower boundary of the confidence intervals (\code{lwr}).
 \item the upper boundary of the confidence intervals (\code{upr}).
@@ -101,74 +105,101 @@ as well as, if \code{CI = TRUE}:
 
 Some metadata are also attached to the dataframe (as attributes):
 \itemize{
-\item \code{h} the bandwidth parameter.
-\item \code{RMSE} the minimal root mean square error when \code{h} is selected by cross validation.
-\item \code{h_selection} the method used to select \code{h}.
-\item \code{h_select_duration} the computing time spent to select the bandwidth parameter.
+\item the call to the function (\code{call}).
+\item the argument \code{CI}.
+\item the bandwidth parameter (\code{h}).
+\item the method used to select \code{h} (\code{h_selection}).
+\item the minimal root mean square error when \code{h} is selected (\code{RMSE}).
+\item the computing time (in seconds) spent to select the bandwidth parameter (\code{h_selection_duration}) if \code{h} automatically selected.
+}
+
+\strong{---Output for \code{calc_rho()}---}
+
+A 14 x \eqn{t} dataframe with:
+\itemize{
+\item the six raw components of correlation (\code{x}, \code{y}, \code{x2}, \code{y2}, \code{xy}).
+\item the time points (\code{t}).
+\item the six raw components of correlation after smoothing (\code{x_smoothed}, \code{y_smoothed}, \code{x2_smoothed}, \code{y2_smoothed}, \code{xy_smoothed}).
+\item the standard deviation around \eqn{x} and \eqn{y} (\code{sd_x_smoothed}, \code{sd_y_smoothed}).
+\item the smoothed correlation coefficient (\code{rho_smoothed}).
+}
+
+\strong{---Output for \code{calc_RMSE()}---}
+
+A scalar of class numeric corresponding to the RMSE.
+
+\strong{---Output for \code{select_h()}---}
+
+A list with the following components:
+\itemize{
+\item the selected bandwidth parameter (\code{h}).
+\item the method used to select \code{h} (\code{h_selection}).
+\item the minimal root mean square error when \code{h} is selected (\code{RMSE}).
+\item the computing time (in seconds) spent to select the bandwidth parameter (\code{time}).
 }
 }
 \description{
-The function \code{tcor} implements (together with its helper function
-\code{calc_rho}) the nonparametric estimation of the time varying correlation
-coefficient proposed by Choi & Shin, 2021. The general idea is to compute a
-(Pearson) correlation coefficient (\code{r(x,y) = (mean(xy) - mean(x)*mean(y)) / (sqrt(mean(x^2)-mean(x)^2) * sqrt(mean(y^2)-mean(y)^2))}), but instead of
-using the means required for such a computation, each component (i.e., \code{x},
-\code{y}, \code{x^2}, \code{y^2}, \code{x*y}) is smoothed and the smoothed terms are considered
-in place the original means. The intensity of the smoothing depends on a
-unique parameter: the bandwidth (\code{h}). If \code{h = Inf}, the method produces the
-original (i.e., time-invariant) correlation value. The smaller the parameter
-\code{h}, the more variation in time is being captured. The parameter \code{h} can be
-provided by the user; otherwise it is automatically estimated by the internal
-helper functions \code{select_h} and \code{calc_RMSE} (see \strong{Details}).
+The function \code{tcor()} implements (together with its helper function
+\code{calc_rho()}) the nonparametric estimation of the time varying correlation
+coefficient proposed by Choi & Shin (2021). The general idea is to compute a
+(Pearson) correlation coefficient (\eqn{r(x,y) = \frac{\hat{xy} - \hat{x}\times\hat{y}}{
+\sqrt{\hat{x^2}-\hat{x}^2} \times \sqrt{\hat{y^2}-\hat{y}^2}}}), but instead of
+using the means required for such a computation, each component (i.e.,
+\eqn{x}, \eqn{y}, \eqn{x^2}, \eqn{y^2}, \eqn{x \times y}) is smoothed and the
+smoothed terms are considered in place the original means. The intensity of
+the smoothing depends on a unique parameter: the bandwidth (\code{h}). If \code{h = Inf}, the method produces the original (i.e., time-invariant) correlation
+value. The smaller the parameter \code{h}, the more variation in time is being
+captured. The parameter \code{h} can be provided by the user; otherwise it is
+automatically estimated by the internal helper functions \code{select_h()} and
+\code{calc_RMSE()} (see \strong{Details}).
 }
 \details{
 \itemize{
 \item \strong{Smoothing}: the smoothing of each component is performed by kernel
 regression. The default is to use the Epanechnikov kernel following Choi &
-Shin 2021, but other kernels have also been implemented and can thus
-alternatively be used (see \code{\link{kern_smooth}} for details). The normal kernel
+Shin (2021), but other kernels have also been implemented and can thus
+alternatively be used (see \code{\link[=kern_smooth]{kern_smooth()}} for details). The normal kernel
 seems to sometimes lead to very small bandwidth being selected, but the
 default kernel can lead to numerical issues (see next point). We thus
 recommend always comparing the results from different kernel methods.
 \item \strong{Numerical issues}: some numerical issues can happen because the smoothing
 is performed independently on each component of the correlation coefficient.
 As a consequence, some relationship between components may become violated
-for some time points. For instance, if the square of the smoothed $x$ term
-gets larger than the smoothed $x^2$ term, the variance of $x$ would become
+for some time points. For instance, if the square of the smoothed \eqn{x} term
+gets larger than the smoothed \eqn{x^2} term, the variance of \eqn{x} would become
 negative. In such cases, coefficient values returned are \code{NA}.
 \item \strong{Bandwidth selection}: when the value used to define the bandwidth (\code{h})
-in \code{tcor} is set to \code{NULL} (the default), the internal function \code{select_h}
+in \code{tcor()} is set to \code{NULL} (the default), the internal function \code{select_h()}
 is used to to select the optimal value for \code{h}. It is first estimated by
-leave-one-out cross validation (using internally \code{calc_RMSE}). If the cross
+leave-one-out cross validation (using internally \code{calc_RMSE()}). If the cross
 validation error (RMSE) is minimal for the maximal value of \code{h} considered
-(\code{8*sqrt(N)}), rather than taking this as the optimal \code{h} value, the
+(\eqn{8\sqrt{N}}), rather than taking this as the optimal \code{h} value, the
 bandwidth becomes estimated using the so-called elbow criterion. This latter
 method identifies the value \code{h} after which the cross validation error
 decreasing very little. The procedure is detailed in section 2.1 in Choi &
-Shin, 2021.
+Shin (2021).
 \item \strong{Parallel computation}: if \code{h} is not provided, an automatic bandwidth
 selection occurs (see above). For large datasets, this step can be
 computationally demanding. The current implementation thus relies on
-\code{\link[parallel:mclapply]{parallel::mclapply}} and is thus only effective for Linux and MacOS.
+\code{\link[parallel:mclapply]{parallel::mclapply()}} and is thus only effective for Linux and MacOS.
 Relying on parallel processing also implies that you call \code{options("mc.cores" = XX)} beforehand, replacing \code{XX} by the relevant number of CPU cores you
 want to use (see \strong{Examples}). For debugging, do use \code{options("mc.cores" = 1)}, otherwise you may not be able to see the error messages generated in
 child nodes.
 \item \strong{Confidence interval}: if \code{CI} is set to \code{TRUE}, a confidence interval is
-calculated as described in Choi & Shin, 2021. This is also necessary for using
-\code{\link{test_equality}} to test differences between correlations at two time points.
+calculated as described in Choi & Shin (2021). This is also necessary for using
+\code{\link[=test_equality]{test_equality()}} to test differences between correlations at two time points.
 The computation of the confidence intervals involves multiple internal
 functions (see \code{\link{CI}} for details).
 }
 }
 \section{Functions}{
 \itemize{
-\item \code{tcor()}: \strong{The user-level function to be used}.
+\item \code{tcor()}: \strong{the user-level function to be used}.
 
-\item \code{calc_rho()}: Internal function computing the correlation for a given bandwidth.
+\item \code{calc_rho()}: computes the correlation for a given bandwidth.
 
 The function calls the kernel smoothing procedure on each component required
-to compute the time-varying correlation. It returns a dataframe with the time,
-the correlation value and the underlying components used for the computation.
+to compute the time-varying correlation.
 
 \item \code{calc_RMSE()}: Internal function computing the root mean square error (RMSE) for a given bandwidth.
 
@@ -176,8 +207,7 @@ The function removes each time point one by one and predicts the correlation
 at the missing time point based on the other time points. It then computes
 and returns the RMSE between this predicted correlation and the one predicted
 using the full dataset. See also \emph{Bandwidth selection} and \emph{Parallel
-computation} in
-\strong{Details}.
+computation} in \strong{Details}.
 
 \item \code{select_h()}: Internal function selecting the optimal bandwidth parameter \code{h}.
 

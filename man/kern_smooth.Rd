@@ -45,8 +45,8 @@ The function perform the smoothing of a time-series by non-parametric kernel reg
 The function is essentially a wrapper that calls different underlying
 functions depending on the kernel that is selected:
 \itemize{
-\item \code{\link[lpridge:lpepa]{lpridge::lpepa}} for "epanechnikov".
-\item \code{\link[stats:ksmooth]{stats::ksmooth}} for "normal" and "box".
+\item \code{\link[lpridge:lpepa]{lpridge::lpepa()}} for "epanechnikov".
+\item \code{\link[stats:ksmooth]{stats::ksmooth()}} for "normal" and "box".
 The argument \code{param_smoother} can be used to pass additional arguments to
 these functions.
 }

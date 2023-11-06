@@ -1,23 +1,24 @@
 #' Compute time varying correlation coefficients
 #'
-#' The function `tcor` implements (together with its helper function
-#' `calc_rho`) the nonparametric estimation of the time varying correlation
-#' coefficient proposed by Choi & Shin, 2021. The general idea is to compute a
-#' (Pearson) correlation coefficient (`r(x,y) = (mean(xy) - mean(x)*mean(y)) /
-#' (sqrt(mean(x^2)-mean(x)^2) * sqrt(mean(y^2)-mean(y)^2))`), but instead of
-#' using the means required for such a computation, each component (i.e., `x`,
-#' `y`, `x^2`, `y^2`, `x*y`) is smoothed and the smoothed terms are considered
-#' in place the original means. The intensity of the smoothing depends on a
-#' unique parameter: the bandwidth (`h`). If `h = Inf`, the method produces the
-#' original (i.e., time-invariant) correlation value. The smaller the parameter
-#' `h`, the more variation in time is being captured. The parameter `h` can be
-#' provided by the user; otherwise it is automatically estimated by the internal
-#' helper functions `select_h` and `calc_RMSE` (see **Details**).
+#' The function `tcor()` implements (together with its helper function
+#' `calc_rho()`) the nonparametric estimation of the time varying correlation
+#' coefficient proposed by Choi & Shin (2021). The general idea is to compute a
+#' (Pearson) correlation coefficient (\eqn{r(x,y) = \frac{\hat{xy} - \hat{x}\times\hat{y}}{
+#' \sqrt{\hat{x^2}-\hat{x}^2} \times \sqrt{\hat{y^2}-\hat{y}^2}}}), but instead of
+#' using the means required for such a computation, each component (i.e.,
+#' \eqn{x}, \eqn{y}, \eqn{x^2}, \eqn{y^2}, \eqn{x \times y}) is smoothed and the
+#' smoothed terms are considered in place the original means. The intensity of
+#' the smoothing depends on a unique parameter: the bandwidth (`h`). If `h =
+#' Inf`, the method produces the original (i.e., time-invariant) correlation
+#' value. The smaller the parameter `h`, the more variation in time is being
+#' captured. The parameter `h` can be provided by the user; otherwise it is
+#' automatically estimated by the internal helper functions `select_h()` and
+#' `calc_RMSE()` (see **Details**).
 #'
 #' - **Smoothing**: the smoothing of each component is performed by kernel
 #' regression. The default is to use the Epanechnikov kernel following Choi &
-#' Shin 2021, but other kernels have also been implemented and can thus
-#' alternatively be used (see [`kern_smooth`] for details). The normal kernel
+#' Shin (2021), but other kernels have also been implemented and can thus
+#' alternatively be used (see [`kern_smooth()`] for details). The normal kernel
 #' seems to sometimes lead to very small bandwidth being selected, but the
 #' default kernel can lead to numerical issues (see next point). We thus
 #' recommend always comparing the results from different kernel methods.
@@ -25,25 +26,25 @@
 #' - **Numerical issues**: some numerical issues can happen because the smoothing
 #' is performed independently on each component of the correlation coefficient.
 #' As a consequence, some relationship between components may become violated
-#' for some time points. For instance, if the square of the smoothed $x$ term
-#' gets larger than the smoothed $x^2$ term, the variance of $x$ would become
+#' for some time points. For instance, if the square of the smoothed \eqn{x} term
+#' gets larger than the smoothed \eqn{x^2} term, the variance of \eqn{x} would become
 #' negative. In such cases, coefficient values returned are `NA`.
 #'
 #' - **Bandwidth selection**: when the value used to define the bandwidth (`h`)
-#' in `tcor` is set to `NULL` (the default), the internal function `select_h`
+#' in `tcor()` is set to `NULL` (the default), the internal function `select_h()`
 #' is used to to select the optimal value for `h`. It is first estimated by
-#' leave-one-out cross validation (using internally `calc_RMSE`). If the cross
+#' leave-one-out cross validation (using internally `calc_RMSE()`). If the cross
 #' validation error (RMSE) is minimal for the maximal value of `h` considered
-#' (`8*sqrt(N)`), rather than taking this as the optimal `h` value, the
+#' (\eqn{8\sqrt{N}}), rather than taking this as the optimal `h` value, the
 #' bandwidth becomes estimated using the so-called elbow criterion. This latter
 #' method identifies the value `h` after which the cross validation error
 #' decreasing very little. The procedure is detailed in section 2.1 in Choi &
-#' Shin, 2021.
+#' Shin (2021).
 #'
 #' - **Parallel computation**: if `h` is not provided, an automatic bandwidth
 #' selection occurs (see above). For large datasets, this step can be
 #' computationally demanding. The current implementation thus relies on
-#' [`parallel::mclapply`] and is thus only effective for Linux and MacOS.
+#' [`parallel::mclapply()`] and is thus only effective for Linux and MacOS.
 #' Relying on parallel processing also implies that you call `options("mc.cores"
 #' = XX)` beforehand, replacing `XX` by the relevant number of CPU cores you
 #' want to use (see **Examples**). For debugging, do use `options("mc.cores" =
@@ -51,8 +52,8 @@
 #' child nodes.
 #'
 #' - **Confidence interval**: if `CI` is set to `TRUE`, a confidence interval is
-#' calculated as described in Choi & Shin, 2021. This is also necessary for using
-#' [`test_equality`] to test differences between correlations at two time points.
+#' calculated as described in Choi & Shin (2021). This is also necessary for using
+#' [`test_equality()`] to test differences between correlations at two time points.
 #' The computation of the confidence intervals involves multiple internal
 #' functions (see [`CI`] for details).
 #'
@@ -68,21 +69,6 @@
 #' @param verbose a logical specifying if information should be displayed to
 #' monitor the progress of the cross validation (default = `FALSE`).
 #'
-#' @return A dataframe containing:
-#' - the time points (`t`).
-#' - the estimates of the correlation value (`r`).
-#'
-#' as well as, if `CI = TRUE`:
-#' - the Standard Error (`SE`).
-#' - the lower boundary of the confidence intervals (`lwr`).
-#' - the upper boundary of the confidence intervals (`upr`).
-#'
-#' Some metadata are also attached to the dataframe (as attributes):
-#' - `h` the bandwidth parameter.
-#' - `RMSE` the minimal root mean square error when `h` is selected by cross validation.
-#' - `h_selection` the method used to select `h`.
-#' - `h_select_duration` the computing time spent to select the bandwidth parameter.
-#'
 #' @name tcor
 #' @rdname tcor
 #'
@@ -97,7 +83,29 @@
 NULL
 
 
-#' @describeIn tcor **The user-level function to be used**.
+#' @describeIn tcor **the user-level function to be used**.
+#'
+#' @return
+#' **---Output for `tcor()`---**
+#'
+#'  A 2 x \eqn{t} dataframe containing:
+#'  - the time points (`t`).
+#'  - the estimates of the correlation value (`r`).
+#'
+#'  Or, if `CI = TRUE`, a 5 x \eqn{t} dataframe containing:
+#'  - the time points (`t`).
+#'  - the estimates of the correlation value (`r`).
+#'  - the Standard Error (`SE`).
+#'  - the lower boundary of the confidence intervals (`lwr`).
+#'  - the upper boundary of the confidence intervals (`upr`).
+#'
+#'  Some metadata are also attached to the dataframe (as attributes):
+#' - the call to the function (`call`).
+#' - the argument `CI`.
+#' - the bandwidth parameter (`h`).
+#' - the method used to select `h` (`h_selection`).
+#' - the minimal root mean square error when `h` is selected (`RMSE`).
+#' - the computing time (in seconds) spent to select the bandwidth parameter (`h_selection_duration`) if `h` automatically selected.
 #'
 #' @order 1
 #'
@@ -347,12 +355,20 @@ tcor <- function(x, y, t = seq_along(x), h = NULL, cor.method = c("pearson", "sp
 }
 
 
-#' @describeIn tcor Internal function computing the correlation for a given bandwidth.
+#' @describeIn tcor computes the correlation for a given bandwidth.
 #'
 #' The function calls the kernel smoothing procedure on each component required
-#' to compute the time-varying correlation. It returns a dataframe with the time,
-#' the correlation value and the underlying components used for the computation.
+#' to compute the time-varying correlation.
 #'
+#' @return
+#' **---Output for `calc_rho()`---**
+#'
+#'  A 14 x \eqn{t} dataframe with:
+#'   - the six raw components of correlation (`x`, `y`, `x2`, `y2`, `xy`).
+#'   - the time points (`t`).
+#'   - the six raw components of correlation after smoothing (`x_smoothed`, `y_smoothed`, `x2_smoothed`, `y2_smoothed`, `xy_smoothed`).
+#'   - the standard deviation around \eqn{x} and \eqn{y} (`sd_x_smoothed`, `sd_y_smoothed`).
+#'   - the smoothed correlation coefficient (`rho_smoothed`).
 #' @order 2
 #'
 #' @export
@@ -450,8 +466,12 @@ calc_rho <- function(x, y, t = seq_along(x), t.for.pred = t, h, cor.method = c("
 #' at the missing time point based on the other time points. It then computes
 #' and returns the RMSE between this predicted correlation and the one predicted
 #' using the full dataset. See also *Bandwidth selection* and *Parallel
-#' computation* in
-#' **Details**.
+#' computation* in **Details**.
+#'
+#' @return
+#' **---Output for `calc_RMSE()`---**
+#'
+#' A scalar of class numeric corresponding to the RMSE.
 #'
 #' @order 3
 #'
@@ -504,6 +524,15 @@ calc_RMSE <- function(h, x, y, t = seq_along(x), cor.method = c("pearson", "spea
 #' in **Details**.
 #'
 #' @order 4
+#'
+#' @return
+#' **---Output for `select_h()`---**
+#'
+#' A list with the following components:
+#' - the selected bandwidth parameter (`h`).
+#' - the method used to select `h` (`h_selection`).
+#' - the minimal root mean square error when `h` is selected (`RMSE`).
+#' - the computing time (in seconds) spent to select the bandwidth parameter (`time`).
 #'
 #' @export
 #'

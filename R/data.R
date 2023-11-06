@@ -1,7 +1,7 @@
 #' Daily Closing Prices of Major European Stock Indices, April 2000--December 2017
 #'
 #' A dataset containing the stockmarket returns between 2000-04-03 and 2017-12-05.
-#' This dataset is very close to the one used by Choi & Shin 2021, although not
+#' This dataset is very close to the one used by Choi & Shin (2021), although not
 #' strictly identical. It has been produced by the Oxford-Man Institute of Quantitative Finance.
 #'
 #' @format A data frame with 4618 rows and 7 variables:
@@ -12,7 +12,7 @@
 #'   \item{Nikkei}{a numeric vector of the stockmarket return for the Nikkei 225.}
 #'   \item{DAX}{a numeric vector of the stockmarket return for the German stock index.}
 #'   \item{NASDAQ}{a numeric vector of the stockmarket return for the Nasdaq Stock Market.}
-#'   \item{Event}{a character string of particular events that have impacted the stockmarket, as in Choi & Shin 2021.}
+#'   \item{Event}{a character string of particular events that have impacted the stockmarket, as in Choi & Shin (2021).}
 #' }
 #'
 #' @source

@@ -12,7 +12,7 @@ test_equality(
 )
 }
 \arguments{
-\item{tcor_obj}{the output of a call to \code{\link{tcor}} with \code{CI = TRUE}.}
+\item{tcor_obj}{the output of a call to \code{\link[=tcor]{tcor()}} with \code{CI = TRUE}.}
 
 \item{t1}{the first time point used by the test (by default, the first time point in the time series).}
 
@@ -25,7 +25,7 @@ a data.frame with the result of the test, including the effect size (\code{delta
 }
 \description{
 This function tests whether smoothed correlation values at two time points are equal (H0) or not.
-The test is described page 341 in Choi & Shin, 2021.
+The test is described page 341 in Choi & Shin (2021).
 }
 \details{
 Two different test statistics can be used, one is asymptotically Student-t distributed under H0 and one is chi-square distributed.
@@ -59,5 +59,5 @@ stockprice[1000, "DateID"] ## t2 does match with date `stockprice` despite missi
 
 }
 \seealso{
-\code{\link{test_ref}}, \code{\link{tcor}}
+\code{\link[=test_ref]{test_ref()}}, \code{\link[=tcor]{tcor()}}
 }

@@ -4,8 +4,8 @@
 #'
 #' The function is essentially a wrapper that calls different underlying
 #' functions depending on the kernel that is selected:
-#' - [`lpridge::lpepa`] for "epanechnikov".
-#' - [`stats::ksmooth`] for "normal" and "box".
+#' - [`lpridge::lpepa()`] for "epanechnikov".
+#' - [`stats::ksmooth()`] for "normal" and "box".
 #' The argument `param_smoother` can be used to pass additional arguments to
 #' these functions.
 #'

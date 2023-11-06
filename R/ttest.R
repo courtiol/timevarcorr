@@ -1,12 +1,12 @@
 #' Compute equality test between correlation coefficient estimates at two time points
 #'
 #' This function tests whether smoothed correlation values at two time points are equal (H0) or not.
-#' The test is described page 341 in Choi & Shin, 2021.
+#' The test is described page 341 in Choi & Shin (2021).
 #'
 #' Two different test statistics can be used, one is asymptotically Student-t distributed under H0 and one is chi-square distributed.
 #' In practice, it seems to give very similar results.
 #'
-#' @param tcor_obj the output of a call to [`tcor`] with `CI = TRUE`.
+#' @param tcor_obj the output of a call to [`tcor()`] with `CI = TRUE`.
 #' @param t1 the first time point used by the test (by default, the first time point in the time series).
 #' @param t2 the second time point used by the test (by default, the last time point in the time series).
 #' @param test a character string indicating which test to use ("student", the default; or "chi2").
@@ -15,7 +15,7 @@
 #'
 #' @export
 #'
-#' @seealso [`test_ref`], [`tcor`]
+#' @seealso [`test_ref()`], [`tcor()`]
 #'
 #' @examples
 #' ## Simple example
@@ -110,7 +110,7 @@ test_equality <- function(tcor_obj, t1 = 1, t2 = nrow(tcor_obj), test = c("stude
 #' Test difference between correlation coefficient estimates and a value of reference
 #'
 #' This function tests whether smoothed correlation values are equal (H0) or not to a reference value (default = `0`).
-#' The test is not described in Choi & Shin, 2021, but it is based on the idea behind [`test_equality`].
+#' The test is not described in Choi & Shin, 2021, but it is based on the idea behind [`test_equality()`].
 #'
 #' Two different test statistics can be used, one is asymptotically Student-t distributed under H0 and one is chi-square distributed.
 #' In practice, it seems to give very similar results.
@@ -118,13 +118,13 @@ test_equality <- function(tcor_obj, t1 = 1, t2 = nrow(tcor_obj), test = c("stude
 #' @inheritParams test_equality
 #' @param t a vector of time point(s) used by the test (by default, all time points are considered).
 #' @param r_ref a scalar indicating the reference value for the correlation coefficient to be used in the test (default = `0`).
-#' @param p.adjust.methods a character string indicating the method used to adjust p-values for multiple testing (see [`p.adjust`]; default = "none").
+#' @param p.adjust.methods a character string indicating the method used to adjust p-values for multiple testing (see [`p.adjust()`]; default = "none").
 #'
 #' @return a data.frame with the result of the test, including the effect size (`delta_r = r[t] - r_ref`).
 #'
 #' @export
 #'
-#' @seealso [`test_equality`], [`tcor`]
+#' @seealso [`test_equality()`], [`tcor()`]
 #'
 #' @examples
 #' ## Comparison of all correlation values to reference of 0.5

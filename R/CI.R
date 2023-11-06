@@ -1,9 +1,9 @@
 #' Internal functions for the computation of confidence intervals
 #'
-#' These functions compute the different terms required to compute the confidence
-#' interval around the time-varying correlation coefficient.
+#' These functions compute the different terms required for [`tcor()`] to compute the confidence
+#' interval around the time-varying correlation coefficient. These terms are defined in Choi & Shin (2021).
 #'
-#' @seealso [`tcor`]
+#' @seealso [`tcor()`]
 #' @name CI
 #'
 #' @references
@@ -13,6 +13,15 @@
 #' Andrews, D. W. K. Heteroskedasticity and autocorrelation consistent covariance matrix estimation.
 #' Econometrica: Journal of the Econometric Society, 817-858 (1991).
 #'
+#' @return
+#' - `calc_H()` returns a 5 x 5 x \eqn{t} array of elements of class numeric, which corresponds to \eqn{\hat{H_t}} in Choi & Shin (2021).
+#' - `calc_e()` returns a \eqn{t} x 5 matrix of elements of class numeric storing the residuals, which corresponds to \eqn{\hat{e}_t} in Choi & Shin (2021).
+#' - `calc_Gamma()` returns a 5 x 5 matrix of elements of class numeric, which corresponds to \eqn{\hat{\Gamma}_l} in Choi & Shin (2021).
+#' - `calc_GammaINF()` returns a 5 x 5 matrix of elements of class numeric, which corresponds to \eqn{\hat{\Gamma}^\infty} in Choi & Shin (2021).
+#' - `calc_L_And()` returns a scalar of class numeric, which corresponds to \eqn{L_{And}} in Choi & Shin (2021).
+#' - `calc_D()` returns a \eqn{t} x 5 matrix of elements of class numeric storing the residuals, which corresponds to \eqn{D_t} in Choi & Shin (2021).
+#' - `calc_SE()` returns a vector of length \eqn{t} of elements of class numeric, which corresponds to \eqn{se(\hat{\rho}_t(h))} in Choi & Shin (2021).
+#'
 #' @examples
 #' rho_obj <- with(na.omit(stockprice),
 #'                 calc_rho(x = SP500, y = FTSE100, t = DateID, h = 20, kernel = "box"))
@@ -21,18 +30,16 @@
 NULL
 
 
-#' @describeIn CI Internal function computing the `$\hat{H_t}$` array.
+#' @describeIn CI computes the \eqn{\hat{H_t}} array.
 #'
-#' `$\hat{H_t}$` is a component needed to compute confidence intervals;
-#' `$H_t$` is defined in eq. 6 from Choi & Shin, 2021.
-#' The function returns a 5 x 5 x `t` array.
+#' \eqn{\hat{H_t}} is a component needed to compute confidence intervals;
+#' \eqn{H_t} is defined in eq. 6 from Choi & Shin (2021).
 #'
 #' @export
 #' @param smoothed_obj an object created with [`calc_rho`].
 #'
 #' @examples
-#'
-#' ## Computing `$\hat{H_t}$`
+#' ## Computing \eqn{\hat{H_t}}
 #'
 #' H <- calc_H(smoothed_obj = rho_obj)
 #' H[, , 1:2] # H array for the first two time points
@@ -63,18 +70,15 @@ calc_H <- function(smoothed_obj) {
 }
 
 
-#' @describeIn CI Internal function computing `$\hat{e}_t$`.
+#' @describeIn CI computes \eqn{\hat{e}_t}.
 #'
-#' `$\hat{e}_t$` is a component needed to compute confidence intervals;
-#' it is defined in eq. 9 from Choi & Shin, 2021.
-#' The function returns a `t` x 5 matrix storing the residuals.
+#' \eqn{\hat{e}_t} is defined in eq. 9 from Choi & Shin (2021).
 #'
 #' @export
-#' @param H an object created with [`calc_H`].
+#' @param H an object created with `calc_H`.
 #'
 #' @examples
-#'
-#' ## Computing `$\hat{e}_t$`
+#' ## Computing \eqn{\hat{e}_t}
 #'
 #' e <- calc_e(smoothed_obj = rho_obj, H = H)
 #' head(e) # e matrix for the first six time points
@@ -91,19 +95,16 @@ calc_e <- function(smoothed_obj, H) {
 }
 
 
-#' @describeIn CI Internal function computing `$\hat{\Gamma}_l$`.
+#' @describeIn CI computes \eqn{\hat{\Gamma}_l}.
 #'
-#' `$\hat{\Gamma}_l$` is a component needed to compute confidence intervals;
-#' it is defined in eq. 9 from Choi & Shin, 2021.
-#' The function returns a 5 x 5 matrix.
+#' \eqn{\hat{\Gamma}_l} is defined in eq. 9 from Choi & Shin (2021).
 #'
 #' @export
-#' @param e an object created with [`calc_e`].
+#' @param e an object created with `calc_e`.
 #' @param l a scalar indicating a number of time points.
 #'
 #' @examples
-#'
-#' ## Computing `$\hat{\Gamma}_l$`
+#' ## Computing \eqn{\hat{\Gamma}_l}
 #'
 #' calc_Gamma(e = e, l = 3)
 #'
@@ -116,18 +117,15 @@ calc_Gamma <- function(e, l) {
 }
 
 
-#' @describeIn CI Internal function computing `$\hat{\Gamma}^\Inf$`.
+#' @describeIn CI computes \eqn{\hat{\Gamma}^\infty}.
 #'
-#' `$\hat{\Gamma}^\Inf$` is a component needed to compute confidence intervals (the long run variance estimator);
-#' it is defined in eq. 9 from Choi & Shin, 2021.
-#' The function returns a 5 x 5 matrix.
+#' \eqn{\hat{\Gamma}^\infty} is the long run variance estimator, defined in eq. 9 from Choi & Shin (2021).
 #'
 #' @export
 #' @param L a scalar indicating a bandwidth parameter.
 #'
 #' @examples
-#'
-#' ## Computing `$\hat{\Gamma}^\Inf$`
+#' ## Computing \eqn{\hat{\Gamma}^\infty}
 #'
 #' calc_GammaINF(e = e, L = 2)
 #'
@@ -145,19 +143,16 @@ calc_GammaINF <- function(e, L) {
 }
 
 
-#' @describeIn CI Internal function computing `$L_{And}$`.
+#' @describeIn CI computes \eqn{L_{And}}.
 #'
-#' `$L_{And}$` is a component needed to compute confidence intervals;
-#' it is defined in Choi & Shin, 2021, p 342.
-#' It also corresponds to `$S_T^*$`, eq 5.3 in Andrews 1991.
-#' The function returns a scalar which should be used as an input for `L` in [`calc_GammaINF`].
+#' \eqn{L_{And}} is defined in Choi & Shin (2021, p 342).
+#' It also corresponds to \eqn{S_T^*}, eq 5.3 in Andrews (1991).
 #'
 #' @export
-#' @param AR.method character string specifying the method to fit the autoregressive model used to compute `$\hat{\gamma}_1$` in `$L_{And}$` (see [`stats::ar`] for details).
+#' @param AR.method character string specifying the method to fit the autoregressive model used to compute \eqn{\hat{\gamma}_1} in \eqn{L_{And}} (see [`stats::ar`] for details).
 #'
 #' @examples
-#'
-#' ## Computing `$L_{And}$`
+#' ## Computing \eqn{L_{And}}
 #'
 #' calc_L_And(e = e)
 #' sapply(c("yule-walker", "burg", "ols", "mle", "yw"),
@@ -171,17 +166,14 @@ calc_L_And <- function(e, AR.method = c("yule-walker", "burg", "ols", "mle", "yw
 }
 
 
-#' @describeIn CI Internal function computing `$D_t$`.
+#' @describeIn CI computes \eqn{D_t}.
 #'
-#' `$D_t$` is a component needed to compute confidence intervals;
-#' it is defined in Choi & Shin, 2021, p 338.
-#' The function returns a `t` x 5 matrix storing the residuals.
+#' \eqn{D_t} is defined in Choi & Shin (2021, p 338).
 #'
 #' @export
 #'
 #' @examples
-#'
-#' ## Computing `$D_t$`
+#' ## Computing \eqn{D_t}
 #'
 #' D <- calc_D(smoothed_obj = rho_obj)
 #' head(D) # D matrix for the first six time points
@@ -197,23 +189,21 @@ calc_D <- function(smoothed_obj) {
 }
 
 
-#' @describeIn CI Internal function computing `$se(\hat{rho}_t(h))$`.
+#' @describeIn CI computes \eqn{se(\hat{\rho}_t(h))}.
 #'
-#' The standard deviation of the time-varying correlation (`$se(\hat{rho}_t(h))$`) is defined in eq. 8 from Choi & Shin, 2021.
-#' It depends on `$D_{Lt}$`, `$D_{Mt}$` & `$D_{Ut}$`, themselves defined in Choi & Shin, 2021, p 337 & 339.
-#' The `$D_{Xt}$` terms are all computed within the function since they all rely on the same components.
-#' The function returns a vector of length `t`.
+#' The standard deviation of the time-varying correlation (\eqn{se(\hat{\rho}_t(h))}) is defined in eq. 8 from Choi & Shin (2021).
+#' It depends on \eqn{D_{Lt}}, \eqn{D_{Mt}} & \eqn{D_{Ut}}, themselves defined in Choi & Shin (2021, p 337 & 339).
+#' The \eqn{D_{Xt}} terms are all computed within the function since they all rely on the same components.
 #'
 #' @export
 #' @inheritParams kern_smooth
 #'
 #' @examples
+#' ## Computing \eqn{se(\hat{\rho}_t(h))}
+#' # nb: takes a few seconds to run
 #'
 #' run <- FALSE ## change to TRUE to run the example
 #' if (in_pkgdown() || run) {
-#'
-#' ## Computing `$se(\hat{rho}_t(h))$`
-#' # nb: takes a few seconds to run
 #'
 #' SE <- calc_SE(smoothed_obj = rho_obj, h = 50)
 #' head(SE) # SE vector for the first six time points
