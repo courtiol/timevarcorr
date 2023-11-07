@@ -1,6 +1,8 @@
-# timevarcorr 0.1.1
+# timevarcorr (development version)
 
-New submission to CRAN after revisions.
+# timevarcorr 0.1.1 (First CRAN release)
+
+New submission to CRAN after revisions (accepted).
 
 * Add Choi & Shin (2021) in DESCRIPTION.
 * Improve documentation (returns more detailed and use of LaTeX).
